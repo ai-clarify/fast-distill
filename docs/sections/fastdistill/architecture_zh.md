@@ -3,21 +3,22 @@
 ## 目标与硬约束
 - Teacher 侧吞吐最大化，质量下限不下降。
 - 质量闸门可复核、可反驳（exec/judge）。
-- 训练与数据生成解耦，避免供应商绑定。
+- 训练与数据生成路径解耦，避免供应商绑定。
 
-## 全链路流程图
+## 全链路流程图（当前参考管线）
 ```mermaid
 flowchart TD
   A[原始输入] --> B[Canonicalize 规范化]
-  B --> C[Dedup 去重]
-  C --> D[Teacher 生成]
-  D --> E[规则过滤]
-  E --> F[Parse + Exec 执行评估]
-  F --> G[Teacher 评分]
-  G --> H[Select/Keep 选择]
-  H --> I[导出蒸馏数据]
-  I --> J[学生模型生成]
-  J --> K[蒸馏模型评测]
+  B --> C[Hash sample_id]
+  C --> D[Dedup 去重]
+  D --> E[Teacher 生成]
+  E --> F[规则过滤]
+  F --> G[SQLite Exec 执行评估]
+  G --> H[Teacher 评分]
+  H --> I[Keep（score + exec_pass）]
+  I --> J[导出蒸馏数据]
+  J --> K[学生模型生成]
+  K --> L[学生执行评估 + 评分]
 
   subgraph AnalysisTools[分析工具]
     M1[WriteManifest]
@@ -25,24 +26,21 @@ flowchart TD
     M3[WriteTimingReport]
   end
 
-  B -.-> M1
-  D -.-> M1
-  H -.-> M1
-  E -.-> M2
+  J -.-> M1
   F -.-> M2
   H -.-> M2
-  K -.-> M2
+  L -.-> M2
   A -.-> M3
-  D -.-> M3
-  H -.-> M3
-  J -.-> M3
+  E -.-> M3
+  I -.-> M3
   K -.-> M3
+  L -.-> M3
 ```
 
 ## 数据合同
 - `canonical_input`: 对关键字段做稳定 JSON 序列化。
-- `sample_id`: sha256(`task_id + schema_hash + canonical_input + decode_profile`)。
-- `schema_hash`: sha256(`schema`)。
+- `sample_id`: sha256(`task_id + canonical_input`)（参考管线）。
+- 生产使用可额外加入 `schema_hash`、`decode_profile`。
 - 产物按 `run_id` 与 `stage` 分区，保证可重放。
 
 ## 分析/观测工具（好事分析工具）
@@ -50,17 +48,23 @@ flowchart TD
    - 输出：每个 stage 的 `manifest.json`。
    - 字段：`count`, `field_hash`, `min_sample_id`, `max_sample_id`, `columns`。
    - 作用：数据审计 + 可重放。
+   - 参考管线在 `distilled` stage 写入 manifest。
 
 2. **质量报告** (`WriteQualityReport`)
    - 输出：每个 stage 的 `quality_report.json`。
    - 字段：`kept`, `rejected`, `p_keep`, `exec_pass_rate`, `gold_match_rate`,
      `judge_score` 统计, `reject_reason_counts`, `exec_error_counts`。
    - 作用：量化质量闸门与失败分布。
+   - 参考管线输出：
+     - `stage=distilled`（teacher_score + exec/gold match）
+     - `stage=student_eval`（student_score + exec/gold match）
 
 3. **耗时报告** (`WriteTimingReport` + `MarkTime`)
    - 输出：`timing_report.json`。
    - 字段：分段耗时 `p50/p90/p95` + total。
    - 作用：定位性能瓶颈。
+   - 参考管线标签：`raw`, `canonical`, `hashed`, `teacher`,
+     `filtered`, `eval`, `selected`, `distilled`, `student_gen`, `student_eval`。
 
 4. **SQL 执行评估** (`SQLiteExecEval`)
    - 字段：`exec_pass`, `exec_error`, `gold_match`, `result_signature`。
@@ -69,6 +73,7 @@ flowchart TD
 5. **LLM 统计**
    - 位于 `distilabel_metadata.statistics_<step_name>`。
    - 用于计算 `teacher_tokens_per_sec` 与成本/样本。
+   - 学生侧统计使用 `statistics_text_generation_1`。
 
 ## 指标计算
 - `teacher_tokens_per_sec` = sum(output_tokens) / teacher_duration_seconds
@@ -80,6 +85,10 @@ flowchart TD
 - 提升 `input_batch_size` 与 provider 端批处理能力。
 - 用 decode profile 控制多样性与成本（temperature/top_p/n）。
 - 通过 `sample_id` 做去重/缓存，避免重复调用（例如 `DeduplicateByField`）。
+
+**学生生成**
+- 单独预算吞吐，尽量使用更小/更快的学生模型。
+- prompt 保持最小化（schema + instruction），降低延迟。
 
 **质量闸门**
 - 先做低成本规则过滤，再做 exec/judge。
