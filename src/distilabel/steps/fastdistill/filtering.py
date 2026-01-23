@@ -65,6 +65,26 @@ class RuleFilter(Step):
         yield inputs
 
 
+class FilterByBool(Step):
+    """Streamingly filter rows where the given field matches the expected value."""
+
+    field: str = Field(default="keep")
+    value: bool = Field(default=True)
+
+    @property
+    def inputs(self) -> List[str]:
+        return [self.field]
+
+    @property
+    def outputs(self) -> List[str]:
+        return []
+
+    @override
+    def process(self, inputs: StepInput):  # type: ignore[override]
+        filtered = [row for row in inputs if bool(row.get(self.field)) == self.value]
+        yield filtered
+
+
 class SelectByBool(GlobalStep):
     """Select rows where the given field matches the expected value.
 

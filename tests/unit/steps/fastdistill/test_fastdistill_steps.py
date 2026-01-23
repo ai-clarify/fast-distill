@@ -23,6 +23,8 @@ from distilabel.errors import DistilabelUserError
 from distilabel.steps.fastdistill import (
     CanonicalizeFields,
     ComputeHash,
+    DeduplicateByField,
+    FilterByBool,
     MarkTime,
     RuleFilter,
     SelectByBool,
@@ -132,6 +134,19 @@ def test_rule_filter_rejects_and_keeps() -> None:
     assert outputs[2]["reject_reason"] == "too_long"
 
 
+def test_filter_by_bool() -> None:
+    step = FilterByBool(field="keep", value=True)
+    outputs = next(
+        step.process(
+            [
+                {"keep": True, "value": 1},
+                {"keep": False, "value": 2},
+            ]
+        )
+    )
+    assert outputs == [{"keep": True, "value": 1}]
+
+
 def test_select_by_bool() -> None:
     step = SelectByBool(field="keep", value=True)
     outputs = next(
@@ -143,6 +158,39 @@ def test_select_by_bool() -> None:
         )
     )
     assert outputs == [{"keep": True, "value": 1}]
+
+
+def test_deduplicate_by_field_drop_duplicates() -> None:
+    step = DeduplicateByField(field="sample_id")
+    outputs = next(
+        step.process(
+            [
+                {"sample_id": "a", "value": 1},
+                {"sample_id": "a", "value": 2},
+                {"sample_id": "b", "value": 3},
+            ]
+        )
+    )
+    assert outputs == [
+        {"sample_id": "a", "value": 1},
+        {"sample_id": "b", "value": 3},
+    ]
+
+
+def test_deduplicate_by_field_emits_duplicate_flag() -> None:
+    step = DeduplicateByField(
+        field="sample_id", drop_duplicates=False, emit_duplicate_field=True
+    )
+    outputs = next(
+        step.process(
+            [
+                {"sample_id": "a", "value": 1},
+                {"sample_id": "a", "value": 2},
+            ]
+        )
+    )
+    assert outputs[0]["is_duplicate"] is False
+    assert outputs[1]["is_duplicate"] is True
 
 
 def test_mark_time_and_timing_report(tmp_path: Path) -> None:

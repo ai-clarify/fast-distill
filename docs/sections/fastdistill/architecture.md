@@ -78,12 +78,13 @@ These are the first-class analysis tools in the fastdistill steps:
 **Teacher generation**
 - Increase `input_batch_size` and provider-side batch support.
 - Use decode profiles (temperature/top_p/n) to trade diversity vs cost.
-- Cache/dedup with `sample_id` to avoid repeat generations.
+- Cache/dedup with `sample_id` to avoid repeat generations (e.g. `DeduplicateByField`).
 
 **Quality gates**
 - Put cheap rules first (length/format) before exec/judge.
 - Short-circuit on exec failure; skip judge for failures.
 - Run judge in a separate queue with strict concurrency caps.
+- Prefer streaming filters (e.g. `FilterByBool`) to avoid global-step barriers.
 
 **Data plane**
 - Partition artifacts by `run_id` and `stage`.

@@ -8,9 +8,10 @@ from distilabel.steps import KeepColumns, LoadDataFromDicts
 from distilabel.steps.fastdistill import (
     CanonicalizeFields,
     ComputeHash,
+    DeduplicateByField,
+    FilterByBool,
     MarkTime,
     RuleFilter,
-    SelectByBool,
     SQLiteExecEval,
     WriteManifest,
     WriteQualityReport,
@@ -77,6 +78,7 @@ def run():
             fields=["task_id", "canonical_input"], output_field="sample_id"
         )
         mark_hashed = MarkTime(label="hashed")
+        dedup = DeduplicateByField(field="sample_id")
         teacher = TextGeneration(
             llm=llm,
             system_prompt="Return SQL only. Do not wrap in quotes.",
@@ -88,8 +90,8 @@ def run():
         mark_filtered = MarkTime(label="filtered")
         sql_eval = SQLiteExecEval(db_path=db_path, sql_field="generation")
         mark_eval = MarkTime(label="eval")
-        select_keep = SelectByBool(field="keep", value=True)
-        select_exec = SelectByBool(field="exec_pass", value=True)
+        filter_keep = FilterByBool(field="keep", value=True)
+        filter_exec = FilterByBool(field="exec_pass", value=True)
         mark_selected = MarkTime(label="selected")
         keep = KeepColumns(columns=["sample_id", "instruction", "generation"])
         mark_distilled = MarkTime(label="distilled")
@@ -123,14 +125,15 @@ def run():
             >> mark_canonical
             >> sample_id
             >> mark_hashed
+            >> dedup
             >> teacher
             >> mark_teacher
             >> rule_filter
             >> mark_filtered
             >> sql_eval
             >> mark_eval
-            >> select_keep
-            >> select_exec
+            >> filter_keep
+            >> filter_exec
             >> mark_selected
             >> mark_distilled
             >> timing_report
@@ -139,7 +142,11 @@ def run():
             >> manifest
         )
 
-    result = pipeline.run(use_cache=False, load_groups="sequential_step_execution")
+    load_groups = os.getenv("FASTDISTILL_LOAD_GROUPS")
+    run_kwargs = {"use_cache": False}
+    if load_groups:
+        run_kwargs["load_groups"] = load_groups
+    result = pipeline.run(**run_kwargs)
     ds = result["default"]["train"]
     print("distilled_rows=", len(ds))
     for row in ds:

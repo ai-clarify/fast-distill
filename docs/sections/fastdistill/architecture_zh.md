@@ -76,12 +76,13 @@ flowchart TD
 **Teacher 生成**
 - 提升 `input_batch_size` 与 provider 端批处理能力。
 - 用 decode profile 控制多样性与成本（temperature/top_p/n）。
-- 通过 `sample_id` 做去重/缓存，避免重复调用。
+- 通过 `sample_id` 做去重/缓存，避免重复调用（例如 `DeduplicateByField`）。
 
 **质量闸门**
 - 先做低成本规则过滤，再做 exec/judge。
 - exec 失败直接短路，避免无意义 judge。
 - judge 单独队列，严格限制并发。
+- 简单过滤优先用流式 step（如 `FilterByBool`），避免全局步骤阻塞。
 
 **数据面**
 - 产物按 `run_id` + `stage` 分区。

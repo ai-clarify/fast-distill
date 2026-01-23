@@ -13,7 +13,12 @@
 # limitations under the License.
 
 from distilabel.steps.fastdistill.canonicalize import CanonicalizeFields
-from distilabel.steps.fastdistill.filtering import RuleFilter, SelectByBool
+from distilabel.steps.fastdistill.dedup import DeduplicateByField
+from distilabel.steps.fastdistill.filtering import (
+    FilterByBool,
+    RuleFilter,
+    SelectByBool,
+)
 from distilabel.steps.fastdistill.hashing import ComputeHash
 from distilabel.steps.fastdistill.manifest import WriteManifest
 from distilabel.steps.fastdistill.quality_report import WriteQualityReport
@@ -22,6 +27,8 @@ from distilabel.steps.fastdistill.timing import MarkTime, WriteTimingReport
 
 __all__ = [
     "CanonicalizeFields",
+    "DeduplicateByField",
+    "FilterByBool",
     "ComputeHash",
     "RuleFilter",
     "SelectByBool",
