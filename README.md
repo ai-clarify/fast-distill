@@ -66,4 +66,4 @@ pytest tests/unit/steps/fastdistill/test_fastdistill_steps.py
 ```
 
 ## License
-Apache-2.0
+MIT
