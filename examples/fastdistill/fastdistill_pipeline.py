@@ -43,9 +43,9 @@ def build_pipeline():
     # Env keys:
     # - OPENROUTER_API_KEY (preferred) or OPENAI_API_KEY (fallback)
     # - OPENROUTER_BASE_URL (default: https://openrouter.ai/api/v1)
-    # - OPENROUTER_MODEL (default: deepseek/deepseek-chat)
+    # - OPENROUTER_MODEL (default: deepseek/deepseek-v3.2)
     base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-    model = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat")
+    model = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-v3.2")
     api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
     teacher_llm = OpenAILLM(
         model=model,
