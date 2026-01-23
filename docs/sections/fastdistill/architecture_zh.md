@@ -13,11 +13,11 @@ flowchart TD
   C --> D[Teacher 生成]
   D --> E[规则过滤]
   E --> F[Parse + Exec 执行评估]
-  F --> G[Judge/Score 评分]
+  F --> G[Teacher 评分]
   G --> H[Select/Keep 选择]
   H --> I[导出蒸馏数据]
-  I --> J[训练]
-  J --> K[评测]
+  I --> J[学生模型生成]
+  J --> K[蒸馏模型评测]
 
   subgraph AnalysisTools[分析工具]
     M1[WriteManifest]
@@ -31,9 +31,12 @@ flowchart TD
   E -.-> M2
   F -.-> M2
   H -.-> M2
+  K -.-> M2
   A -.-> M3
   D -.-> M3
   H -.-> M3
+  J -.-> M3
+  K -.-> M3
 ```
 
 ## 数据合同
@@ -70,7 +73,7 @@ flowchart TD
 ## 指标计算
 - `teacher_tokens_per_sec` = sum(output_tokens) / teacher_duration_seconds
 - `pipeline_kept_samples_per_hour` = kept / (total_duration_seconds / 3600)
-- `train_tokens_per_sec` = training tokens / training wall time
+- `student_tokens_per_sec` = sum(output_tokens) / student_gen_duration_seconds
 
 ## 可性能优化的点
 **Teacher 生成**
@@ -94,8 +97,8 @@ flowchart TD
 - `load_groups` 控制并发与内存峰值。
 - global step（manifest/report）建议串行执行。
 
-**训练/评测**
-- 训练只读取 distilled 数据，不耦合生成产物。
+**学生评测**
+- 评测只读取 distilled 数据，不耦合生成产物。
 - 持续追踪 exec_error 分布，驱动定向优化。
 
 ## 入口

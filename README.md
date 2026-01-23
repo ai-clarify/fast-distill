@@ -25,7 +25,7 @@ Artifacts (default):
 ## Architecture
 End-to-end path:
 ```
-Raw -> Canonicalize -> Dedup -> Teacher -> Parse/Exec -> Judge -> Select -> Export -> Train -> Eval
+Raw -> Canonicalize -> Dedup -> Teacher -> Rule Filter -> Exec -> Teacher Score -> Select -> Export -> Student Gen -> Student Eval
 ```
 
 Design + flowchart + perf optimization points:
@@ -44,6 +44,7 @@ Sample YAML configs:
 ## Reference pipelines
 - `examples/fastdistill/fastdistill_pipeline.py`
 - `examples/fastdistill/fastdistill_pipeline.yaml`
+Both reference pipelines use **Text2SQL** as the task example.
 
 ## Tests
 ```bash

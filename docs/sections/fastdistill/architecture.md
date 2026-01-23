@@ -13,11 +13,11 @@ flowchart TD
   C --> D[Teacher generation]
   D --> E[Rule filter]
   E --> F[Parse + Exec eval]
-  F --> G[Judge/Score]
+  F --> G[Teacher score]
   G --> H[Select/Keep]
   H --> I[Export distilled]
-  I --> J[Train]
-  J --> K[Eval]
+  I --> J[Student generation]
+  J --> K[Distilled model eval]
 
   subgraph AnalysisTools[Analysis tools]
     M1[WriteManifest]
@@ -31,9 +31,12 @@ flowchart TD
   E -.-> M2
   F -.-> M2
   H -.-> M2
+  K -.-> M2
   A -.-> M3
   D -.-> M3
   H -.-> M3
+  J -.-> M3
+  K -.-> M3
 ```
 
 ## Data contract
@@ -72,7 +75,7 @@ These are the first-class analysis tools in the fastdistill steps:
 ## Metrics derived from reports
 - `teacher_tokens_per_sec` = sum(output_tokens) / teacher_duration_seconds
 - `pipeline_kept_samples_per_hour` = kept / (total_duration_seconds / 3600)
-- `train_tokens_per_sec` = training tokens / training wall time
+- `student_tokens_per_sec` = sum(output_tokens) / student_gen_duration_seconds
 
 ## Performance optimization points
 **Teacher generation**
@@ -96,7 +99,7 @@ These are the first-class analysis tools in the fastdistill steps:
 - Use `load_groups` to control step concurrency and memory.
 - Prefer sequential execution for large global steps (manifest/report).
 
-**Eval + training**
+**Student eval**
 - Keep eval isolated from generation artifacts; only read distilled outputs.
 - Track exec error distributions to drive targeted fixes.
 

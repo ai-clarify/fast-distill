@@ -25,8 +25,10 @@ from distilabel.steps.fastdistill import (
     ComputeHash,
     DeduplicateByField,
     FilterByBool,
+    KeepByScore,
     MarkTime,
     RuleFilter,
+    ScoreFromExecEval,
     SelectByBool,
     SQLiteExecEval,
     WriteManifest,
@@ -191,6 +193,36 @@ def test_deduplicate_by_field_emits_duplicate_flag() -> None:
     )
     assert outputs[0]["is_duplicate"] is False
     assert outputs[1]["is_duplicate"] is True
+
+
+def test_score_from_exec_eval() -> None:
+    step = ScoreFromExecEval()
+    outputs = next(
+        step.process(
+            [
+                {"exec_pass": True, "gold_match": True},
+                {"exec_pass": True, "gold_match": False},
+                {"exec_pass": False, "gold_match": False},
+            ]
+        )
+    )
+    assert outputs[0]["teacher_score"] == 1.0
+    assert outputs[1]["teacher_score"] == 0.5
+    assert outputs[2]["teacher_score"] == 0.0
+
+
+def test_keep_by_score() -> None:
+    step = KeepByScore(min_score=0.5)
+    outputs = next(
+        step.process(
+            [
+                {"teacher_score": 1.0, "keep": True},
+                {"teacher_score": 0.3, "keep": True},
+            ]
+        )
+    )
+    assert outputs[0]["keep"] is True
+    assert outputs[1]["keep"] is False
 
 
 def test_mark_time_and_timing_report(tmp_path: Path) -> None:

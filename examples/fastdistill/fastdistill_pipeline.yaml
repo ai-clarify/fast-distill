@@ -1,8 +1,8 @@
 distilabel:
   version: 1.0.0.b0
 pipeline:
-  name: fastdistill-v0
-  description: FastDistill reference pipeline (Provider Gateway via OpenAI-compatible API).
+  name: fastdistill-text2sql
+  description: FastDistill Text2SQL reference pipeline (Provider Gateway via OpenAI-compatible API).
   steps:
     - step:
         name: load_data
@@ -11,10 +11,9 @@ pipeline:
         batch_size: 50
         data:
           - task_id: text2sql-001
-            schema:
-              tables: [users]
-              columns: [id, name]
-            question: List user names
+            schema: "users(id, name)"
+            instruction: "List all user names ordered by id."
+            gold_sql: "SELECT name FROM users ORDER BY id;"
             decode_profile:
               temperature: 0.2
               max_tokens: 128
@@ -28,7 +27,7 @@ pipeline:
         name: canonicalize_fields
         input_mappings: {}
         output_mappings: {}
-        fields: [schema, question]
+        fields: [schema, instruction]
         output_field: canonical_input
         type_info:
           module: distilabel.steps.fastdistill.canonicalize
@@ -69,8 +68,8 @@ pipeline:
             module: distilabel.models.llms.openai
             name: OpenAILLM
         system_prompt: Return SQL only.
-        template: "{{ question }}"
-        columns: [question]
+        template: "Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:"
+        columns: [schema, instruction]
         group_generations: false
         num_generations: 1
         type_info:

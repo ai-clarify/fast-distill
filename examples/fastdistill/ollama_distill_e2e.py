@@ -10,8 +10,10 @@ from distilabel.steps.fastdistill import (
     ComputeHash,
     DeduplicateByField,
     FilterByBool,
+    KeepByScore,
     MarkTime,
     RuleFilter,
+    ScoreFromExecEval,
     SQLiteExecEval,
     WriteManifest,
     WriteQualityReport,
@@ -22,6 +24,7 @@ from distilabel.steps.tasks import TextGeneration
 
 def run():
     model = os.getenv("OLLAMA_MODEL", "qwen3:0.6b")
+    student_model = os.getenv("OLLAMA_STUDENT_MODEL", model)
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
     artifacts_root = os.getenv(
@@ -45,6 +48,15 @@ def run():
 
     llm = OllamaLLM(
         model=model,
+        host=host,
+        generation_kwargs={
+            "options": {
+                "num_gpu": 0,
+            }
+        },
+    )
+    student_llm = OllamaLLM(
+        model=student_model,
         host=host,
         generation_kwargs={
             "options": {
@@ -89,12 +101,56 @@ def run():
         rule_filter = RuleFilter(text_field="generation", min_chars=1, max_chars=512)
         mark_filtered = MarkTime(label="filtered")
         sql_eval = SQLiteExecEval(db_path=db_path, sql_field="generation")
+        teacher_score = ScoreFromExecEval(
+            exec_pass_field="exec_pass",
+            gold_match_field="gold_match",
+            score_field="teacher_score",
+        )
+        keep_by_score = KeepByScore(
+            score_field="teacher_score",
+            keep_field="keep",
+            min_score=0.5,
+        )
         mark_eval = MarkTime(label="eval")
         filter_keep = FilterByBool(field="keep", value=True)
         filter_exec = FilterByBool(field="exec_pass", value=True)
         mark_selected = MarkTime(label="selected")
-        keep = KeepColumns(columns=["sample_id", "instruction", "generation"])
+        keep = KeepColumns(
+            columns=[
+                "sample_id",
+                "schema",
+                "instruction",
+                "gold_sql",
+                "generation",
+                "timing",
+            ]
+        )
         mark_distilled = MarkTime(label="distilled")
+        student = TextGeneration(
+            llm=student_llm,
+            system_prompt="Return SQL only. Do not wrap in quotes.",
+            template="Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:",
+            columns=["schema", "instruction"],
+            output_mappings={
+                "generation": "student_generation",
+                "model_name": "student_model_name",
+            },
+        )
+        mark_student = MarkTime(label="student_gen")
+        student_eval = SQLiteExecEval(
+            db_path=db_path,
+            sql_field="student_generation",
+            exec_pass_field="student_exec_pass",
+            exec_error_field="student_exec_error",
+            gold_match_field="student_gold_match",
+            result_signature_field="student_result_signature",
+        )
+        student_score = ScoreFromExecEval(
+            exec_pass_field="student_exec_pass",
+            gold_match_field="student_gold_match",
+            score_field="student_score",
+        )
+        mark_student_eval = MarkTime(label="student_eval")
         manifest = WriteManifest(
             stage="distilled",
             output_dir=os.path.join(artifacts_root, "manifests"),
@@ -102,6 +158,15 @@ def run():
         report = WriteQualityReport(
             stage="distilled",
             output_dir=os.path.join(artifacts_root, "reports"),
+            judge_score_field="teacher_score",
+        )
+        student_report = WriteQualityReport(
+            stage="student_eval",
+            output_dir=os.path.join(artifacts_root, "reports"),
+            judge_score_field="student_score",
+            exec_pass_field="student_exec_pass",
+            exec_error_field="student_exec_error",
+            gold_match_field="student_gold_match",
         )
         timing_report = WriteTimingReport(
             output_dir=os.path.join(artifacts_root, "reports"),
@@ -115,6 +180,8 @@ def run():
                 "eval",
                 "selected",
                 "distilled",
+                "student_gen",
+                "student_eval",
             ],
         )
 
@@ -131,15 +198,23 @@ def run():
             >> rule_filter
             >> mark_filtered
             >> sql_eval
+            >> teacher_score
+            >> keep_by_score
             >> mark_eval
             >> filter_keep
             >> filter_exec
             >> mark_selected
             >> mark_distilled
-            >> timing_report
             >> report
             >> keep
             >> manifest
+            >> student
+            >> mark_student
+            >> student_eval
+            >> student_score
+            >> mark_student_eval
+            >> student_report
+            >> timing_report
         )
 
     load_groups = os.getenv("FASTDISTILL_LOAD_GROUPS")

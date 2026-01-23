@@ -16,20 +16,21 @@ def build_pipeline():
         base_url="http://gateway.local/v1",
     )
 
-    with Pipeline(name="fastdistill-v0") as pipeline:
+    with Pipeline(name="fastdistill-text2sql") as pipeline:
         data = LoadDataFromDicts(
             data=[
                 {
                     "task_id": "text2sql-001",
-                    "schema": {"tables": ["users"], "columns": ["id", "name"]},
-                    "question": "List user names",
+                    "schema": "users(id, name)",
+                    "instruction": "List all user names ordered by id.",
+                    "gold_sql": "SELECT name FROM users ORDER BY id;",
                     "decode_profile": {"temperature": 0.2, "max_tokens": 128, "n": 1},
                     "system_prompt": "Return SQL only.",
                 }
             ]
         )
 
-        canonical = CanonicalizeFields(fields=["schema", "question"])
+        canonical = CanonicalizeFields(fields=["schema", "instruction"])
         schema_hash = ComputeHash(fields=["schema"], output_field="schema_hash")
         sample_id = ComputeHash(
             fields=["task_id", "schema_hash", "canonical_input", "decode_profile"],
@@ -39,8 +40,8 @@ def build_pipeline():
         teacher = TextGeneration(
             llm=teacher_llm,
             system_prompt="Return SQL only.",
-            template="{{ question }}",
-            columns=["question"],
+            template="Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:",
+            columns=["schema", "instruction"],
         )
 
         manifest = WriteManifest(stage="teacher_candidates")

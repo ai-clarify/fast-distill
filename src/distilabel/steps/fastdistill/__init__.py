@@ -22,6 +22,7 @@ from distilabel.steps.fastdistill.filtering import (
 from distilabel.steps.fastdistill.hashing import ComputeHash
 from distilabel.steps.fastdistill.manifest import WriteManifest
 from distilabel.steps.fastdistill.quality_report import WriteQualityReport
+from distilabel.steps.fastdistill.scoring import KeepByScore, ScoreFromExecEval
 from distilabel.steps.fastdistill.sql_eval import SQLiteExecEval
 from distilabel.steps.fastdistill.timing import MarkTime, WriteTimingReport
 
@@ -34,6 +35,8 @@ __all__ = [
     "SelectByBool",
     "WriteManifest",
     "WriteQualityReport",
+    "ScoreFromExecEval",
+    "KeepByScore",
     "SQLiteExecEval",
     "MarkTime",
     "WriteTimingReport",
