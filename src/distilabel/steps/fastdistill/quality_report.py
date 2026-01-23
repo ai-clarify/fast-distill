@@ -52,6 +52,7 @@ class WriteQualityReport(GlobalStep):
 
     reject_reason_field: str = Field(default="reject_reason")
     exec_pass_field: str = Field(default="exec_pass")
+    exec_error_field: str = Field(default="exec_error")
     gold_match_field: str = Field(default="gold_match")
     judge_score_field: str = Field(default="judge_score")
     keep_field: str = Field(default="keep")
@@ -76,6 +77,15 @@ class WriteQualityReport(GlobalStep):
             )
             reject_counts = {str(k): v for k, v in reject_counts.items()}
 
+        exec_error_counts = None
+        if total > 0 and self.exec_error_field in inputs[0]:
+            exec_error_counts = Counter(
+                row.get(self.exec_error_field)
+                for row in inputs
+                if row.get(self.exec_error_field)
+            )
+            exec_error_counts = {str(k): v for k, v in exec_error_counts.items()}
+
         exec_pass_rate = self._rate_for_bool_field(inputs, self.exec_pass_field)
         gold_match_rate = self._rate_for_bool_field(inputs, self.gold_match_field)
 
@@ -93,24 +103,39 @@ class WriteQualityReport(GlobalStep):
             }
 
         keep_rate = None
+        kept_count = None
+        rejected_count = None
         if total > 0:
             if self.keep_field in inputs[0]:
-                keep_rate = self._rate_for_bool_field(inputs, self.keep_field)
+                kept_count = sum(
+                    1 for row in inputs if bool(row.get(self.keep_field))
+                )
+                rejected_count = total - kept_count
+                keep_rate = kept_count / total
             elif self.selected_field in inputs[0]:
-                keep_rate = self._rate_for_bool_field(inputs, self.selected_field)
+                kept_count = sum(
+                    1 for row in inputs if bool(row.get(self.selected_field))
+                )
+                rejected_count = total - kept_count
+                keep_rate = kept_count / total
             elif reject_counts is not None:
                 kept = reject_counts.get("None", 0) + reject_counts.get("", 0) + reject_counts.get("ok", 0)
+                kept_count = kept
+                rejected_count = total - kept
                 keep_rate = kept / total
 
         report = {
             "run_id": run_id,
             "stage": self.stage,
             "total": total,
+            "kept": kept_count,
+            "rejected": rejected_count,
             "p_keep": keep_rate,
             "exec_pass_rate": exec_pass_rate,
             "gold_match_rate": gold_match_rate,
             "judge_score": judge_stats,
             "reject_reason_counts": reject_counts,
+            "exec_error_counts": exec_error_counts,
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
 

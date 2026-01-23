@@ -1,0 +1,1 @@
+- 2026-01-23: `examples/fastdistill/ollama_distill_e2e.py` emitted `No module named 'bs4'` during dataset materialization; resolved by installing `beautifulsoup4`.

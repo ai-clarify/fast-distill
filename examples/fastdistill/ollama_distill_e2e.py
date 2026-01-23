@@ -134,9 +134,9 @@ def run():
             >> mark_selected
             >> mark_distilled
             >> timing_report
+            >> report
             >> keep
             >> manifest
-            >> report
         )
 
     result = pipeline.run(use_cache=False, load_groups="sequential_step_execution")

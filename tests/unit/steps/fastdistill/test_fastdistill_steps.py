@@ -89,18 +89,24 @@ def test_write_quality_report(tmp_path: Path) -> None:
             "gold_match": True,
             "judge_score": 0.9,
             "reject_reason": "ok",
+            "exec_error": None,
+            "keep": True,
         },
         {
             "exec_pass": False,
             "gold_match": False,
             "judge_score": 0.2,
             "reject_reason": "exec_error",
+            "exec_error": "syntax error",
+            "keep": False,
         },
     ]
     next(step.process(inputs))
 
     report = read_json(tmp_path / "filtered" / "quality_report.json")
     assert report["total"] == 2
+    assert report["kept"] == 1
+    assert report["rejected"] == 1
     assert report["exec_pass_rate"] == 0.5
     assert report["gold_match_rate"] == 0.5
     assert report["judge_score"]["min"] == 0.2
