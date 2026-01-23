@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+import subprocess
 
 from distilabel.models.llms import OllamaLLM
 from distilabel.pipeline import Pipeline
@@ -22,9 +23,22 @@ from distilabel.steps.fastdistill import (
 from distilabel.steps.tasks import TextGeneration
 
 
+def ensure_ollama_model(model: str, host: str) -> None:
+    auto_pull = os.getenv("FASTDISTILL_OLLAMA_AUTO_PULL", "1")
+    if auto_pull != "1":
+        return
+    if host not in ("http://localhost:11434", "http://127.0.0.1:11434"):
+        print(f"skip_ollama_pull_remote_host={host}")
+        return
+    try:
+        subprocess.run(["ollama", "pull", model], check=True)
+    except FileNotFoundError as exc:
+        raise RuntimeError("ollama CLI not found; install ollama to auto-pull models") from exc
+
+
 def run():
     model = os.getenv("OLLAMA_MODEL", "qwen3:0.6b")
-    student_model = os.getenv("OLLAMA_STUDENT_MODEL", model)
+    student_model = os.getenv("OLLAMA_STUDENT_MODEL", "qwen3:0.6b")
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
     artifacts_root = os.getenv(
@@ -45,6 +59,9 @@ def run():
     )
     conn.commit()
     conn.close()
+
+    ensure_ollama_model(model, host)
+    ensure_ollama_model(student_model, host)
 
     llm = OllamaLLM(
         model=model,
