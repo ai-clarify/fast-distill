@@ -35,6 +35,20 @@ Design + flowchart + perf optimization points:
 Baseline run (2026-01-23):
 - `docs/sections/fastdistill/baseline.md`
 
+## 0.6B distillation planning (time + cost)
+Distilling a 0.6B model is workload-dependent. Use these formulas to estimate
+wall time and total cost, including teacher API fees:
+
+- **Total distilled tokens** = target_steps * tokens_per_step
+- **Teacher tokens** = distilled_tokens * teacher_tokens_multiplier
+- **Wall time (hours)** = distilled_samples / pipeline_kept_samples_per_hour
+- **Teacher API cost** = teacher_tokens * price_per_token
+- **Total cost** = teacher_api_cost + student_training_cost + eval_cost
+
+Use `docs/sections/fastdistill/baseline.md` and the timing/quality reports to
+plug in `pipeline_kept_samples_per_hour`, `tokens_per_step`, and
+`teacher_tokens_multiplier` for your run.
+
 ## Config
 Sample YAML configs:
 - `configs/fastdistill/run_config.sample.yaml`
