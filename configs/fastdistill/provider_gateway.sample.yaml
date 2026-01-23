@@ -1,0 +1,12 @@
+provider_gateway:
+  base_url: http://gateway.local/v1
+  request_timeout_s: 120
+  rate_limits:
+    qps: 20
+    tpm: 120000
+  self_hosted_limits:
+    max_concurrency: 8
+    token_budget: 200000
+  capability_probe:
+    cache_path: artifacts/provider_caps.json
+    refresh_interval_s: 3600

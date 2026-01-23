@@ -1,0 +1,30 @@
+fastdistill:
+  run_id: run-2026-01-23-a
+  shards: 64
+  gates:
+    test_exec_accuracy_min: 0.65
+    online_win_rate_min: 0.55
+  provider_gateway:
+    base_url: http://gateway.local/v1
+    api_key_env: PROVIDER_GATEWAY_API_KEY
+  decode_profiles:
+    profile_a:
+      temperature: 0.2
+      top_p: 1.0
+      max_tokens: 512
+      n: 1
+    profile_b:
+      temperature: 0.7
+      top_p: 1.0
+      max_tokens: 512
+      n: 4
+  pipeline:
+    stages:
+      - raw
+      - canonical
+      - teacher_candidates
+      - filtered
+      - distilled
+    outputs:
+      manifest_dir: artifacts/manifests
+      quality_report_dir: artifacts/reports

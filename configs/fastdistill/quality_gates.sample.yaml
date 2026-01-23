@@ -1,0 +1,11 @@
+quality_gates:
+  test_exec_accuracy_min: 0.65
+  online_win_rate_min: 0.55
+  judge_score_min: 0.0
+  max_generation_tokens: 512
+  reject_reasons:
+    - parse_error
+    - exec_error
+    - judge_low
+    - constraint_violation
+    - timeout

@@ -1,0 +1,51 @@
+contract_version: "1.0"
+endpoints:
+  chat_completions:
+    path: /chat/completions
+    method: POST
+    request:
+      provider_id: openai|anthropic|deepseek|vllm|sglang
+      model: teacher-model-name
+      mode: chat
+      messages:
+        - role: system
+          content: ""
+        - role: user
+          content: ""
+      decode:
+        temperature: 0.2
+        top_p: 1.0
+        max_tokens: 512
+        n: 1
+        seed: 123
+      constraints:
+        json_schema: null
+        stop:
+          - "\n\n"
+        tool_spec: null
+      trace:
+        run_id: run-2026-01-23
+        sample_id: "..."
+        shard_id: 7
+  embeddings:
+    path: /embeddings
+    method: POST
+    request:
+      provider_id: openai|vllm|sglang
+      model: embedding-model-name
+      inputs:
+        - text 1
+        - text 2
+      trace:
+        run_id: run-2026-01-23
+        sample_id: "..."
+        shard_id: 7
+capabilities:
+  provider_caps_path: provider_caps.json
+  fields:
+    - supports_batch
+    - supports_logprobs
+    - supports_json_schema
+    - supports_tool_spec
+    - max_concurrency
+    - token_budget

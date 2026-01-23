@@ -1,0 +1,184 @@
+# Copyright 2023-present, Argilla, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import hashlib
+import json
+import sqlite3
+from pathlib import Path
+
+import pytest
+
+from distilabel.errors import DistilabelUserError
+from distilabel.steps.fastdistill import (
+    CanonicalizeFields,
+    ComputeHash,
+    MarkTime,
+    RuleFilter,
+    SelectByBool,
+    SQLiteExecEval,
+    WriteManifest,
+    WriteQualityReport,
+    WriteTimingReport,
+)
+from distilabel.utils.serialization import read_json
+
+
+def test_canonicalize_fields_stable_json() -> None:
+    step = CanonicalizeFields(fields=["b", "a"], output_field="canonical_input")
+    output = next(step.process([{"a": 2, "b": 1}]))
+
+    assert output[0]["canonical_input"] == json.dumps(
+        {"a": 2, "b": 1},
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    )
+
+
+def test_canonicalize_fields_missing_field_raises() -> None:
+    step = CanonicalizeFields(fields=["a", "missing"], output_field="canonical_input")
+    with pytest.raises(DistilabelUserError):
+        next(step.process([{"a": 1}]))
+
+
+def test_compute_hash_matches_expected() -> None:
+    step = ComputeHash(fields=["a", "b"], output_field="sample_id")
+    row = {"a": 1, "b": {"y": 1, "x": 2}}
+    output = next(step.process([row]))
+
+    payload = json.dumps(1, ensure_ascii=True, separators=(",", ":")) + "|" + json.dumps(
+        {"x": 2, "y": 1},
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    )
+    expected = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    assert output[0]["sample_id"] == expected
+
+
+def test_write_manifest(tmp_path: Path) -> None:
+    step = WriteManifest(output_dir=str(tmp_path), stage="canonical")
+    inputs = [
+        {"sample_id": "a", "field": 1},
+        {"sample_id": "b", "field": 2},
+    ]
+    next(step.process(inputs))
+
+    manifest = read_json(tmp_path / "canonical" / "manifest.json")
+    assert manifest["count"] == 2
+    assert manifest["min_sample_id"] == "a"
+    assert manifest["max_sample_id"] == "b"
+
+
+def test_write_quality_report(tmp_path: Path) -> None:
+    step = WriteQualityReport(output_dir=str(tmp_path), stage="filtered")
+    inputs = [
+        {
+            "exec_pass": True,
+            "gold_match": True,
+            "judge_score": 0.9,
+            "reject_reason": "ok",
+        },
+        {
+            "exec_pass": False,
+            "gold_match": False,
+            "judge_score": 0.2,
+            "reject_reason": "exec_error",
+        },
+    ]
+    next(step.process(inputs))
+
+    report = read_json(tmp_path / "filtered" / "quality_report.json")
+    assert report["total"] == 2
+    assert report["exec_pass_rate"] == 0.5
+    assert report["gold_match_rate"] == 0.5
+    assert report["judge_score"]["min"] == 0.2
+    assert report["judge_score"]["max"] == 0.9
+
+
+def test_rule_filter_rejects_and_keeps() -> None:
+    step = RuleFilter(text_field="generation", min_chars=2, max_chars=5)
+    outputs = next(
+        step.process(
+            [
+                {"generation": ""},
+                {"generation": "ok"},
+                {"generation": "toolong"},
+            ]
+        )
+    )
+    assert outputs[0]["keep"] is False
+    assert outputs[0]["reject_reason"] == "empty_output"
+    assert outputs[1]["keep"] is True
+    assert outputs[1]["reject_reason"] == "ok"
+    assert outputs[2]["keep"] is False
+    assert outputs[2]["reject_reason"] == "too_long"
+
+
+def test_select_by_bool() -> None:
+    step = SelectByBool(field="keep", value=True)
+    outputs = next(
+        step.process(
+            [
+                {"keep": True, "value": 1},
+                {"keep": False, "value": 2},
+            ]
+        )
+    )
+    assert outputs == [{"keep": True, "value": 1}]
+
+
+def test_mark_time_and_timing_report(tmp_path: Path) -> None:
+    marker = MarkTime(label="stage_a")
+    outputs = next(marker.process([{"value": 1}]))
+    assert "timing" in outputs[0]
+    assert "stage_a" in outputs[0]["timing"]
+
+    report = WriteTimingReport(
+        output_dir=str(tmp_path),
+        report_name="timing.json",
+        ordered_labels=["stage_a", "stage_b"],
+    )
+    outputs[0]["timing"]["stage_b"] = outputs[0]["timing"]["stage_a"] + 1.0
+    next(report.process(outputs))
+    data = read_json(tmp_path / "timing.json")
+    assert "durations" in data
+
+
+def test_sqlite_exec_eval(tmp_path: Path) -> None:
+    db_path = tmp_path / "test.db"
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE users (id INTEGER, name TEXT)")
+    cur.executemany(
+        "INSERT INTO users (id, name) VALUES (?, ?)",
+        [(1, "Alice"), (2, "Bob")],
+    )
+    conn.commit()
+    conn.close()
+
+    step = SQLiteExecEval(db_path=str(db_path), sql_field="generation")
+    step.load()
+    outputs = next(
+        step.process(
+            [
+                {
+                    "generation": "SELECT name FROM users ORDER BY id;",
+                    "gold_sql": "SELECT name FROM users ORDER BY id;",
+                }
+            ]
+        )
+    )
+    assert outputs[0]["exec_pass"] is True
+    assert outputs[0]["gold_match"] is True
