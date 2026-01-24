@@ -93,6 +93,60 @@ graph TD
     StudentEval --> Reports
 ```
 
+## Module architecture (data/control/observability)
+```mermaid
+flowchart LR
+  subgraph ControlPlane["Control plane"]
+    Orchestrator[Pipeline Orchestrator]
+    Policy[Quality/Cost Policy]
+    Registry[Artifact Registry]
+  end
+
+  subgraph DataPlane["Data plane"]
+    Ingest[Ingest + Canonicalize]
+    Gen[Teacher Generation]
+    Gates[Quality Gates]
+    Distill[Distilled Export]
+    StudentEval[Student Eval]
+  end
+
+  subgraph ModelPlane["Model plane"]
+    Trainer[Training (external)]
+  end
+
+  subgraph Providers["Provider adapters"]
+    OpenAI[OpenAI-compatible]
+    SGLang[SGLangLLM]
+    Ollama[Ollama]
+  end
+
+  subgraph Observability["Observability"]
+    Manifest[Manifest]
+    Quality[Quality Report]
+    Timing[Timing Report]
+  end
+
+  Orchestrator --> Ingest
+  Policy --> Gates
+  Ingest --> Gen --> Gates --> Distill --> StudentEval --> Trainer
+  Providers --> Gen
+  Distill --> Registry
+  StudentEval --> Registry
+  Ingest -.-> Manifest
+  Gates -.-> Quality
+  StudentEval -.-> Quality
+  Ingest -.-> Timing
+  Gen -.-> Timing
+  StudentEval -.-> Timing
+```
+
+### Module responsibilities
+- **Control plane**: run configuration, scheduling, budget/quality policy, artifact versioning.
+- **Data plane**: canonicalization, generation, gates, distilled export, student eval.
+- **Model plane**: training lives outside the pipeline; consumes distilled outputs.
+- **Provider adapters**: OpenAI-compatible providers, SGLang, Ollama; swappable at runtime.
+- **Observability**: manifests + quality/timing reports; no mutations to data flow.
+
 ## Data contract
 - `canonical_input`: stable JSON string from selected fields.
 - `sample_id`: sha256 over `task_id + canonical_input` (reference pipeline).

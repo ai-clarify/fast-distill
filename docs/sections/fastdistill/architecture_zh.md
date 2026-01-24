@@ -37,6 +37,60 @@ flowchart TD
   L -.-> M3
 ```
 
+## 模块化架构（数据面 / 控制面 / 观测面）
+```mermaid
+flowchart LR
+  subgraph ControlPlane["控制面"]
+    Orchestrator[管线编排]
+    Policy[质量/成本策略]
+    Registry[产物注册]
+  end
+
+  subgraph DataPlane["数据面"]
+    Ingest[数据接入 + 规范化]
+    Gen[Teacher 生成]
+    Gates[质量闸门]
+    Distill[蒸馏数据导出]
+    StudentEval[学生评测]
+  end
+
+  subgraph ModelPlane["模型面"]
+    Trainer[训练（外部）]
+  end
+
+  subgraph Providers["推理后端"]
+    OpenAI[OpenAI 兼容]
+    SGLang[SGLangLLM]
+    Ollama[Ollama]
+  end
+
+  subgraph Observability["观测面"]
+    Manifest[Manifest]
+    Quality[Quality Report]
+    Timing[Timing Report]
+  end
+
+  Orchestrator --> Ingest
+  Policy --> Gates
+  Ingest --> Gen --> Gates --> Distill --> StudentEval --> Trainer
+  Providers --> Gen
+  Distill --> Registry
+  StudentEval --> Registry
+  Ingest -.-> Manifest
+  Gates -.-> Quality
+  StudentEval -.-> Quality
+  Ingest -.-> Timing
+  Gen -.-> Timing
+  StudentEval -.-> Timing
+```
+
+### 模块职责
+- **控制面**：运行配置、调度、成本/质量策略、产物版本管理。
+- **数据面**：规范化、生成、闸门、蒸馏导出、学生评测。
+- **模型面**：训练在管线之外执行，仅消费蒸馏数据。
+- **推理后端**：OpenAI 兼容、SGLang、Ollama 等可热插拔。
+- **观测面**：manifest/质量/耗时报告，仅观测不改写数据流。
+
 ## 数据合同
 - `canonical_input`: 对关键字段做稳定 JSON 序列化。
 - `sample_id`: sha256(`task_id + canonical_input`)（参考管线）。

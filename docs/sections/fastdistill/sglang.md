@@ -5,7 +5,7 @@ SGLang exposes an OpenAI-compatible API, so FastDistill can connect via
 
 ## Start a local SGLang server
 ```bash
-python -m sglang.launch_server --model qwen/qwen2.5-0.5b-instruct --port 30000
+python -m sglang.launch_server --model-path qwen/qwen2.5-0.5b-instruct --host 0.0.0.0 --port 30000
 ```
 
 ## Use in FastDistill
@@ -14,6 +14,8 @@ from distilabel.models.llms import SGLangLLM
 
 llm = SGLangLLM(model="qwen/qwen2.5-0.5b-instruct")
 ```
+
+The SGLang server exposes OpenAI-compatible endpoints under `/v1` (e.g. `chat/completions`).
 
 Environment variables:
 - `SGLANG_BASE_URL` (default: `http://127.0.0.1:30000/v1`)
