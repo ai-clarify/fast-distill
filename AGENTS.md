@@ -48,6 +48,7 @@ Keep this concise and action-oriented. Prefer correctness and maintainability ov
 * Prefer local registry sources for Rust deps.
 * Keep responses focused on actionable outputs (changes + validation + limitations).
 * I may ask other agent assistants to make changes; you should only commit your own code, fix conflicts, and never roll back code.
+* If unexpected changes are detected, do not stop; if you can confirm they do not affect the current task, you may proceed and include them in the same commit.
 
 ---
 
