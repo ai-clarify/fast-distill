@@ -1,14 +1,18 @@
-# FastDistill Baseline (2026-01-23)
+# FastDistill Baseline (2026-01-24)
 
 ## Run configuration
-- Pipeline: `examples/fastdistill/ollama_distill_e2e.py`
-- Teacher model: `lfm2.5-thinking:latest` (Ollama, localhost)
-- Student model: `lfm2.5-thinking:latest` (defaulted from `OLLAMA_STUDENT_MODEL`)
+- Pipeline: `examples/fastdistill/fastdistill_pipeline.py`
+- Orchestrator: `scripts/run_ollama_mlx_e2e.py`
+- Provider: Ollama (local)
+- Teacher model: `qwen3:0.6b`
+- Student training model: `Qwen/Qwen3-0.6B` (MLX LoRA)
 - Dataset size: 2 samples (Text2SQL mini set)
 - Artifacts root: `~/.cache/fastdistill/artifacts`
-- Load groups: unset (`FASTDISTILL_LOAD_GROUPS` not set)
+- MLX config: `~/.cache/fastdistill/artifacts/mlx/mlx_train.yaml`
+- MLX iters: 1000
+- MLX batch size: 1 (auto-adjusted to dataset size)
 
-## Quality results (teacher/distilled)
+## Distillation quality results
 From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
 - total: 2
 - kept: 2
@@ -20,31 +24,16 @@ From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
 - reject_reason_counts: {"ok": 2}
 - exec_error_counts: {}
 
-## Student eval results
-From `~/.cache/fastdistill/artifacts/reports/student_eval/quality_report.json`:
-- total: 2
-- exec_pass_rate: 1.0
-- gold_match_rate: 1.0
-- judge_score: min 1.0, max 1.0, mean 1.0
-- exec_error_counts: {}
-- kept/rejected/p_keep: null (not applicable for eval-only stage)
+## Distillation timing
+- distillation_wall_time_s: 20.930
+- distilled_model_score_mean: 1.0
+- pipeline_kept_samples_per_hour: 344.00
+- 1000-sample distillation time estimate: 2.91 hours (linear extrapolation)
 
-## Timing results (p50)
-From `~/.cache/fastdistill/artifacts/reports/timing_report.json`:
-- total p50: 24.927s
-- raw -> canonical: 0.286s
-- canonical -> hashed: 0.307s
-- hashed -> teacher: 6.996s
-- teacher -> filtered: 0.310s
-- filtered -> eval: 0.578s
-- eval -> selected: 0.436s
-- selected -> distilled: 0.144s
-- distilled -> student_gen: 15.420s
-- student_gen -> student_eval: 0.450s
-
-## Derived throughput
-- pipeline_kept_samples_per_hour (p50-based): 288.85
+## MLX training results
+- mlx_train_wall_time_s: 60.187
+- adapter outputs: `~/.cache/fastdistill/artifacts/mlx/adapters/adapters.safetensors`
 
 ## Notes
+- This is a smoke-test dataset; timings scale with prompt length, model speed, and dataset size.
 - Token-level throughput is not reported because the Ollama client did not emit token statistics in this run.
-- `distilled -> student_gen` includes stage boundaries (report/manifest/keep) before student generation in this reference pipeline.

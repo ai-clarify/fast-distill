@@ -12,13 +12,22 @@ The reference pipeline writes MLX datasets to:
 These files contain `messages` arrays (system/user/assistant) and are produced
 by the `WriteMlxDataset` step in the pipeline.
 
+## Local Ollama + MLX full run
+```bash
+FASTDISTILL_PROVIDER=ollama OLLAMA_MODEL=qwen3:0.6b \
+python scripts/run_ollama_mlx_e2e.py
+```
+
 ## Train with mlx-lm-lora (optional)
 `mlx-lm-lora` supports MLX fine-tuning using a YAML config. Dataset format
 supports `messages`, `prompt/completion`, or `text` records.
 
+Make sure the `mlx_lm_lora` module is installed and importable before running
+the training command.
+
 Example config:
 ```yaml
-model: Qwen/Qwen2.5-0.5B-Instruct
+model: Qwen/Qwen3-0.6B
 train: true
 train_mode: sft
 train_type: lora
@@ -36,4 +45,5 @@ mlx_lm_lora.train --config configs/fastdistill/mlx_train.sample.yaml
 
 ## Notes
 - MLX training runs on Apple Silicon; export can run anywhere.
+- Set `MLX_MODEL` to override the default student model (defaults to `Qwen/Qwen3-0.6B` in the e2e script).
 - Keep student eval in FastDistill to verify SQL exec correctness after training.

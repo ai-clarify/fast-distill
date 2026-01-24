@@ -1,79 +1,149 @@
-# Fast Distill
+<div align="center">
+  <img src="assets/logo.png" alt="Fast Distill Logo" width="76" height="76" style="border-radius:20px; object-fit:cover; box-shadow:0 10px 32px -24px rgba(0,0,0,0.45);"/>
+  <h1>Fast Distill</h1>
+  <p>
+    <strong>High-throughput distillation pipeline with hard quality gates and replayable data contracts.</strong>
+  </p>
 
-High-throughput distillation pipeline with hard quality gates and replayable data contracts.
+  <p>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+    </a>
+    <a href="https://www.python.org/">
+      <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python Version">
+    </a>
+    <a href="#">
+      <img src="https://img.shields.io/badge/status-active-success.svg" alt="Status">
+    </a>
+  </p>
+</div>
 
-## What it is
-- Unified Provider Gateway (OpenAI-compatible surface)
-- Deterministic data contract (canonical input + sample_id + manifest)
-- Multi-stage quality gates (rules, exec, judge)
-- Per-stage timing + quality reports
-- Training decoupled from data generation
+<div align="center">
+  <img src="assets/architecture.png" alt="Fast Distill Architecture" width="100%"/>
+</div>
 
-## Quickstart (Text2SQL + auto-eval)
+---
+
+## 📖 Introduction
+
+**Fast Distill** is a production-grade data distillation framework designed to bridge the gap between raw data potential and high-quality student model training. It orchestrates a unified provider gateway, deterministic data contracts, and rigorous quality gates to produce datasets you can trust.
+
+Unlike simple generation scripts, Fast Distill prioritizes **auditability** and **reproducibility**, ensuring that every sample in your dataset can be traced back to its origin and verified against strict quality standards.
+
+### Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| **🛡️ Unified Provider Gateway** | Seamless integration with OpenAI-compatible endpoints (vLLM, SGLang, Ollama). |
+| **🔒 Deterministic Contracts** | Canonical input + sample ID + manifest ensures full replayability and auditability. |
+| **🚦 Hard Quality Gates** | Multi-stage filtering: **Rule-based** (cheap) → **Execution** (deterministic) → **LLM Judge** (nuanced). |
+| **📊 Detailed Observability** | Auto-generated per-stage timing and quality reports (`json`) to identify bottlenecks. |
+| **⚡ Decoupled Training** | Clean separation between the data generation plane and model training plane. |
+
+---
+
+## 🚀 Quickstart
+
+Get up and running with a local Text2SQL distillation pipeline using Ollama.
+
+### Prerequisites
+- Python 3.10+
+- [Ollama](https://ollama.com/) running locally (or any OpenAI-compatible server)
+
+### Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/fast-distill.git
+cd fast-distill
+
+# Create and activate virtual environment
 python -m venv .venv
 source .venv/bin/activate
+
+# Install with Ollama support
 pip install -e ".[ollama]"
+```
+
+### Running the Pipeline
+
+Run the end-to-end distillation example with a 0.6B Qwen model:
+
+```bash
+# Set your model and run
 OLLAMA_MODEL=qwen3:0.6b python examples/fastdistill/ollama_distill_e2e.py
 ```
 
-Artifacts (default):
-- `~/.cache/fastdistill/artifacts/manifests/<stage>/manifest.json`
-- `~/.cache/fastdistill/artifacts/reports/<stage>/quality_report.json`
-- `~/.cache/fastdistill/artifacts/reports/timing_report.json`
+### Output Artifacts
+Your distillation run will generate artifacts in `~/.cache/fastdistill/artifacts/`:
+- 📂 `manifests/<stage>/manifest.json` – Precise data lineage.
+- 📊 `reports/<stage>/quality_report.json` – Pass rates and rejection stats.
+- ⏱️ `reports/timing_report.json` – Latency breakdown per stage.
 
-## Architecture
-End-to-end path:
-```
-Raw -> Canonicalize -> Dedup -> Teacher -> Rule Filter -> Exec -> Teacher Score -> Select -> Export -> Student Gen -> Student Eval
-```
+---
 
-Design + flowchart + perf optimization points:
-- `docs/sections/fastdistill/architecture.md`
-- `docs/sections/fastdistill/architecture_zh.md`
+## 📐 Architecture & Design
 
-Baseline run (2026-01-23):
-- `docs/sections/fastdistill/baseline.md`
+The pipeline flows from raw data to a distilled dataset through a series of rigorous checks.
 
-## 0.6B distillation planning (time + cost)
-Distilling a 0.6B model is workload-dependent. Use these formulas to estimate
-wall time and total cost, including teacher API fees:
+**End-to-End Information Flow:**
+1.  **Ingest & Canonicalize**: Normailize raw inputs into a stable schema.
+2.  **Dedup**: Compute hashes to avoid redundant processing.
+3.  **Teacher Gen**: Generate candidates using a high-quality Teacher LLM.
+4.  **Quality Gates**:
+    *   **Rule Filter**: Fast checks (format, length).
+    *   **Exec Eval**: Run code/SQL in a sandbox to verify correctness.
+    *   **Judge**: LLM-based scoring for semantic quality.
+5.  **Selection**: Filter-pass candidates are exported to the Student Dataset.
 
-- **Total distilled tokens** = target_steps * tokens_per_step
-- **Teacher tokens** = distilled_tokens * teacher_tokens_multiplier
-- **Wall time (hours)** = distilled_samples / pipeline_kept_samples_per_hour
-- **Teacher API cost** = teacher_tokens * price_per_token
-- **Total cost** = teacher_api_cost + student_training_cost + eval_cost
+📚 **Learn more:**
+- [Architecture Deep Dive](docs/sections/fastdistill/architecture.md)
+- [Baseline Benchmarks](docs/sections/fastdistill/baseline.md)
 
-Use `docs/sections/fastdistill/baseline.md` and the timing/quality reports to
-plug in `pipeline_kept_samples_per_hour`, `tokens_per_step`, and
-`teacher_tokens_multiplier` for your run.
+---
 
-## Config
-Sample YAML configs:
-- `configs/fastdistill/run_config.sample.yaml`
-- `configs/fastdistill/quality_gates.sample.yaml`
-- `configs/fastdistill/provider_gateway.sample.yaml`
+## 💡 Planning & Cost Estimation
 
-## SGLang
-OpenAI-compatible SGLang integration:
-- `docs/sections/fastdistill/sglang.md`
-- `docs/sections/fastdistill/sglang_zh.md`
+### 0.6B distillation estimate (Text2SQL, 1k samples)
+Measured on `scripts/run_ollama_mlx_e2e.py` with `qwen3:0.6b` teacher + MLX LoRA:
+- Distillation time: 20.930s for 2 samples → **~2.91 hours for 1k samples** (linear extrapolation).
+- MLX training time: **60.187s** for 1k iters (smoke-test config, 2-sample dataset).
+- Token estimate (toy prompts): ~21 input / ~8 output tokens per sample (4 chars/token heuristic).
 
-## MLX
-MLX dataset export + local training:
-- `docs/sections/fastdistill/mlx.md`
-- `docs/sections/fastdistill/mlx_zh.md`
+Teacher API cost for 1k samples (DeepSeek V3.2):
 
-## Reference pipelines
-- `examples/fastdistill/fastdistill_pipeline.py`
-- `examples/fastdistill/fastdistill_pipeline.yaml`
-Both reference pipelines use **Text2SQL** as the task example.
+| Source | Input $/1M | Output $/1M | Est. teacher cost |
+| --- | --- | --- | --- |
+| DeepSeek official pricing | 0.28 (cache miss) | 0.42 | ~$0.009 |
+| DeepSeek pricing-details-usd (legacy rates) | 0.27 | 1.10 | ~$0.014 |
 
-## Tests
+> **Note**: Replace with real token counts + throughput from your pilot runs.
+
+---
+
+## 📚 Documentation & Examples
+
+- **Integrations**:
+    - [SGLang Integration](docs/sections/fastdistill/sglang.md)
+    - [MLX Local Training](docs/sections/fastdistill/mlx.md)
+- **Configuration**:
+    - [Run Config](configs/fastdistill/run_config.sample.yaml)
+    - [Quality Gates](configs/fastdistill/quality_gates.sample.yaml)
+- **Reference**:
+    - [Text2SQL Pipeline Code](examples/fastdistill/fastdistill_pipeline.py)
+
+---
+
+## 🧪 Testing
+
+Ensure the pipeline integrity by running the unit tests:
+
 ```bash
 pytest tests/unit/steps/fastdistill/test_fastdistill_steps.py
 ```
 
-## License
-MIT
+---
+
+## ⚖️ License
+
+This project is licensed under the **MIT License**.

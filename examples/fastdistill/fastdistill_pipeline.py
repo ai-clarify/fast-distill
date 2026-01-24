@@ -3,7 +3,7 @@ import os
 import sqlite3
 import time
 
-from distilabel.models.llms import OpenAILLM, SGLangLLM
+from distilabel.models.llms import OllamaLLM, OpenAILLM, SGLangLLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import KeepColumns, LoadDataFromDicts
 from distilabel.steps.fastdistill import (
@@ -49,6 +49,13 @@ def build_pipeline():
         # - SGLANG_MODEL (default: qwen/qwen2.5-0.5b-instruct)
         model = os.getenv("SGLANG_MODEL", "qwen/qwen2.5-0.5b-instruct")
         teacher_llm = SGLangLLM(model=model)
+    elif provider == "ollama":
+        # Env keys (Ollama):
+        # - OLLAMA_MODEL (default: qwen3:0.6b)
+        # - OLLAMA_HOST (default: http://localhost:11434)
+        model = os.getenv("OLLAMA_MODEL", "qwen3:0.6b")
+        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        teacher_llm = OllamaLLM(model=model, host=host)
     else:
         # Env keys (OpenRouter):
         # - OPENROUTER_API_KEY (preferred) or OPENAI_API_KEY (fallback)

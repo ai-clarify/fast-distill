@@ -1,6 +1,6 @@
 # Sample config for mlx-lm-lora training.
 # Adjust model/data/output settings to match your environment.
-model: Qwen/Qwen2.5-0.5B-Instruct
+model: Qwen/Qwen3-0.6B
 train: true
 train_mode: sft
 train_type: lora

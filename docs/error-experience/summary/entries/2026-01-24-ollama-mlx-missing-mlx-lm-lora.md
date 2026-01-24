@@ -1,0 +1,1 @@
+- 2026-01-24: `scripts/run_ollama_mlx_e2e.py` failed with `No module named 'mlx_lm_lora'`; install the MLX training package before rerunning.
