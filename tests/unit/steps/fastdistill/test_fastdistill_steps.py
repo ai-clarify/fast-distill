@@ -14,6 +14,7 @@
 
 import hashlib
 import json
+import math
 import sqlite3
 from pathlib import Path
 
@@ -34,6 +35,7 @@ from distilabel.steps.fastdistill import (
     WriteMlxDataset,
     WriteManifest,
     WriteQualityReport,
+    WriteScoreAgreementReport,
     WriteTimingReport,
 )
 from distilabel.utils.serialization import read_json
@@ -116,6 +118,30 @@ def test_write_quality_report(tmp_path: Path) -> None:
     assert report["gold_match_rate"] == 0.5
     assert report["judge_score"]["min"] == 0.2
     assert report["judge_score"]["max"] == 0.9
+
+
+def test_write_score_agreement_report(tmp_path: Path) -> None:
+    step = WriteScoreAgreementReport(
+        output_dir=str(tmp_path),
+        stage="score_agreement",
+        agreement_epsilons=[0.0, 0.1, 0.2],
+        pass_threshold=0.5,
+    )
+    inputs = [
+        {"teacher_score": 1.0, "student_score": 1.0},
+        {"teacher_score": 0.5, "student_score": 0.6},
+        {"teacher_score": 0.0, "student_score": 0.2},
+    ]
+    next(step.process(inputs))
+
+    report = read_json(tmp_path / "score_agreement" / "score_agreement.json")
+    assert report["total"] == 3
+    assert report["matched"] == 3
+    assert math.isclose(report["mae"], 0.1, rel_tol=1e-6)
+    assert math.isclose(report["agreement_at_0.0"], 1 / 3, rel_tol=1e-6)
+    assert math.isclose(report["agreement_at_0.1"], 2 / 3, rel_tol=1e-6)
+    assert math.isclose(report["agreement_at_0.2"], 1.0, rel_tol=1e-6)
+    assert math.isclose(report["pass_agreement"], 1.0, rel_tol=1e-6)
 
 
 def test_rule_filter_rejects_and_keeps() -> None:

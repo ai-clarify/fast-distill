@@ -18,6 +18,7 @@ from distilabel.steps.fastdistill import (
     SQLiteExecEval,
     WriteManifest,
     WriteQualityReport,
+    WriteScoreAgreementReport,
     WriteTimingReport,
 )
 from distilabel.steps.tasks import TextGeneration
@@ -139,6 +140,7 @@ def run():
                 "instruction",
                 "gold_sql",
                 "generation",
+                "teacher_score",
                 "timing",
             ]
         )
@@ -185,6 +187,13 @@ def run():
             exec_error_field="student_exec_error",
             gold_match_field="student_gold_match",
         )
+        agreement_report = WriteScoreAgreementReport(
+            stage="score_agreement",
+            output_dir=os.path.join(artifacts_root, "reports"),
+            teacher_score_field="teacher_score",
+            student_score_field="student_score",
+            pass_threshold=0.5,
+        )
         timing_report = WriteTimingReport(
             output_dir=os.path.join(artifacts_root, "reports"),
             report_name="timing_report.json",
@@ -230,6 +239,7 @@ def run():
             >> student_eval
             >> student_score
             >> mark_student_eval
+            >> agreement_report
             >> student_report
             >> timing_report
         )

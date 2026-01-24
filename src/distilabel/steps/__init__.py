@@ -44,6 +44,7 @@ from distilabel.steps.fastdistill import (
     SQLiteExecEval,
     WriteManifest,
     WriteQualityReport,
+    WriteScoreAgreementReport,
     WriteTimingReport,
 )
 from distilabel.steps.formatting.conversation import ConversationTemplate
@@ -112,6 +113,7 @@ __all__ = [
     "TruncateTextColumn",
     "WriteManifest",
     "WriteQualityReport",
+    "WriteScoreAgreementReport",
     "WriteTimingReport",
     "make_generator_step",
     "step",
