@@ -16,6 +16,18 @@ FASTDISTILL_PROVIDER=ollama OLLAMA_MODEL=qwen3:0.6b \
 python scripts/run_ollama_mlx_e2e.py
 ```
 
+### 训练提速参数
+可通过环境变量加速训练（无需改代码）：
+
+- `MLX_FAST=1`：降低评测与保存频率以加速
+- `MLX_ITERS`：覆盖训练迭代数
+- `MLX_BATCH_SIZE`：覆盖 batch size（仍会被数据量上限约束）
+- `MLX_MAX_SEQ_LENGTH`：覆盖最大序列长度
+- `MLX_SAVE_EVERY`：保存间隔
+- `MLX_STEPS_PER_EVAL`：评测间隔
+- `MLX_VAL_BATCHES`：验证 batch 数
+- `MLX_STEPS_PER_REPORT`：日志间隔
+
 ## 使用 mlx-lm-lora 训练（可选）
 `mlx-lm-lora` 支持 YAML 配置训练，数据格式支持 `messages`、`prompt/completion` 或 `text`。
 

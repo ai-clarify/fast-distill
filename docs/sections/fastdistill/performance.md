@@ -29,6 +29,11 @@ From the timing report, the top contributors are:
 3. **Early cheap filters**: reject malformed outputs before SQL eval and judge steps.
 4. **Cache repeated gold SQL**: avoid re-executing the same gold query.
 
+## Training speed levers
+- Use `MLX_FAST=1` to reduce eval and checkpoint overhead.
+- Increase `steps_per_eval` / `save_every` for long runs.
+- Tune `batch_size` and `max_seq_length` to the smallest values that preserve quality.
+
 ## Implemented optimization
 - **Gold SQL result caching** in `SQLiteExecEval`:
   - Adds in-memory caching of gold SQL results with an LRU cap (`max_cached_gold`).

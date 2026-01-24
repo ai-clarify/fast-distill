@@ -8,6 +8,11 @@ from pathlib import Path
 from distilabel.utils.serialization import read_yaml, write_yaml
 
 
+def _env_int(env: dict, key: str) -> int | None:
+    value = env.get(key)
+    return int(value) if value is not None else None
+
+
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     artifacts_root = Path(
@@ -62,6 +67,32 @@ def main() -> None:
             config["batch_size"] = len(train_lines)
         if "MLX_ITERS" in env:
             config["iters"] = int(env["MLX_ITERS"])
+        batch_override = _env_int(env, "MLX_BATCH_SIZE")
+        if batch_override is not None:
+            config["batch_size"] = batch_override
+        max_seq_override = _env_int(env, "MLX_MAX_SEQ_LENGTH")
+        if max_seq_override is not None:
+            config["max_seq_length"] = max_seq_override
+        save_every_override = _env_int(env, "MLX_SAVE_EVERY")
+        if save_every_override is not None:
+            config["save_every"] = save_every_override
+        steps_eval_override = _env_int(env, "MLX_STEPS_PER_EVAL")
+        if steps_eval_override is not None:
+            config["steps_per_eval"] = steps_eval_override
+        steps_report_override = _env_int(env, "MLX_STEPS_PER_REPORT")
+        if steps_report_override is not None:
+            config["steps_per_report"] = steps_report_override
+        val_batches_override = _env_int(env, "MLX_VAL_BATCHES")
+        if val_batches_override is not None:
+            config["val_batches"] = val_batches_override
+        if env.get("MLX_FAST") == "1":
+            iters = config.get("iters")
+            if iters is None:
+                iters = 1000000
+            config["steps_per_eval"] = max(int(iters), int(config.get("steps_per_eval", 200)))
+            config["save_every"] = max(int(iters), int(config.get("save_every", 100)))
+            config["val_batches"] = 1
+            config["steps_per_report"] = max(int(config.get("steps_per_report", 10)), 50)
     else:
         raise FileNotFoundError("MLX dataset export missing train.jsonl or valid.jsonl")
 

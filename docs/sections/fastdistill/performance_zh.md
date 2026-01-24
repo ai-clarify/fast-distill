@@ -29,6 +29,11 @@ Top 阶段占比：
 3. **前置廉价过滤**：格式规则优先过滤，减少后续计算。
 4. **缓存 gold SQL**：避免重复执行同一 gold 查询。
 
+## 训练提速手段
+- 使用 `MLX_FAST=1` 降低评测和保存开销。
+- 提高 `steps_per_eval` / `save_every`，减少训练中的评测与保存频率。
+- 将 `batch_size` 与 `max_seq_length` 调到满足质量的最小值。
+
 ## 已实现优化
 - **SQLiteExecEval gold SQL 缓存**：
   - 对重复的 gold SQL 结果做 LRU 缓存（`max_cached_gold`）。

@@ -18,6 +18,18 @@ FASTDISTILL_PROVIDER=ollama OLLAMA_MODEL=qwen3:0.6b \
 python scripts/run_ollama_mlx_e2e.py
 ```
 
+### Training speed knobs
+Use environment overrides to speed up training without changing code:
+
+- `MLX_FAST=1`: reduce eval/checkpoint frequency for faster runs
+- `MLX_ITERS`: override training iterations
+- `MLX_BATCH_SIZE`: override batch size (still capped by dataset size)
+- `MLX_MAX_SEQ_LENGTH`: override max sequence length
+- `MLX_SAVE_EVERY`: checkpoint interval
+- `MLX_STEPS_PER_EVAL`: evaluation interval
+- `MLX_VAL_BATCHES`: validation batch count
+- `MLX_STEPS_PER_REPORT`: logging interval
+
 ## Train with mlx-lm-lora (optional)
 `mlx-lm-lora` supports MLX fine-tuning using a YAML config. Dataset format
 supports `messages`, `prompt/completion`, or `text` records.
