@@ -8,4 +8,4 @@ record the speed knobs for MLX training.
 - [x] Add MLX training speed knobs (fast profile + env overrides).
 - [x] Document training speed levers in MLX docs (EN + ZH) and performance notes.
 - [x] Validate the script still runs and update plan status.
-- [ ] Commit + push.
+- [x] Commit + push.
