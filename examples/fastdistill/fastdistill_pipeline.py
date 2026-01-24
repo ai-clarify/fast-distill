@@ -149,6 +149,14 @@ def build_pipeline():
             gold_match_field="gold_match",
             score_field="teacher_score",
         )
+        teacher_report = WriteQualityReport(
+            stage="teacher_eval",
+            output_dir=os.path.join(artifacts_root, "reports"),
+            judge_score_field="teacher_score",
+            exec_pass_field="exec_pass",
+            exec_error_field="exec_error",
+            gold_match_field="gold_match",
+        )
         keep_by_score = KeepByScore(
             score_field="teacher_score",
             keep_field="keep",
@@ -189,6 +197,7 @@ def build_pipeline():
             >> rule_filter
             >> sql_eval
             >> teacher_score
+            >> teacher_report
             >> keep_by_score
             >> filter_keep
             >> filter_exec

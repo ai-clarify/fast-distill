@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -6,6 +7,7 @@ import time
 from pathlib import Path
 
 from distilabel.utils.serialization import read_yaml, write_yaml
+from distilabel.steps.fastdistill import QualityGate, evaluate_quality_gate
 
 
 def _load_repo_dotenv() -> None:
@@ -27,6 +29,49 @@ def _load_repo_dotenv() -> None:
 def _env_int(env: dict, key: str) -> int | None:
     value = env.get(key)
     return int(value) if value is not None else None
+
+
+def _env_float(env: dict, key: str) -> float | None:
+    value = env.get(key)
+    return float(value) if value is not None else None
+
+
+def _apply_teacher_eval_gate(artifacts_root: Path, env: dict) -> None:
+    if env.get("FASTDISTILL_TEACHER_EVAL_GATE", "1") != "1":
+        print("teacher_eval_gate=disabled")
+        return
+
+    stage = env.get("FASTDISTILL_TEACHER_EVAL_STAGE", "teacher_eval")
+    report_path = artifacts_root / "reports" / stage / "quality_report.json"
+    if not report_path.exists():
+        raise FileNotFoundError(
+            f"Teacher eval report not found at {report_path}. "
+            "Run the distillation pipeline to generate it or disable the gate "
+            "with FASTDISTILL_TEACHER_EVAL_GATE=0."
+        )
+
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    gate = QualityGate(
+        min_total=_env_int(env, "FASTDISTILL_TEACHER_EVAL_MIN_TOTAL") or 50,
+        min_exec_pass_rate=_env_float(env, "FASTDISTILL_TEACHER_EVAL_MIN_EXEC_PASS_RATE")
+        or 0.5,
+        min_gold_match_rate=_env_float(env, "FASTDISTILL_TEACHER_EVAL_MIN_GOLD_MATCH_RATE")
+        or 0.1,
+        min_judge_score_mean=_env_float(env, "FASTDISTILL_TEACHER_EVAL_MIN_JUDGE_MEAN")
+        or 0.4,
+    )
+    failures = evaluate_quality_gate(report, gate)
+    if failures:
+        details = "; ".join(failures)
+        raise RuntimeError(f"Teacher eval gate failed: {details}")
+
+    print(
+        "teacher_eval_gate=passed",
+        f"total={report.get('total')}",
+        f"exec_pass_rate={report.get('exec_pass_rate')}",
+        f"gold_match_rate={report.get('gold_match_rate')}",
+        f"judge_score_mean={(report.get('judge_score') or {}).get('mean')}",
+    )
 
 
 def main() -> None:
@@ -56,6 +101,8 @@ def main() -> None:
         subprocess.run([sys.executable, str(pipeline)], check=True, env=env)
         distill_elapsed = time.monotonic() - distill_start
         print(f"distillation_wall_time_s={distill_elapsed:.3f}")
+
+    _apply_teacher_eval_gate(artifacts_root, env)
 
     mlx_dir = artifacts_root / "mlx"
     mlx_dir.mkdir(parents=True, exist_ok=True)

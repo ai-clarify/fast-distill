@@ -17,3 +17,12 @@ The e2e Text2SQL pipeline writes:
 ```bash
 OLLAMA_MODEL=qwen3:0.6b python examples/fastdistill/ollama_distill_e2e.py
 ```
+
+## Standardized eval prompt & split (Text2SQL)
+When comparing teacher vs student, keep the eval setup fixed to avoid noisy deltas.
+
+- **System prompt**: `Return SQL only.`
+- **User template**: `Schema: {schema}\nQuestion: {instruction}\nSQL:`
+- **Eval split**: `eval_200` = first 200 rows of WikiSQL eval
+  - Build once: `head -n 200 ~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval.jsonl > ~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval_200.jsonl`
+- **Reporting**: always present pre/post/teacher on the same `eval_200` set.

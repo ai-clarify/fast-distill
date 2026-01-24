@@ -22,6 +22,7 @@ from distilabel.steps.fastdistill.filtering import (
 from distilabel.steps.fastdistill.hashing import ComputeHash
 from distilabel.steps.fastdistill.manifest import WriteManifest
 from distilabel.steps.fastdistill.mlx_export import WriteMlxDataset
+from distilabel.steps.fastdistill.quality_gate import QualityGate, evaluate_quality_gate
 from distilabel.steps.fastdistill.quality_report import WriteQualityReport
 from distilabel.steps.fastdistill.score_agreement import WriteScoreAgreementReport
 from distilabel.steps.fastdistill.scoring import KeepByScore, ScoreFromExecEval
@@ -38,6 +39,8 @@ __all__ = [
     "SelectByBool",
     "WriteManifest",
     "WriteMlxDataset",
+    "QualityGate",
+    "evaluate_quality_gate",
     "WriteQualityReport",
     "WriteScoreAgreementReport",
     "ScoreFromExecEval",
