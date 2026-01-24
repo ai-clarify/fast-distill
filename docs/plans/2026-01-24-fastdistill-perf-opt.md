@@ -9,4 +9,4 @@ implement one concrete performance optimization.
 - [x] Implement one performance optimization (SQLiteExecEval gold-result caching).
 - [x] Add/update docs with performance analysis and optimization notes (EN + ZH).
 - [x] Add/adjust tests for the optimization.
-- [ ] Commit + push.
+- [x] Commit + push.
