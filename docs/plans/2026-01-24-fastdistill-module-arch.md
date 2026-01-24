@@ -6,4 +6,4 @@ Define a clear module architecture for FastDistill and ensure SGLang support is 
 ## Steps
 - [x] Add module-architecture section (EN/中文) aligned to current pipeline modules.
 - [x] Update SGLang docs with official launch_server/endpoint details.
-- [ ] Re-check diffs and commit + push.
+- [x] Re-check diffs and commit + push.
