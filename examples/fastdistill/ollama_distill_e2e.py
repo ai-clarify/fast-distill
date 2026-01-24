@@ -2,10 +2,11 @@ import json
 import os
 import sqlite3
 import subprocess
+from pathlib import Path
 
 from distilabel.models.llms import OllamaLLM
 from distilabel.pipeline import Pipeline
-from distilabel.steps import KeepColumns, LoadDataFromDicts
+from distilabel.steps import KeepColumns, LoadDataFromDicts, LoadDataFromFileSystem
 from distilabel.steps.fastdistill import (
     CanonicalizeFields,
     ComputeHash,
@@ -24,6 +25,22 @@ from distilabel.steps.fastdistill import (
 from distilabel.steps.tasks import TextGeneration
 
 
+def _load_repo_dotenv() -> None:
+    for parent in Path(__file__).resolve().parents:
+        env_path = parent / ".env"
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip()
+                if not key or key in os.environ:
+                    continue
+                os.environ[key] = value.strip().strip("'").strip('"')
+            break
+
+
 def ensure_ollama_model(model: str, host: str) -> None:
     auto_pull = os.getenv("FASTDISTILL_OLLAMA_AUTO_PULL", "1")
     if auto_pull != "1":
@@ -38,28 +55,34 @@ def ensure_ollama_model(model: str, host: str) -> None:
 
 
 def run():
+    _load_repo_dotenv()
     model = os.getenv("OLLAMA_MODEL", "qwen3:0.6b")
     student_model = os.getenv("OLLAMA_STUDENT_MODEL", "qwen3:0.6b")
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    timeout = int(os.getenv("OLLAMA_TIMEOUT", "120"))
+    llm_batch_size = os.getenv("FASTDISTILL_LLM_BATCH_SIZE")
+    llm_batch_size = int(llm_batch_size) if llm_batch_size else None
 
     artifacts_root = os.getenv(
         "FASTDISTILL_ARTIFACTS_DIR",
         os.path.join(os.path.expanduser("~"), ".cache", "fastdistill", "artifacts"),
     )
 
-    db_dir = os.path.join(artifacts_root, "db")
-    os.makedirs(db_dir, exist_ok=True)
-    db_path = os.path.join(db_dir, "text2sql.db")
-    conn = sqlite3.connect(db_path)
-    cur = conn.cursor()
-    cur.execute("DROP TABLE IF EXISTS users")
-    cur.execute("CREATE TABLE users (id INTEGER, name TEXT)")
-    cur.executemany(
-        "INSERT INTO users (id, name) VALUES (?, ?)",
-        [(1, "Alice"), (2, "Bob"), (3, "Chloe")],
-    )
-    conn.commit()
-    conn.close()
+    db_path = os.getenv("FASTDISTILL_DB_PATH")
+    if not db_path:
+        db_dir = os.path.join(artifacts_root, "db")
+        os.makedirs(db_dir, exist_ok=True)
+        db_path = os.path.join(db_dir, "text2sql.db")
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute("DROP TABLE IF EXISTS users")
+        cur.execute("CREATE TABLE users (id INTEGER, name TEXT)")
+        cur.executemany(
+            "INSERT INTO users (id, name) VALUES (?, ?)",
+            [(1, "Alice"), (2, "Bob"), (3, "Chloe")],
+        )
+        conn.commit()
+        conn.close()
 
     ensure_ollama_model(model, host)
     ensure_ollama_model(student_model, host)
@@ -67,6 +90,7 @@ def run():
     llm = OllamaLLM(
         model=model,
         host=host,
+        timeout=timeout,
         generation_kwargs={
             "options": {
                 "num_gpu": 0,
@@ -76,6 +100,7 @@ def run():
     student_llm = OllamaLLM(
         model=student_model,
         host=host,
+        timeout=timeout,
         generation_kwargs={
             "options": {
                 "num_gpu": 0,
@@ -84,22 +109,26 @@ def run():
     )
 
     with Pipeline(name="fastdistill-ollama-e2e") as pipeline:
-        data = LoadDataFromDicts(
-            data=[
-                {
-                    "task_id": "text2sql-001",
-                    "schema": "users(id, name)",
-                    "instruction": "List all user names ordered by id.",
-                    "gold_sql": "SELECT name FROM users ORDER BY id;",
-                },
-                {
-                    "task_id": "text2sql-002",
-                    "schema": "users(id, name)",
-                    "instruction": "Count total users.",
-                    "gold_sql": "SELECT COUNT(*) FROM users;",
-                },
-            ]
-        )
+        data_path = os.getenv("FASTDISTILL_DATA_PATH")
+        if data_path:
+            data = LoadDataFromFileSystem(data_files=data_path)
+        else:
+            data = LoadDataFromDicts(
+                data=[
+                    {
+                        "task_id": "text2sql-001",
+                        "schema": "users(id, name)",
+                        "instruction": "List all user names ordered by id.",
+                        "gold_sql": "SELECT name FROM users ORDER BY id;",
+                    },
+                    {
+                        "task_id": "text2sql-002",
+                        "schema": "users(id, name)",
+                        "instruction": "Count total users.",
+                        "gold_sql": "SELECT COUNT(*) FROM users;",
+                    },
+                ]
+            )
 
         mark_raw = MarkTime(label="raw")
         canonical = CanonicalizeFields(fields=["schema", "instruction"])
@@ -109,11 +138,15 @@ def run():
         )
         mark_hashed = MarkTime(label="hashed")
         dedup = DeduplicateByField(field="sample_id")
+        teacher_kwargs = {}
+        if llm_batch_size:
+            teacher_kwargs["input_batch_size"] = llm_batch_size
         teacher = TextGeneration(
             llm=llm,
             system_prompt="Return SQL only. Do not wrap in quotes.",
             template="Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:",
             columns=["schema", "instruction"],
+            **teacher_kwargs,
         )
         mark_teacher = MarkTime(label="teacher")
         rule_filter = RuleFilter(text_field="generation", min_chars=1, max_chars=512)
@@ -145,6 +178,9 @@ def run():
             ]
         )
         mark_distilled = MarkTime(label="distilled")
+        student_kwargs = {}
+        if llm_batch_size:
+            student_kwargs["input_batch_size"] = llm_batch_size
         student = TextGeneration(
             llm=student_llm,
             system_prompt="Return SQL only. Do not wrap in quotes.",
@@ -154,6 +190,7 @@ def run():
                 "generation": "student_generation",
                 "model_name": "student_model_name",
             },
+            **student_kwargs,
         )
         mark_student = MarkTime(label="student_gen")
         student_eval = SQLiteExecEval(
@@ -246,6 +283,9 @@ def run():
 
     load_groups = os.getenv("FASTDISTILL_LOAD_GROUPS")
     run_kwargs = {"use_cache": False}
+    dataset_batch_size = os.getenv("FASTDISTILL_DATASET_BATCH_SIZE")
+    if dataset_batch_size:
+        run_kwargs["dataset_batch_size"] = int(dataset_batch_size)
     if load_groups:
         run_kwargs["load_groups"] = load_groups
     result = pipeline.run(**run_kwargs)

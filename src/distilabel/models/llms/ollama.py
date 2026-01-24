@@ -262,6 +262,7 @@ class OllamaLLM(AsyncLLM, MagpieChatTemplateMixin):
             A list of strings as completion for the given input.
         """
         text = None
+        completion: Optional[Dict[str, Any]] = None
         try:
             if not format:
                 format = None
@@ -281,7 +282,8 @@ class OllamaLLM(AsyncLLM, MagpieChatTemplateMixin):
                 f" Finish reason was: {e}"
             )
 
-        return prepare_output([text], **self._get_llm_statistics(completion))
+        stats = self._get_llm_statistics(completion) if completion else {}
+        return prepare_output([text], **stats)
 
     @staticmethod
     def _get_llm_statistics(completion: Dict[str, Any]) -> "LLMStatistics":

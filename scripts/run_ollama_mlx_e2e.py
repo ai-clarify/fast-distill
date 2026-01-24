@@ -8,12 +8,29 @@ from pathlib import Path
 from distilabel.utils.serialization import read_yaml, write_yaml
 
 
+def _load_repo_dotenv() -> None:
+    for parent in Path(__file__).resolve().parents:
+        env_path = parent / ".env"
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip()
+                if not key or key in os.environ:
+                    continue
+                os.environ[key] = value.strip().strip("'").strip('"')
+            break
+
+
 def _env_int(env: dict, key: str) -> int | None:
     value = env.get(key)
     return int(value) if value is not None else None
 
 
 def main() -> None:
+    _load_repo_dotenv()
     repo_root = Path(__file__).resolve().parents[1]
     artifacts_root = Path(
         os.getenv(
@@ -30,14 +47,52 @@ def main() -> None:
     env.setdefault("MLX_MODEL", "Qwen/Qwen3-0.6B")
 
     pipeline = repo_root / "examples" / "fastdistill" / "fastdistill_pipeline.py"
-    print("running_distillation=", pipeline)
-    distill_start = time.monotonic()
-    subprocess.run([sys.executable, str(pipeline)], check=True, env=env)
-    distill_elapsed = time.monotonic() - distill_start
-    print(f"distillation_wall_time_s={distill_elapsed:.3f}")
+    distill_elapsed = 0.0
+    if env.get("FASTDISTILL_SKIP_DISTILL") == "1":
+        print("skip_distillation=1")
+    else:
+        print("running_distillation=", pipeline)
+        distill_start = time.monotonic()
+        subprocess.run([sys.executable, str(pipeline)], check=True, env=env)
+        distill_elapsed = time.monotonic() - distill_start
+        print(f"distillation_wall_time_s={distill_elapsed:.3f}")
 
     mlx_dir = artifacts_root / "mlx"
     mlx_dir.mkdir(parents=True, exist_ok=True)
+
+    eval_data = env.get("FASTDISTILL_EVAL_DATA_PATH")
+    eval_db = env.get("FASTDISTILL_EVAL_DB_PATH")
+    eval_limit = env.get("MLX_EVAL_LIMIT")
+    eval_max_tokens = env.get("MLX_EVAL_MAX_TOKENS")
+    eval_log_every = env.get("MLX_EVAL_LOG_EVERY")
+    eval_system_prompt = env.get("MLX_EVAL_SYSTEM_PROMPT", "Return SQL only.")
+    eval_script = repo_root / "scripts" / "eval_mlx_text2sql.py"
+
+    if eval_data and eval_db:
+        print("running_mlx_eval_pre=", eval_script)
+        eval_args = [
+            sys.executable,
+            str(eval_script),
+            "--model",
+            env.get("MLX_MODEL", "Qwen/Qwen3-0.6B"),
+            "--data",
+            eval_data,
+            "--db",
+            eval_db,
+            "--output-dir",
+            str(artifacts_root / "reports"),
+            "--stage",
+            "student_eval_pre",
+            "--system-prompt",
+            eval_system_prompt,
+        ]
+        if eval_limit:
+            eval_args += ["--limit", eval_limit]
+        if eval_max_tokens:
+            eval_args += ["--max-tokens", eval_max_tokens]
+        if eval_log_every:
+            eval_args += ["--log-every", eval_log_every]
+        subprocess.run(eval_args, check=True, env=env)
 
     sample_config = repo_root / "configs" / "fastdistill" / "mlx_train.sample.yaml"
     config_path = Path(env.get("MLX_TRAIN_CONFIG", str(sample_config)))
@@ -113,6 +168,34 @@ def main() -> None:
     )
     train_elapsed = time.monotonic() - train_start
     print(f"mlx_train_wall_time_s={train_elapsed:.3f}")
+
+    if eval_data and eval_db:
+        print("running_mlx_eval_post=", eval_script)
+        eval_args = [
+            sys.executable,
+            str(eval_script),
+            "--model",
+            env.get("MLX_MODEL", "Qwen/Qwen3-0.6B"),
+            "--adapter-path",
+            str(mlx_dir / "adapters"),
+            "--data",
+            eval_data,
+            "--db",
+            eval_db,
+            "--output-dir",
+            str(artifacts_root / "reports"),
+            "--stage",
+            "student_eval_post",
+            "--system-prompt",
+            eval_system_prompt,
+        ]
+        if eval_limit:
+            eval_args += ["--limit", eval_limit]
+        if eval_max_tokens:
+            eval_args += ["--max-tokens", eval_max_tokens]
+        if eval_log_every:
+            eval_args += ["--log-every", eval_log_every]
+        subprocess.run(eval_args, check=True, env=env)
 
     print("mlx_artifacts_dir=", mlx_dir)
 

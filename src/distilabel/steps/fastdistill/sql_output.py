@@ -128,7 +128,8 @@ def clean_sql_output(
     if not text:
         return ""
 
-    cleaned = text.strip()
+    raw = text.strip()
+    cleaned = raw
     if not cleaned:
         return ""
 
@@ -149,5 +150,15 @@ def clean_sql_output(
     candidate = _trim_trailing(candidate, stop_markers)
 
     if require_sql_keyword and not _SQL_INLINE_RE.search(candidate or ""):
+        fallback = _extract_fenced_sql(raw)
+        if fallback is None:
+            fallback = _extract_from_line_start(raw)
+        if fallback is None:
+            fallback = _extract_from_inline_keyword(raw)
+        if fallback is not None:
+            fallback = _SQL_PREFIX_RE.sub("", fallback).strip()
+            fallback = _trim_trailing(fallback, stop_markers)
+            if _SQL_INLINE_RE.search(fallback or ""):
+                return fallback.strip()
         return ""
     return candidate.strip()

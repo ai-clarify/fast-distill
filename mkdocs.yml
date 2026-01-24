@@ -174,6 +174,9 @@ nav:
       - Quickstart: "sections/getting_started/quickstart.md"
       - Installation: "sections/getting_started/installation.md"
       - FAQ: "sections/getting_started/faq.md"
+  - Engineering:
+      - Engineering Practices: "ENGINEERING_PRACTICES.md"
+      - 工程实践: "ENGINEERING_PRACTICES_zh.md"
   - How-to guides:
       - "sections/how_to_guides/index.md"
       - Basic:

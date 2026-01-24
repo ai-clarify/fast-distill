@@ -74,6 +74,26 @@ Run the end-to-end distillation example with a 0.6B Qwen model:
 OLLAMA_MODEL=qwen3:0.6b python examples/fastdistill/ollama_distill_e2e.py
 ```
 
+### Text2SQL WikiSQL 1k (OpenRouter)
+Prepare a 1k Text2SQL dataset sourced from WikiSQL.
+
+```bash
+python scripts/prepare_wikisql_1k.py
+```
+
+Configure your teacher model in `.env` at repo root:
+```bash
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=deepseek/deepseek-v3.2
+```
+
+Run the teacher distillation pipeline:
+```bash
+FASTDISTILL_DATA_PATH=~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.jsonl \
+FASTDISTILL_DB_PATH=~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db \
+python examples/fastdistill/fastdistill_pipeline.py
+```
+
 ### Output Artifacts
 Your distillation run will generate artifacts in `~/.cache/fastdistill/artifacts/`:
 - 📂 `manifests/<stage>/manifest.json` – Precise data lineage.
@@ -115,7 +135,7 @@ Teacher API cost for 1k samples (DeepSeek V3.2):
 | Source | Input $/1M | Output $/1M | Est. teacher cost |
 | --- | --- | --- | --- |
 | DeepSeek official pricing | 0.28 (cache miss) | 0.42 | ~$0.009 |
-| DeepSeek pricing-details-usd (legacy rates) | 0.27 | 1.10 | ~$0.014 |
+| OpenRouter pricing (portkey) | 0.27 | 0.40 | ~$0.009 |
 
 > **Note**: Replace with real token counts + throughput from your pilot runs.
 
@@ -131,8 +151,9 @@ Teacher API cost for 1k samples (DeepSeek V3.2):
     - [Quality Gates](configs/fastdistill/quality_gates.sample.yaml)
 - **Reference**:
     - [Text2SQL Pipeline Code](examples/fastdistill/fastdistill_pipeline.py)
-    - [Performance Analysis](docs/sections/fastdistill/performance.md)
-    - [Teacher-Student Alignment](docs/sections/fastdistill/quality_alignment.md)
+- [Performance Analysis](docs/sections/fastdistill/performance.md)
+- [Teacher-Student Alignment](docs/sections/fastdistill/quality_alignment.md)
+- [WikiSQL 1k Runbook](docs/sections/fastdistill/text2sql_wikisql.md)
 
 ---
 
