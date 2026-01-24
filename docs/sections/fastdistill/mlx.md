@@ -59,3 +59,4 @@ mlx_lm_lora.train --config configs/fastdistill/mlx_train.sample.yaml
 - MLX training runs on Apple Silicon; export can run anywhere.
 - Set `MLX_MODEL` to override the default student model (defaults to `Qwen/Qwen3-0.6B` in the e2e script).
 - Keep student eval in FastDistill to verify SQL exec correctness after training.
+- If eval outputs include `<think>` or other reasoning, the evaluator strips reasoning and extracts SQL automatically (see `clean_sql_output`).

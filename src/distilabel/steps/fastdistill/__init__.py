@@ -25,6 +25,7 @@ from distilabel.steps.fastdistill.mlx_export import WriteMlxDataset
 from distilabel.steps.fastdistill.quality_report import WriteQualityReport
 from distilabel.steps.fastdistill.score_agreement import WriteScoreAgreementReport
 from distilabel.steps.fastdistill.scoring import KeepByScore, ScoreFromExecEval
+from distilabel.steps.fastdistill.sql_output import SqlOutputCleaner, clean_sql_output
 from distilabel.steps.fastdistill.sql_eval import SQLiteExecEval
 from distilabel.steps.fastdistill.timing import MarkTime, WriteTimingReport
 
@@ -41,6 +42,8 @@ __all__ = [
     "WriteScoreAgreementReport",
     "ScoreFromExecEval",
     "KeepByScore",
+    "SqlOutputCleaner",
+    "clean_sql_output",
     "SQLiteExecEval",
     "MarkTime",
     "WriteTimingReport",

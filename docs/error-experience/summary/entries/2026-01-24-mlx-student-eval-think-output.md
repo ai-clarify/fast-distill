@@ -1,0 +1,1 @@
+- 2026-01-24: MLX Text2SQL eval failed due to `<think>` outputs; added SQL-output cleaner to strip reasoning and extract SQL.
