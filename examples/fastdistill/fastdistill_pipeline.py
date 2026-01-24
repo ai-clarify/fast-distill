@@ -3,7 +3,7 @@ import os
 import sqlite3
 import time
 
-from distilabel.models.llms import OpenAILLM
+from distilabel.models.llms import OpenAILLM, SGLangLLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import KeepColumns, LoadDataFromDicts
 from distilabel.steps.fastdistill import (
@@ -16,6 +16,7 @@ from distilabel.steps.fastdistill import (
     ScoreFromExecEval,
     SQLiteExecEval,
     WriteManifest,
+    WriteMlxDataset,
     WriteQualityReport,
 )
 from distilabel.steps.tasks import TextGeneration
@@ -40,18 +41,27 @@ def build_pipeline():
     conn.commit()
     conn.close()
 
-    # Env keys:
-    # - OPENROUTER_API_KEY (preferred) or OPENAI_API_KEY (fallback)
-    # - OPENROUTER_BASE_URL (default: https://openrouter.ai/api/v1)
-    # - OPENROUTER_MODEL (default: deepseek/deepseek-v3.2)
-    base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-    model = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-v3.2")
-    api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
-    teacher_llm = OpenAILLM(
-        model=model,
-        base_url=base_url,
-        api_key=api_key,
-    )
+    provider = os.getenv("FASTDISTILL_PROVIDER", "openrouter")
+    if provider == "sglang":
+        # Env keys (SGLang):
+        # - SGLANG_BASE_URL (default: http://127.0.0.1:30000/v1)
+        # - SGLANG_API_KEY (optional)
+        # - SGLANG_MODEL (default: qwen/qwen2.5-0.5b-instruct)
+        model = os.getenv("SGLANG_MODEL", "qwen/qwen2.5-0.5b-instruct")
+        teacher_llm = SGLangLLM(model=model)
+    else:
+        # Env keys (OpenRouter):
+        # - OPENROUTER_API_KEY (preferred) or OPENAI_API_KEY (fallback)
+        # - OPENROUTER_BASE_URL (default: https://openrouter.ai/api/v1)
+        # - OPENROUTER_MODEL (default: deepseek/deepseek-v3.2)
+        base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+        model = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-v3.2")
+        api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+        teacher_llm = OpenAILLM(
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+        )
 
     with Pipeline(name="fastdistill-text2sql") as pipeline:
         data = LoadDataFromDicts(
@@ -120,6 +130,9 @@ def build_pipeline():
             stage="distilled",
             output_dir=os.path.join(artifacts_root, "manifests"),
         )
+        mlx_export = WriteMlxDataset(
+            output_dir=os.path.join(artifacts_root, "mlx"),
+        )
 
         (
             data
@@ -135,6 +148,7 @@ def build_pipeline():
             >> filter_exec
             >> report
             >> keep
+            >> mlx_export
             >> manifest
         )
 

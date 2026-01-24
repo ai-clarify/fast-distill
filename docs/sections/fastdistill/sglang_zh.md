@@ -15,6 +15,12 @@ from distilabel.models.llms import SGLangLLM
 llm = SGLangLLM(model="qwen/qwen2.5-0.5b-instruct")
 ```
 
+参考管线切换：
+```bash
+FASTDISTILL_PROVIDER=sglang SGLANG_MODEL=qwen/qwen2.5-0.5b-instruct \
+python examples/fastdistill/fastdistill_pipeline.py
+```
+
 SGLang 提供 OpenAI 兼容的 `/v1` 接口（例如 `chat/completions`）。
 
 环境变量：

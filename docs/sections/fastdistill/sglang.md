@@ -15,6 +15,12 @@ from distilabel.models.llms import SGLangLLM
 llm = SGLangLLM(model="qwen/qwen2.5-0.5b-instruct")
 ```
 
+Reference pipeline switch:
+```bash
+FASTDISTILL_PROVIDER=sglang SGLANG_MODEL=qwen/qwen2.5-0.5b-instruct \
+python examples/fastdistill/fastdistill_pipeline.py
+```
+
 The SGLang server exposes OpenAI-compatible endpoints under `/v1` (e.g. `chat/completions`).
 
 Environment variables:

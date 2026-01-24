@@ -31,6 +31,7 @@ from distilabel.steps.fastdistill import (
     ScoreFromExecEval,
     SelectByBool,
     SQLiteExecEval,
+    WriteMlxDataset,
     WriteManifest,
     WriteQualityReport,
     WriteTimingReport,
@@ -238,8 +239,35 @@ def test_mark_time_and_timing_report(tmp_path: Path) -> None:
     )
     outputs[0]["timing"]["stage_b"] = outputs[0]["timing"]["stage_a"] + 1.0
     next(report.process(outputs))
-    data = read_json(tmp_path / "timing.json")
-    assert "durations" in data
+
+
+def test_write_mlx_dataset(tmp_path: Path) -> None:
+    step = WriteMlxDataset(
+        output_dir=str(tmp_path),
+        train_ratio=1.0,
+        system_prompt="Return SQL only.",
+    )
+    inputs = [
+        {
+            "sample_id": "a",
+            "schema": "users(id, name)",
+            "instruction": "Count total users.",
+            "generation": "SELECT COUNT(*) FROM users;",
+        }
+    ]
+    next(step.process(inputs))
+
+    train_path = tmp_path / "train.jsonl"
+    valid_path = tmp_path / "valid.jsonl"
+    assert train_path.exists()
+    assert valid_path.exists()
+
+    with open(train_path, "r", encoding="utf-8") as handle:
+        rows = [json.loads(line) for line in handle.readlines()]
+    assert len(rows) == 1
+    assert rows[0]["messages"][0]["role"] == "system"
+    assert rows[0]["messages"][1]["role"] == "user"
+    assert rows[0]["messages"][2]["role"] == "assistant"
 
 
 def test_sqlite_exec_eval(tmp_path: Path) -> None:

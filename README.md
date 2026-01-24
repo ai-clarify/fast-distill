@@ -60,6 +60,11 @@ OpenAI-compatible SGLang integration:
 - `docs/sections/fastdistill/sglang.md`
 - `docs/sections/fastdistill/sglang_zh.md`
 
+## MLX
+MLX dataset export + local training:
+- `docs/sections/fastdistill/mlx.md`
+- `docs/sections/fastdistill/mlx_zh.md`
+
 ## Reference pipelines
 - `examples/fastdistill/fastdistill_pipeline.py`
 - `examples/fastdistill/fastdistill_pipeline.yaml`

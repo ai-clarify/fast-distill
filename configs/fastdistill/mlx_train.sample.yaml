@@ -1,0 +1,11 @@
+# Sample config for mlx-lm-lora training.
+# Adjust model/data/output settings to match your environment.
+model: Qwen/Qwen2.5-0.5B-Instruct
+train: true
+train_mode: sft
+train_type: lora
+data: ~/.cache/fastdistill/artifacts/mlx
+iters: 1000
+batch_size: 4
+learning_rate: 1e-5
+max_seq_length: 2048

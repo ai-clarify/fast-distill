@@ -21,6 +21,7 @@ from distilabel.steps.fastdistill.filtering import (
 )
 from distilabel.steps.fastdistill.hashing import ComputeHash
 from distilabel.steps.fastdistill.manifest import WriteManifest
+from distilabel.steps.fastdistill.mlx_export import WriteMlxDataset
 from distilabel.steps.fastdistill.quality_report import WriteQualityReport
 from distilabel.steps.fastdistill.scoring import KeepByScore, ScoreFromExecEval
 from distilabel.steps.fastdistill.sql_eval import SQLiteExecEval
@@ -34,6 +35,7 @@ __all__ = [
     "RuleFilter",
     "SelectByBool",
     "WriteManifest",
+    "WriteMlxDataset",
     "WriteQualityReport",
     "ScoreFromExecEval",
     "KeepByScore",
