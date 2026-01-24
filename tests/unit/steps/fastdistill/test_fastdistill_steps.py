@@ -296,3 +296,52 @@ def test_sqlite_exec_eval(tmp_path: Path) -> None:
     )
     assert outputs[0]["exec_pass"] is True
     assert outputs[0]["gold_match"] is True
+
+
+def test_sqlite_exec_eval_gold_cache(tmp_path: Path) -> None:
+    db_path = tmp_path / "test.db"
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE users (id INTEGER, name TEXT)")
+    cur.executemany(
+        "INSERT INTO users (id, name) VALUES (?, ?)",
+        [(1, "Alice"), (2, "Bob")],
+    )
+    conn.commit()
+    conn.close()
+
+    step = SQLiteExecEval(
+        db_path=str(db_path),
+        sql_field="generation",
+        cache_gold_results=True,
+        max_cached_gold=1,
+    )
+    step.load()
+
+    call_counter = {"count": 0}
+    original_exec = step._exec_sql
+
+    def wrapped_exec(sql: str):
+        call_counter["count"] += 1
+        return original_exec(sql)
+
+    step._exec_sql = wrapped_exec  # type: ignore[assignment]
+
+    outputs = next(
+        step.process(
+            [
+                {
+                    "generation": "SELECT name FROM users ORDER BY id;",
+                    "gold_sql": "SELECT name FROM users ORDER BY id;",
+                },
+                {
+                    "generation": "SELECT name FROM users ORDER BY id;",
+                    "gold_sql": "SELECT name FROM users ORDER BY id;",
+                },
+            ]
+        )
+    )
+
+    assert outputs[0]["gold_match"] is True
+    assert outputs[1]["gold_match"] is True
+    assert call_counter["count"] == 3

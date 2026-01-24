@@ -131,6 +131,7 @@ Teacher API cost for 1k samples (DeepSeek V3.2):
     - [Quality Gates](configs/fastdistill/quality_gates.sample.yaml)
 - **Reference**:
     - [Text2SQL Pipeline Code](examples/fastdistill/fastdistill_pipeline.py)
+    - [Performance Analysis](docs/sections/fastdistill/performance.md)
 
 ---
 

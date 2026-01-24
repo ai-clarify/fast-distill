@@ -14,6 +14,7 @@
 
 import hashlib
 import sqlite3
+from collections import OrderedDict
 from typing import List, Optional, Sequence
 
 from pydantic import Field, PrivateAttr
@@ -44,8 +45,20 @@ class SQLiteExecEval(Step):
         default=None,
         description="Optional max number of rows to compare.",
     )
+    cache_gold_results: bool = Field(
+        default=True,
+        description="Cache gold SQL results to avoid repeated execution.",
+    )
+    max_cached_gold: int = Field(
+        default=1024,
+        ge=1,
+        description="Maximum number of cached gold SQL results.",
+    )
 
     _conn: sqlite3.Connection = PrivateAttr(None)
+    _gold_cache: OrderedDict[str, List[List[object]]] = PrivateAttr(
+        default_factory=OrderedDict
+    )
 
     @property
     def inputs(self) -> List[str]:
@@ -63,10 +76,14 @@ class SQLiteExecEval(Step):
     def load(self) -> None:
         super().load()
         self._conn = sqlite3.connect(self.db_path)
+        if self.cache_gold_results:
+            self._gold_cache.clear()
 
     def unload(self) -> None:
         if self._conn is not None:
             self._conn.close()
+        if self.cache_gold_results:
+            self._gold_cache.clear()
 
     def _normalize_rows(self, rows: Sequence[Sequence[object]]) -> List[List[object]]:
         normalized = [list(row) for row in rows]
@@ -111,7 +128,17 @@ class SQLiteExecEval(Step):
                     row[self.gold_match_field] = False
                     continue
                 try:
-                    gold_rows = self._exec_sql(gold_sql)
+                    gold_rows: Optional[List[List[object]]] = None
+                    if self.cache_gold_results:
+                        gold_rows = self._gold_cache.get(gold_sql)
+                        if gold_rows is not None:
+                            self._gold_cache.move_to_end(gold_sql)
+                    if gold_rows is None:
+                        gold_rows = self._exec_sql(gold_sql)
+                        if self.cache_gold_results:
+                            self._gold_cache[gold_sql] = gold_rows
+                            if len(self._gold_cache) > self.max_cached_gold:
+                                self._gold_cache.popitem(last=False)
                 except Exception:  # noqa: BLE001
                     row[self.gold_match_field] = False
                     continue
