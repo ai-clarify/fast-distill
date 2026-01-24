@@ -55,6 +55,11 @@ Sample YAML configs:
 - `configs/fastdistill/quality_gates.sample.yaml`
 - `configs/fastdistill/provider_gateway.sample.yaml`
 
+## SGLang
+OpenAI-compatible SGLang integration:
+- `docs/sections/fastdistill/sglang.md`
+- `docs/sections/fastdistill/sglang_zh.md`
+
 ## Reference pipelines
 - `examples/fastdistill/fastdistill_pipeline.py`
 - `examples/fastdistill/fastdistill_pipeline.yaml`

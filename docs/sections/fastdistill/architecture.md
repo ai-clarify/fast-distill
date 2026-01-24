@@ -7,34 +7,90 @@
 
 ## End-to-end flow (current reference pipeline)
 ```mermaid
-flowchart TD
-  A[Raw inputs] --> B[Canonicalize]
-  B --> C[Hash sample_id]
-  C --> D[Dedup]
-  D --> E[Teacher generation]
-  E --> F[Rule filter]
-  F --> G[SQLite exec eval]
-  G --> H[Teacher score]
-  H --> I[Keep (score + exec_pass)]
-  I --> J[Export distilled]
-  J --> K[Student generation]
-  K --> L[Student exec eval + score]
+graph TD
+    %% Base Styles
+    classDef data fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef external fill:#eeeeee,stroke:#616161,stroke-width:2px,stroke-dasharray: 5, 5;
+    classDef artifact fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef app fill:#fff3e0,stroke:#e65100,stroke-width:4px;
 
-  subgraph AnalysisTools[Analysis tools]
-    M1[WriteManifest]
-    M2[WriteQualityReport]
-    M3[WriteTimingReport]
-  end
+    subgraph InputLayer ["Input Layer"]
+        RawData[Raw Task Data<br/>Schema, Instructions]:::data
+    end
 
-  J -.-> M1
-  F -.-> M2
-  H -.-> M2
-  L -.-> M2
-  A -.-> M3
-  E -.-> M3
-  I -.-> M3
-  K -.-> M3
-  L -.-> M3
+    subgraph FastDistillPipeline ["Fast Distill Pipeline (Distilabel)"]
+        direction TB
+        
+        %% Data Prep Phase
+        subgraph DataPrep ["Data Preparation"]
+            Canonical[Canonicalize Fields]:::component
+            ComputeHash[Compute Hash<br/>Sample ID]:::component
+            Dedup[Deduplicate]:::component
+        end
+
+        %% Generation Phase
+        subgraph TeacherGen ["Teacher Generation"]
+            TeacherLLM[Teacher Model<br/>OpenAI/vLLM]:::external
+            GenStep[Text Generation]:::component
+        end
+
+        %% Validation Phase (The "Hard Gates")
+        subgraph QualityGates ["Quality Gates"]
+            RuleF{Rule Filter<br/>Length/Format}:::decision
+            ExecEnv[Execution Env<br/>SQLite/Python]:::external
+            ExecEval[Execution Eval<br/>Run SQL/Code]:::component
+            Scorer[Teacher Score/Judge]:::component
+        end
+
+        %% Selection Phase
+        subgraph Selection ["Selection & Reporting"]
+            Threshold{Pass Gates?}:::decision
+            ManifestWriter[Write Manifest]:::component
+            ReportWriter[Write Quality Report]:::component
+        end
+    end
+
+    subgraph DataPlane ["Data Plane / Artifacts"]
+        Manifest[manifest.json<br/>Audit/Replay]:::artifact
+        Reports[quality_report.json, timing_report.json]:::artifact
+        Dataset[Distilled Dataset<br/>High Quality]:::artifact
+    end
+
+    subgraph Updates ["Upper-Layer Application"]
+        StudentTrain[Student Model Training]:::app
+        StudentEval[Student Evaluation Pipeline]:::app
+    end
+
+    %% Connections
+    RawData --> Canonical
+    Canonical --> ComputeHash
+    ComputeHash --> Dedup
+    Dedup --> GenStep
+    GenStep -- prompt --> TeacherLLM
+    TeacherLLM -- completion --> GenStep
+    
+    GenStep --> RuleF
+    RuleF -- pass --> ExecEval
+    RuleF -- fail --> ReportWriter
+    
+    ExecEval -- code --> ExecEnv
+    ExecEnv -- result --> ExecEval
+    
+    ExecEval --> Scorer
+    Scorer --> Threshold
+    
+    Threshold -- Keep --> Dataset
+    Threshold -- Keep --> ManifestWriter
+    Threshold -- Reject --> ReportWriter
+    
+    ManifestWriter --> Manifest
+    ReportWriter --> Reports
+    
+    Dataset --> StudentTrain
+    Dataset --> StudentEval
+    StudentEval --> Reports
 ```
 
 ## Data contract
