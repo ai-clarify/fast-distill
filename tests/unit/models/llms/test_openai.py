@@ -13,13 +13,14 @@ import nest_asyncio
 import orjson
 import pytest
 
-pytest.importorskip("openai")
-from openai.types import Batch
-
 from fastdistill.exceptions import FastDistillOfflineBatchGenerationNotFinishedException
 from fastdistill.models.llms.openai import _OPENAI_BATCH_API_MAX_FILE_SIZE, OpenAILLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("openai")
+openai_types = pytest.importorskip("openai.types")
+Batch = openai_types.Batch
 
 
 @patch("openai.OpenAI")

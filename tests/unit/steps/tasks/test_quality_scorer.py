@@ -6,11 +6,11 @@ from typing import Any, Dict, Union
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.pipeline.local import Pipeline
 from fastdistill.steps.tasks.quality_scorer import QualityScorer
 from tests.unit.conftest import DummyAsyncLLM
+
+pytest.importorskip("instructor")
 
 
 class TestQualityScorer:

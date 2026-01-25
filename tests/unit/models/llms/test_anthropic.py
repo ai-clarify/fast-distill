@@ -10,11 +10,11 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import nest_asyncio
 import pytest
 
-pytest.importorskip("anthropic")
-
 from fastdistill.models.llms.anthropic import AnthropicLLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("anthropic")
 
 
 @patch("anthropic.AsyncAnthropic")

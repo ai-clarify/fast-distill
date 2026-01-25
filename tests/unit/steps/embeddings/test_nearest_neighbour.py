@@ -4,9 +4,9 @@
 
 import pytest
 
-pytest.importorskip("faiss")
-
 from fastdistill.steps.embeddings.nearest_neighbour import FaissNearestNeighbour
+
+pytest.importorskip("faiss")
 
 
 class TestFaissNearestNeighbour:

@@ -8,11 +8,11 @@ from typing import Any, Dict, Generator
 
 import pytest
 
-pytest.importorskip("llama_cpp")
-
 from fastdistill.models.llms.llamacpp import LlamaCppLLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("llama_cpp")
 
 TINYLLAMA_PATH = (
     Path.home()

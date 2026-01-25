@@ -12,12 +12,12 @@ import pytest
 
 from .utils import DummyUserDetail
 
-pytest.importorskip("mistralai")
-
 try:
     from fastdistill.models.llms.mistral import MistralLLM
 except ImportError:
     MistralLLM = None
+
+pytest.importorskip("mistralai")
 
 
 @pytest.mark.skipif(

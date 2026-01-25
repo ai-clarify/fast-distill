@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.tasks.math_shepherd.generator import (
     FEW_SHOTS_GSM8K,
     RULES_GSM8K,
@@ -19,6 +17,8 @@ from tests.unit.conftest import DummyLLM
 
 if TYPE_CHECKING:
     from fastdistill.typing import GenerateOutput
+
+pytest.importorskip("instructor")
 
 
 class MathShepherdGeneratorLLM(DummyLLM):

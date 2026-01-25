@@ -6,11 +6,11 @@ from typing import Any, Dict, List, Union
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.models.llms.base import LLM
 from fastdistill.steps.tasks.ultrafeedback import UltraFeedback
 from fastdistill.typing import ChatType, GenerateOutput
+
+pytest.importorskip("instructor")
 
 
 class UltraFeedbackLLM(LLM):

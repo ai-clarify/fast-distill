@@ -4,16 +4,14 @@
 
 from typing import TYPE_CHECKING
 
-import pytest
-
-pytest.importorskip("faiss")
-
-import faiss
 import numpy as np
+import pytest
 
 from fastdistill.pipeline import Pipeline
 from fastdistill.steps import FaissNearestNeighbour, LoadDataFromDicts, StepInput, step
 from fastdistill.steps.filtering.embedding import EmbeddingDedup
+
+faiss = pytest.importorskip("faiss")
 
 if TYPE_CHECKING:
     from fastdistill.typing import StepOutput

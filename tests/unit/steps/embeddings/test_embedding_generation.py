@@ -4,12 +4,12 @@
 
 import pytest
 
-pytest.importorskip("sentence_transformers")
-
 from fastdistill.models.embeddings.sentence_transformers import (
     SentenceTransformerEmbeddings,
 )
 from fastdistill.steps.embeddings.embedding_generation import EmbeddingGeneration
+
+pytest.importorskip("sentence_transformers")
 
 
 class TestEmbeddingGeneration:

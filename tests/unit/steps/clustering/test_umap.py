@@ -5,9 +5,9 @@
 import numpy as np
 import pytest
 
-pytest.importorskip("umap")
-
 from fastdistill.steps.clustering.umap import UMAP
+
+pytest.importorskip("umap")
 
 
 class TestUMAP:

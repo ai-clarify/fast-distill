@@ -6,10 +6,10 @@ from typing import Any, Dict
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.tasks.apigen.semantic_checker import APIGenSemanticChecker
 from tests.unit.conftest import DummyLLM
+
+pytest.importorskip("instructor")
 
 SAMPLE_DATA = [
     # The info can for the function description can be obtained from the tool itself

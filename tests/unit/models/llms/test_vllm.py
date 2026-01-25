@@ -7,9 +7,25 @@ from typing import Any, Dict, List
 from unittest import mock
 
 import pytest
+from pydantic import BaseModel
 
-pytest.importorskip("openai")
-pytest.importorskip("transformers")
+from fastdistill.models.llms import vLLM
+from fastdistill.models.llms.vllm import ClientvLLM
+
+openai_pagination = pytest.importorskip("openai.pagination")
+openai_types = pytest.importorskip("openai.types")
+openai_completion = pytest.importorskip("openai.types.completion")
+openai_completion_choice = pytest.importorskip("openai.types.completion_choice")
+openai_completion_usage = pytest.importorskip("openai.types.completion_usage")
+transformers = pytest.importorskip("transformers")
+
+SyncPage = openai_pagination.SyncPage
+Model = openai_types.Model
+Completion = openai_completion.Completion
+CompletionChoice = openai_completion_choice.CompletionChoice
+CompletionUsage = openai_completion_usage.CompletionUsage
+AutoTokenizer = transformers.AutoTokenizer
+
 if not (
     os.getenv("HF_TOKEN")
     or os.getenv("HUGGINGFACE_TOKEN")
@@ -18,16 +34,6 @@ if not (
     pytest.skip(
         "Hugging Face token required for private test models", allow_module_level=True
     )
-from openai.pagination import SyncPage
-from openai.types import Model
-from openai.types.completion import Completion
-from openai.types.completion_choice import CompletionChoice
-from openai.types.completion_usage import CompletionUsage
-from pydantic import BaseModel
-from transformers import AutoTokenizer
-
-from fastdistill.models.llms import vLLM
-from fastdistill.models.llms.vllm import ClientvLLM
 
 
 class Character(BaseModel):

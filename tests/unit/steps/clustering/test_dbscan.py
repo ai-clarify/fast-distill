@@ -5,9 +5,9 @@
 
 import pytest
 
-pytest.importorskip("sklearn")
-
 from fastdistill.steps.clustering.dbscan import DBSCAN
+
+pytest.importorskip("sklearn")
 
 
 class TestDBSCAN:

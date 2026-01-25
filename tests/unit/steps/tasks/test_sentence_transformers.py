@@ -6,8 +6,6 @@ from typing import Any, Dict
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.tasks.sentence_transformers import (
     CONTEXT_INTRO,
     NEGATIVE_STYLE,
@@ -17,6 +15,8 @@ from fastdistill.steps.tasks.sentence_transformers import (
     GenerationAction,
 )
 from tests.unit.conftest import DummyAsyncLLM
+
+pytest.importorskip("instructor")
 
 
 class TestGenerateSentencePair:

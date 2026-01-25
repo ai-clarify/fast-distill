@@ -6,11 +6,11 @@ from typing import Any, Dict, Union
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.pipeline.local import Pipeline
 from fastdistill.steps.tasks.complexity_scorer import ComplexityScorer
 from tests.unit.conftest import DummyAsyncLLM
+
+pytest.importorskip("instructor")
 
 
 class TestComplexityScorer:

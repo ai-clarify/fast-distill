@@ -4,9 +4,9 @@
 
 import pytest
 
-pytest.importorskip("transformers")
-
 from fastdistill.steps.reward_model import RewardModelScore
+
+pytest.importorskip("transformers")
 
 
 class TestRewardModelScore:

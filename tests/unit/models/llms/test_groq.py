@@ -10,11 +10,11 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import nest_asyncio
 import pytest
 
-pytest.importorskip("groq")
-
 from fastdistill.models.llms.groq import GroqLLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("groq")
 
 
 @patch("groq._client.AsyncGroq")

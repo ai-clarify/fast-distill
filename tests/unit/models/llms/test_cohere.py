@@ -10,13 +10,13 @@ from unittest import mock
 import nest_asyncio
 import pytest
 
-pytest.importorskip("cohere")
-pytest.importorskip("tokenizers")
-from tokenizers import Tokenizer
-
 from fastdistill.models.llms.cohere import CohereLLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("cohere")
+tokenizers = pytest.importorskip("tokenizers")
+Tokenizer = tokenizers.Tokenizer
 
 
 @mock.patch("cohere.AsyncClient")

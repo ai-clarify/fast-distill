@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import nest_asyncio
 import pytest
 
-pytest.importorskip("litellm")
-
 from fastdistill.models.llms.litellm import LiteLLM
+
+pytest.importorskip("litellm")
 
 
 @pytest.fixture(params=["mistral/mistral-tiny", "gpt-4"])

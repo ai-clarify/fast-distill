@@ -7,14 +7,14 @@ from typing import Any, Dict, Literal, Type, Union
 import pytest
 from pydantic import BaseModel
 
-pytest.importorskip("outlines")
-
 from fastdistill.models.llms.huggingface.transformers import TransformersLLM
 from fastdistill.steps.tasks.structured_outputs.outlines import (
     _is_outlines_version_below_0_1_0,
     model_to_schema,
 )
 from fastdistill.typing import OutlinesStructuredOutputType
+
+pytest.importorskip("outlines")
 
 
 class DummyUserTest(BaseModel):

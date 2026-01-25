@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, List
 
 import pytest
 
-pytest.importorskip("argilla")
-
 from fastdistill.pipeline.local import Pipeline
 from fastdistill.steps.argilla.base import ArgillaBase
 from fastdistill.steps.base import StepInput
 
 if TYPE_CHECKING:
     from fastdistill.typing import StepOutput
+
+pytest.importorskip("argilla")
 
 
 class CustomArgilla(ArgillaBase):

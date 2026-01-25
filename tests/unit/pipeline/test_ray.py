@@ -6,8 +6,6 @@ from typing import Generator
 
 import pytest
 
-pytest.importorskip("ray")
-
 from fastdistill.errors import FastDistillUserError
 from fastdistill.models.llms.vllm import vLLM
 from fastdistill.pipeline.ray import RayPipeline
@@ -15,6 +13,8 @@ from fastdistill.steps.base import StepResources
 from fastdistill.steps.tasks.text_generation import TextGeneration
 from fastdistill.utils.serialization import TYPE_INFO_KEY
 from tests.unit.conftest import DummyAsyncLLM, DummyTaskOfflineBatchGeneration
+
+pytest.importorskip("ray")
 
 
 @pytest.fixture

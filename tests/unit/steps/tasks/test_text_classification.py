@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.tasks.text_classification import TextClassification
 from tests.unit.conftest import DummyAsyncLLM
 
 if TYPE_CHECKING:
     from fastdistill.typing import FormattedInput, GenerateOutput
+
+pytest.importorskip("instructor")
 
 
 class TextClassificationLLM(DummyAsyncLLM):

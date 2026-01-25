@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, List, Union
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.tasks.apigen.generator import APIGenGenerator
 from tests.unit.conftest import DummyLLM
 
 if TYPE_CHECKING:
     from fastdistill.typing import FormattedInput, GenerateOutput
+
+pytest.importorskip("instructor")
 
 
 class DummyAPIGenLLM(DummyLLM):

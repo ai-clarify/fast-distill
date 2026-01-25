@@ -6,9 +6,9 @@
 import numpy as np
 import pytest
 
-pytest.importorskip("llama_cpp")
-
 from fastdistill.models.embeddings import LlamaCppEmbeddings
+
+pytest.importorskip("llama_cpp")
 
 
 class TestLlamaCppEmbeddings:

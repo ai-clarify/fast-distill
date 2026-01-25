@@ -7,12 +7,12 @@ from typing import Any, Dict, List
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.pipeline.local import Pipeline
 from fastdistill.steps.tasks.argilla_labeller import ArgillaLabeller
 from fastdistill.typing import ChatItem
 from tests.unit.conftest import DummyAsyncLLM
+
+pytest.importorskip("instructor")
 
 
 @pytest.fixture

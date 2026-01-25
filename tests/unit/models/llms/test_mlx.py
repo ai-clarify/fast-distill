@@ -7,11 +7,11 @@ from typing import Any, Dict, Generator
 
 import pytest
 
-pytest.importorskip("mlx_lm")
-
 from fastdistill.models.llms.mlx import MlxLLM
 
 from .utils import DummyUserDetail
+
+pytest.importorskip("mlx_lm")
 
 RUNS_ON_APPLE_SILICON = platform.processor() == "arm" and platform.system() == "Darwin"
 

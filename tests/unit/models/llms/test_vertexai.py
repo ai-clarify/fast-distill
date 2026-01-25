@@ -7,14 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import nest_asyncio
 import pytest
 
-pytest.importorskip("vertexai")
-from vertexai.generative_models import (
-    Content,
-    GenerationConfig,
-    Part,
-)
-
 from fastdistill.models.llms.vertexai import VertexAILLM
+
+vertexai_gen = pytest.importorskip("vertexai.generative_models")
+Content = vertexai_gen.Content
+GenerationConfig = vertexai_gen.GenerationConfig
+Part = vertexai_gen.Part
 
 
 @patch("vertexai.generative_models.GenerativeModel.generate_content_async")

@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import nest_asyncio
 import pytest
 
-pytest.importorskip("openai")
-
 from fastdistill.models.image_generation.openai import OpenAIImageGeneration
+
+pytest.importorskip("openai")
 
 
 @patch("openai.OpenAI")

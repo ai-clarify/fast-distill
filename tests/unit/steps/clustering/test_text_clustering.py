@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-pytest.importorskip("instructor")
-
 from fastdistill.steps.clustering.text_clustering import TextClustering
 from tests.unit.conftest import DummyAsyncLLM
 
 if TYPE_CHECKING:
     from fastdistill.typing import FormattedInput, GenerateOutput
+
+pytest.importorskip("instructor")
 
 
 class ClusteringLLM(DummyAsyncLLM):
