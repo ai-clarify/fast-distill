@@ -20,4 +20,4 @@ Date: 2026-01-25
 - [x] Drafted layered walkthrough docs (EN + ZH).
 - [x] Updated mkdocs navigation and cross-links.
 - [x] Ran lint + unit + integration tests.
-- [ ] Committed changes.
+- [x] Committed changes.
