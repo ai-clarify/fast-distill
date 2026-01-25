@@ -1,5 +1,40 @@
 # FastDistill Baselines
 
+## Run (2026-01-25, Ollama standard flow)
+
+### Run configuration
+- Pipeline: `scripts/run_ollama_mlx_e2e.py`
+- Provider: Ollama (local)
+- Teacher model: `qwen3:0.6b`
+- Student training model: `Qwen/Qwen3-0.6B` (MLX LoRA)
+- Dataset size: 2 samples (Text2SQL mini set)
+- Artifacts root: `~/.cache/fastdistill/artifacts`
+
+### Distillation quality results
+From `~/.cache/fastdistill/artifacts/reports/teacher_eval/quality_report.json`:
+- total: 2
+- exec_pass_rate: 1.0
+- gold_match_rate: 0.5
+- judge_score: min 0.5, max 1.0, mean 0.75
+
+From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
+- total: 2
+- kept: 2
+- rejected: 0
+- p_keep: 1.0
+- exec_pass_rate: 1.0
+- gold_match_rate: 0.5
+- judge_score: min 0.5, max 1.0, mean 0.75
+
+### Distillation timing
+- pipeline_wall_time_s: 31.817
+- distillation_wall_time_s: 35.200
+- distilled_model_score_mean: 0.75
+
+### Notes
+- Run failed at teacher eval gate: `total 2 < min_total 50`.
+- Override via `FASTDISTILL_TEACHER_EVAL_MIN_TOTAL=2` or disable with `FASTDISTILL_TEACHER_EVAL_GATE=0` to proceed.
+
 ## Run (2026-01-25, OpenRouter quick distill)
 
 ### Run configuration

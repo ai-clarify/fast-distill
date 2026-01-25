@@ -1,0 +1,1 @@
+- 2026-01-25: `run_ollama_mlx_e2e.py` stopped at teacher eval gate (`total 2 < min_total 50`); set `FASTDISTILL_TEACHER_EVAL_MIN_TOTAL=2` or disable the gate for smoke tests.

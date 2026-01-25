@@ -5,3 +5,4 @@
 - entries/2026-01-24-ollama-none-response-unboundlocal.md
 - entries/2026-01-24-mlx-student-eval-think-output.md
 - entries/2026-01-25-fastdistill-pipeline-missing-openai.md
+- entries/2026-01-25-fastdistill-standard-flow-gate.md

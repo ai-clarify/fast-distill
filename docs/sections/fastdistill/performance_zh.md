@@ -11,6 +11,16 @@
 ### 备注
 - 建议在 SQL 执行前加入 `SqlOutputCleaner` 去除代码块，提升通过率。
 
+## 运行（2026-01-25，Ollama 标准流程）
+
+### 关键指标（Text2SQL 迷你集）
+- 蒸馏耗时：2 条样本 35.200s（约 204.55 samples/hour）。
+- Teacher exec_pass_rate：1.0（gold_match_rate 0.5）。
+- Teacher judge_score mean：0.75。
+
+### 备注
+- 2 条样本触发默认 `min_total=50` gate，流程在 teacher_eval 阶段终止。
+
 ## 数据来源（2026-01-24 基线）
 - Timing 报告：`~/.cache/fastdistill/artifacts/reports/timing_report.json`（2026-01-23，`examples/fastdistill/ollama_distill_e2e.py`）
 - Baseline：`docs/sections/fastdistill/baseline.md`（2026-01-24，`scripts/run_ollama_mlx_e2e.py`）

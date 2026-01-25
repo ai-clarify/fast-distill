@@ -11,6 +11,16 @@
 ### Notes
 - Add `SqlOutputCleaner` before SQL exec to strip code fences and improve pass rate.
 
+## Run (2026-01-25, Ollama standard flow)
+
+### Key metrics (Text2SQL mini set)
+- Distillation wall time: 35.200s for 2 samples (~204.55 samples/hour).
+- Teacher exec_pass_rate: 1.0 (gold_match_rate 0.5).
+- Teacher judge_score mean: 0.75.
+
+### Notes
+- Teacher eval gate failed at default `min_total=50` for the 2-sample run.
+
 ## Data sources (2026-01-24 baseline)
 - Timing report: `~/.cache/fastdistill/artifacts/reports/timing_report.json` (2026-01-23, `examples/fastdistill/ollama_distill_e2e.py`)
 - Baseline: `docs/sections/fastdistill/baseline.md` (2026-01-24, `scripts/run_ollama_mlx_e2e.py`)
