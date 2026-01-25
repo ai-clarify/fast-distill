@@ -1,6 +1,17 @@
-# FastDistill Performance Analysis (2026-01-24)
+# FastDistill Performance Analysis
 
-## Data sources
+## Run (2026-01-25, OpenRouter quick distill)
+
+### Key metrics (Text2SQL mini set)
+- Distillation wall time: 35.798s for 1 kept sample (~100.56 samples/hour).
+- 1k-sample distillation estimate: ~9.94 hours (linear extrapolation from kept samples).
+- Teacher exec_pass_rate: 0.5 (one fenced-SQL response failed execution).
+- Teacher gold_match_rate: 0.5.
+
+### Notes
+- Add `SqlOutputCleaner` before SQL exec to strip code fences and improve pass rate.
+
+## Data sources (2026-01-24 baseline)
 - Timing report: `~/.cache/fastdistill/artifacts/reports/timing_report.json` (2026-01-23, `examples/fastdistill/ollama_distill_e2e.py`)
 - Baseline: `docs/sections/fastdistill/baseline.md` (2026-01-24, `scripts/run_ollama_mlx_e2e.py`)
 

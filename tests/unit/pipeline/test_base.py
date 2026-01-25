@@ -5,6 +5,7 @@
 import logging
 import os
 import tempfile
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from queue import Queue
 from typing import Any, Callable, Dict, List, Optional
@@ -13,6 +14,8 @@ from unittest import mock
 import pytest
 from datasets import Dataset
 from fsspec.implementations.local import LocalFileSystem
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 from pydantic import Field
 from upath import UPath
 
@@ -1265,6 +1268,13 @@ class TestBasePipeline:
             assert pipeline.requirements_to_install() == expected
 
     def test_pipeline_error_from_requirements(self):
+        def fastdistill_requirement_satisfied() -> bool:
+            try:
+                installed_version = version("fastdistill")
+            except PackageNotFoundError:
+                return False
+            return Version(installed_version) in SpecifierSet(">=0.0.1")
+
         @requirements(["fastdistill>=0.0.1"])
         class CustomStep(Step):
             @property
@@ -1280,10 +1290,7 @@ class TestBasePipeline:
                     input["response"] = "unit test"
                 yield inputs
 
-        with pytest.raises(
-            ModuleNotFoundError,
-            match=r"Please install the following requirements to run the pipeline: \nfastdistill>=0.0.1\nrandom_requirement",
-        ):
+        with pytest.raises(ModuleNotFoundError) as excinfo:
             with DummyPipeline(
                 name="unit-test-pipeline", requirements=["random_requirement"]
             ) as pipeline:
@@ -1293,6 +1300,10 @@ class TestBasePipeline:
 
                 gen_step >> step1_0 >> step2
             pipeline.run()
+        msg = str(excinfo.value)
+        assert "random_requirement" in msg
+        if not fastdistill_requirement_satisfied():
+            assert "fastdistill>=0.0.1" in msg
 
     def test_pipeline_with_dataset_and_generator_step(self):
         with pytest.raises(ValueError) as exc_info:

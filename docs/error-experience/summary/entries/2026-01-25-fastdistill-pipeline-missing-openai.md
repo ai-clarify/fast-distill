@@ -1,0 +1,1 @@
+- 2026-01-25: `examples/fastdistill/fastdistill_pipeline.py` failed to load OpenAI client; install `fastdistill[openai]` (or `openai`) before running OpenRouter/OpenAI flows.

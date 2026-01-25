@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import os
 from typing import Any, Dict, List
 from unittest import mock
 
@@ -9,6 +10,14 @@ import pytest
 
 pytest.importorskip("openai")
 pytest.importorskip("transformers")
+if not (
+    os.getenv("HF_TOKEN")
+    or os.getenv("HUGGINGFACE_TOKEN")
+    or os.getenv("HUGGINGFACE_HUB_TOKEN")
+):
+    pytest.skip(
+        "Hugging Face token required for private test models", allow_module_level=True
+    )
 from openai.pagination import SyncPage
 from openai.types import Model
 from openai.types.completion import Completion

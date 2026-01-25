@@ -1,6 +1,17 @@
-# FastDistill 性能分析（2026-01-24）
+# FastDistill 性能分析
 
-## 数据来源
+## 运行（2026-01-25，OpenRouter 快速蒸馏）
+
+### 关键指标（Text2SQL 迷你集）
+- 蒸馏耗时：1 条保留样本 35.798s（约 100.56 samples/hour）。
+- 1k 样本蒸馏估算：约 9.94 小时（按保留样本线性估算）。
+- Teacher exec_pass_rate：0.5（1 条 fenced SQL 执行失败）。
+- Teacher gold_match_rate：0.5。
+
+### 备注
+- 建议在 SQL 执行前加入 `SqlOutputCleaner` 去除代码块，提升通过率。
+
+## 数据来源（2026-01-24 基线）
 - Timing 报告：`~/.cache/fastdistill/artifacts/reports/timing_report.json`（2026-01-23，`examples/fastdistill/ollama_distill_e2e.py`）
 - Baseline：`docs/sections/fastdistill/baseline.md`（2026-01-24，`scripts/run_ollama_mlx_e2e.py`）
 
