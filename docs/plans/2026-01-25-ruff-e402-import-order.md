@@ -14,7 +14,7 @@ Date: 2026-01-25
 
 ## Progress
 - [x] Reviewed engineering practices in `docs/ENGINEERING_PRACTICES.md`.
-- [ ] Inspected failing test files.
-- [ ] Reordered imports / adjusted optional dependency handling.
-- [ ] Ran lint + tests.
+- [x] Inspected failing test files.
+- [x] Reordered imports / adjusted optional dependency handling.
+- [x] Ran lint + tests.
 - [ ] Committed changes.
