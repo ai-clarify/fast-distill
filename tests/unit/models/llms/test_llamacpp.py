@@ -2,8 +2,8 @@
 #
 # Licensed under the MIT License.
 
-import os
 import urllib.request
+from pathlib import Path
 from typing import Any, Dict, Generator
 
 import pytest
@@ -14,13 +14,22 @@ from fastdistill.models.llms.llamacpp import LlamaCppLLM
 
 from .utils import DummyUserDetail
 
+TINYLLAMA_PATH = (
+    Path.home()
+    / ".cache"
+    / "fastdistill"
+    / "models"
+    / "tinyllama-1.1b-chat-v1.0.Q2_K.gguf"
+)
+
 
 def download_tinyllama() -> None:
-    if not os.path.exists("tinyllama.gguf"):
+    if not TINYLLAMA_PATH.exists():
         try:
+            TINYLLAMA_PATH.parent.mkdir(parents=True, exist_ok=True)
             urllib.request.urlretrieve(
                 "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q2_K.gguf",
-                "tinyllama.gguf",
+                TINYLLAMA_PATH,
             )
         except Exception as exc:  # noqa: BLE001
             pytest.skip(f"tinyllama download failed: {exc}")
@@ -30,7 +39,7 @@ def download_tinyllama() -> None:
 def llm() -> Generator[LlamaCppLLM, None, None]:
     download_tinyllama()
 
-    llm = LlamaCppLLM(model_path="tinyllama.gguf", n_gpu_layers=0)  # type: ignore
+    llm = LlamaCppLLM(model_path=str(TINYLLAMA_PATH), n_gpu_layers=0)  # type: ignore
     llm.load()
 
     yield llm
@@ -45,13 +54,13 @@ class TestLlamaCppLLM:
             match="`use_magpie_template` cannot be `True` if `tokenizer_id` is `None`",
         ):
             LlamaCppLLM(
-                model_path="tinyllama.gguf",
+                model_path=str(TINYLLAMA_PATH),
                 use_magpie_template=True,
                 magpie_pre_query_template="llama3",
             )
 
     def test_model_name(self, llm: LlamaCppLLM) -> None:
-        assert llm.model_name == "tinyllama.gguf"
+        assert llm.model_name == str(TINYLLAMA_PATH)
 
     def test_generate(self, llm: LlamaCppLLM) -> None:
         responses = llm.generate(
@@ -136,7 +145,7 @@ class TestLlamaCppLLM:
         self, structured_output: Dict[str, Any], dump: Dict[str, Any]
     ) -> None:
         llm = LlamaCppLLM(
-            model_path="tinyllama.gguf",
+            model_path=str(TINYLLAMA_PATH),
             n_gpu_layers=0,
             structured_output=structured_output,
         )
