@@ -15,4 +15,4 @@ Date: 2026-01-25
 - [x] Reviewed engineering practices in `docs/ENGINEERING_PRACTICES.md`.
 - [x] Applied ruff format to the failing files.
 - [x] Ran lint + tests.
-- [ ] Committed changes and pushed.
+- [x] Committed changes and pushed.
