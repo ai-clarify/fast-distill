@@ -79,3 +79,4 @@ venv.bak/
 *.swp
 .DS_Store
 artifacts/
+tinyllama.gguf
