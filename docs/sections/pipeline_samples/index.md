@@ -121,19 +121,19 @@ hide: toc
 
 <div class="grid cards" markdown>
 
--   __Benchmarking with distilabel__
+-   __Benchmarking with fastdistill__
 
     ---
 
     Learn about reproducing the Arena Hard benchmark with disitlabel.
 
-    [:octicons-arrow-right-24: Example](examples/benchmarking_with_distilabel.md)
+    [:octicons-arrow-right-24: Example](examples/benchmarking_with_fastdistill.md)
 
 -   __Structured generation with outlines__
 
     ---
 
-    Learn about generating RPG characters following a pydantic.BaseModel with outlines in distilabel.
+    Learn about generating RPG characters following a pydantic.BaseModel with outlines in fastdistill.
 
     [:octicons-arrow-right-24: Example](examples/llama_cpp_with_outlines.md)
 
@@ -141,7 +141,7 @@ hide: toc
 
     ---
 
-    Learn about answering instructions with knowledge graphs defined as pydantic.BaseModel objects using instructor in distilabel.
+    Learn about answering instructions with knowledge graphs defined as pydantic.BaseModel objects using instructor in fastdistill.
 
     [:octicons-arrow-right-24: Example](examples/mistralai_with_instructor.md)
 
@@ -161,19 +161,19 @@ hide: toc
 
     [:octicons-arrow-right-24: Example](examples/exam_questions.md)
 
--   __Image generation with distilabel__
+-   __Image generation with fastdistill__
 
     ---
 
-    Generate synthetic images using distilabel.
+    Generate synthetic images using fastdistill.
 
     [:octicons-arrow-right-24: Example](examples/image_generation.md)
 
--   __Text generation with images in distilabel__
+-   __Text generation with images in fastdistill__
 
     ---
 
-    Ask questions about images using distilabel.
+    Ask questions about images using fastdistill.
 
     [:octicons-arrow-right-24: Example](examples/text_generation_with_image.md)
 

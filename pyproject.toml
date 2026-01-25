@@ -3,13 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "distilabel"
-description = "Distilabel is an AI Feedback (AIF) framework for building datasets with and for LLMs."
+name = "fastdistill"
+description = "FastDistill is an AI Feedback (AIF) framework for building datasets with and for LLMs."
 readme = "README.md"
 requires-python = ">=3.9"
-license = "Apache-2.0"
+license = "MIT"
 keywords = ["llm", "annotation", "alignment", "synthetic", "data", "rlaif"]
-authors = [{ name = "Argilla", email = "admin@argilla.io" }]
+authors = [{ name = "cklxx" }]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
@@ -43,10 +43,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-distilabel = "distilabel.cli.app:app"
+fastdistill = "fastdistill.cli.app:app"
 
 [project.entry-points."mkdocs.plugins"]
-"distilabel/components-gallery" = "distilabel.utils.mkdocs.components_gallery:ComponentsGalleryPlugin"
+"fastdistill/components-gallery" = "fastdistill.utils.mkdocs.components_gallery:ComponentsGalleryPlugin"
 
 [project.optional-dependencies]
 dev = ["ruff == 0.8.1", "pre-commit >= 3.5.0"]
@@ -108,12 +108,12 @@ vision = ["Pillow >= 10.3.0"]  # To work with images.
 minhash = ["datasketch >= 1.6.5", "nltk>3.8.1"]
 
 [project.urls]
-Documentation = "https://distilabel.argilla.io/"
-Issues = "https://github.com/argilla/distilabel/issues"
-Source = "https://github.com/argilla/distilabel"
+Documentation = "https://fastdistill.argilla.io/"
+Issues = "https://github.com/ai-clarify/fast-distill/issues"
+Source = "https://github.com/ai-clarify/fast-distill"
 
 [tool.hatch.version]
-path = "src/distilabel/__init__.py"
+path = "src/fastdistill/__init__.py"
 
 [tool.ruff]
 line-length = 88

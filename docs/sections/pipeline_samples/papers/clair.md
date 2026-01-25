@@ -1,7 +1,7 @@
 # Contrastive Learning From AI Revisions (CLAIR)
 
 ["Anchored Preference Optimization and Contrastive Revisions: Addressing Underspecification in Alignment"](https://huggingface.co/papers/2408.06266) introduces both Contrastive
-Learning from AI Revisions (CLAIR), a data-creation method which leads to more contrastive preference pairs, and Anchored Preference Optimization (APO), a controllable and more stable alignment objective. While APO can be found in [TRL](https://huggingface.co/docs/trl/dpo_trainer#loss-functions), we have implemented a task for CLAIR in `distilabel`.
+Learning from AI Revisions (CLAIR), a data-creation method which leads to more contrastive preference pairs, and Anchored Preference Optimization (APO), a controllable and more stable alignment objective. While APO can be found in [TRL](https://huggingface.co/docs/trl/dpo_trainer#loss-functions), we have implemented a task for CLAIR in `fastdistill`.
 
 CLAIR is a method for creating preference pairs which minimally revises one output to express a preference, resulting in a more precise learning signal as opposed to conventional methods which use a judge to select a preferred response. 
 
@@ -12,16 +12,16 @@ The athors from the original paper shared a [collection of datasets from CLAIR a
 ### Replication
 
 !!! NOTE
-    The section is named `Replication` but in this case we are showing how to use the [`CLAIR`][distilabel.steps.tasks.clair.CLAIR] task create revisions for your generations using `distilabel`.
+    The section is named `Replication` but in this case we are showing how to use the [`CLAIR`][fastdistill.steps.tasks.clair.CLAIR] task create revisions for your generations using `fastdistill`.
 
-To showcase CLAIR we will be using the [`CLAIR`][distilabel.steps.tasks.PrometheusEval] task implemented in `distilabel` and we are reusing a small sample of the already generated dataset by ContextualAI [`ContextualAI/ultrafeedback_clair_32k`](https://huggingface.co/datasets/ContextualAI/ultrafeedback_clair_32k) for testing.
+To showcase CLAIR we will be using the [`CLAIR`][fastdistill.steps.tasks.PrometheusEval] task implemented in `fastdistill` and we are reusing a small sample of the already generated dataset by ContextualAI [`ContextualAI/ultrafeedback_clair_32k`](https://huggingface.co/datasets/ContextualAI/ultrafeedback_clair_32k) for testing.
 
 #### Installation
 
-To reproduce the code below, one will need to install `distilabel` as follows:
+To reproduce the code below, one will need to install `fastdistill` as follows:
 
 ```bash
-pip install "distilabel>=1.4.0"
+pip install "fastdistill>=1.4.0"
 ```
 
 Depending on the LLM provider you want to use, the requirements may vary, take a look at the dependencies in that case, we are using for the example the free inference endpoints from Hugging Face, but that won't apply for a bigger dataset.
@@ -30,20 +30,20 @@ Depending on the LLM provider you want to use, the requirements may vary, take a
 
 In this case where we already have instructions and their generations, we will just need to load the data and the corresponding CLAIR task for the revisions:
 
-- [`CLAIR`](https://distilabel.argilla.io/dev/components-gallery/tasks/clair/) to generate the revisions.
+- [`CLAIR`](https://fastdistill.argilla.io/dev/components-gallery/tasks/clair/) to generate the revisions.
 
 #### Code
 
-Let's see the full pipeline applied to `ContextualAI/ultrafeedback_clair_32k` in `distilabel`:
+Let's see the full pipeline applied to `ContextualAI/ultrafeedback_clair_32k` in `fastdistill`:
 
 ```python
 from typing import Any, Dict
 
 from datasets import load_dataset
 
-from distilabel.pipeline import Pipeline
-from distilabel.steps.tasks import CLAIR
-from distilabel.models import InferenceEndpointsLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps.tasks import CLAIR
+from fastdistill.models import InferenceEndpointsLLM
 
 
 def transform_ultrafeedback(example: Dict[str, Any]) -> Dict[str, Any]:
@@ -81,4 +81,4 @@ if __name__ == "__main__":
 
 3. Push the distiset to the hub with the script for reproducibility.
 
-An example dataset can be found at: [distilabel-internal-testing/clair-test](https://huggingface.co/datasets/distilabel-internal-testing/clair-test).
+An example dataset can be found at: [fastdistill-internal-testing/clair-test](https://huggingface.co/datasets/fastdistill-internal-testing/clair-test).

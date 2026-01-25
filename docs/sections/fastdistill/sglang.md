@@ -10,7 +10,7 @@ python -m sglang.launch_server --model-path qwen/qwen2.5-0.5b-instruct --host 0.
 
 ## Use in FastDistill
 ```python
-from distilabel.models.llms import SGLangLLM
+from fastdistill.models.llms import SGLangLLM
 
 llm = SGLangLLM(model="qwen/qwen2.5-0.5b-instruct")
 ```

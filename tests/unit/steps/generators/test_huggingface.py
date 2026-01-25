@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import os
 import tempfile
@@ -20,23 +10,23 @@ from typing import Generator, Union
 import pytest
 from datasets import Dataset, IterableDataset
 
-from distilabel.distiset import Distiset
-from distilabel.pipeline import Pipeline
-from distilabel.steps.generators.huggingface import (
+from fastdistill.distiset import Distiset
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps.generators.huggingface import (
     LoadDataFromDisk,
     LoadDataFromFileSystem,
     LoadDataFromHub,
 )
 from tests.unit.pipeline.utils import DummyStep1
 
-DISTILABEL_RUN_SLOW_TESTS = os.getenv("DISTILABEL_RUN_SLOW_TESTS", False)
+FASTDISTILL_RUN_SLOW_TESTS = os.getenv("FASTDISTILL_RUN_SLOW_TESTS", False)
 
 
 @pytest.fixture(scope="module")
 def dataset_loader() -> Generator[Union[Dataset, IterableDataset], None, None]:
     load_hub_dataset = LoadDataFromHub(
         name="load_dataset",
-        repo_id="distilabel-internal-testing/instruction-dataset-mini",
+        repo_id="fastdistill-internal-testing/instruction-dataset-mini",
         split="test",
         batch_size=2,
         pipeline=Pipeline(name="dataset-pipeline"),
@@ -45,7 +35,7 @@ def dataset_loader() -> Generator[Union[Dataset, IterableDataset], None, None]:
 
 
 @pytest.mark.skipif(
-    not DISTILABEL_RUN_SLOW_TESTS,
+    not FASTDISTILL_RUN_SLOW_TESTS,
     reason="These tests depend on internet connection, are slow and depend mainly on HF API, we don't need to test them often.",
 )
 class TestLoadDataFromHub:
@@ -55,7 +45,7 @@ class TestLoadDataFromHub:
     def test_runtime_parameters(self, streaming: bool, ds_type) -> None:
         load_hub_dataset = LoadDataFromHub(
             name="load_dataset",
-            repo_id="distilabel-internal-testing/instruction-dataset-mini",
+            repo_id="fastdistill-internal-testing/instruction-dataset-mini",
             split="test",
             streaming=streaming,
             batch_size=2,

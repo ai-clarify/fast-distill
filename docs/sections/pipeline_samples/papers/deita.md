@@ -18,7 +18,7 @@ We will dive deeper into the whole process. We will investigate each stage to ef
 
 As a reminder, we're looking for a strategy to automatically select good data for the instruction-tuning step when you want to fine-tune an LLM to your own use case taking into account a resource constraint. This means that you cannot blindly train a model on any data you encounter on the internet.
 
-The DEITA authors assume that you have access to open-source datasets that fit your use case. This may not be the case entirely. But with open-source communities tackling many use cases, with projects such as [BLOOM](https://arxiv.org/pdf/2110.08207.pdf) or [AYA](https://cohere.com/research/aya), it's likely that your use case will be tackled at some point. Furthermore, you could generate your own instruction/response pairs with methods such as [self-generated instructions](https://aclanthology.org/2023.acl-long.754/) using distilabel. This tutorial assumes that we have a data pool with excessive samples for the project's cost constraint. In short, we aim to achieve adequate performance from fewer samples.
+The DEITA authors assume that you have access to open-source datasets that fit your use case. This may not be the case entirely. But with open-source communities tackling many use cases, with projects such as [BLOOM](https://arxiv.org/pdf/2110.08207.pdf) or [AYA](https://cohere.com/research/aya), it's likely that your use case will be tackled at some point. Furthermore, you could generate your own instruction/response pairs with methods such as [self-generated instructions](https://aclanthology.org/2023.acl-long.754/) using fastdistill. This tutorial assumes that we have a data pool with excessive samples for the project's cost constraint. In short, we aim to achieve adequate performance from fewer samples.
 
 The authors claim that the subsample size "correlates proportionally with the computation consumed in instruction tuning". Hence on a first approximation, reducing the sample size means reducing computation consumption and so the total development cost. Reproducing the paper notations, we will associate the budget m to a number of instruction/response pairs that you can set depending on your real budget.
 
@@ -31,20 +31,20 @@ To match the experimental set-up, dataset *X\_sota* is a meta-dataset combining 
 Let's prepare our dependencies:
 
 ```bash
-pip install "distilabel[openai,hf-transformers]>=1.0.0"
+pip install "fastdistill[openai,hf-transformers]>=1.0.0"
 pip install pynvml huggingface_hub argilla
 ```
 
-Import distilabel:
+Import fastdistill:
 
 ```python
-from distilabel.models import TransformersLLM, OpenAILLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import ConversationTemplate, DeitaFiltering, ExpandColumns, LoadDataFromHub
-from distilabel.steps.tasks import ComplexityScorer, EvolInstruct, EvolQuality, GenerateEmbeddings, QualityScorer
+from fastdistill.models import TransformersLLM, OpenAILLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import ConversationTemplate, DeitaFiltering, ExpandColumns, LoadDataFromHub
+from fastdistill.steps.tasks import ComplexityScorer, EvolInstruct, EvolQuality, GenerateEmbeddings, QualityScorer
 ```
 
-Define the distilabel Pipeline and load the dataset from the Hugging Face Hub.
+Define the fastdistill Pipeline and load the dataset from the Hugging Face Hub.
 
 ```python
 pipeline = Pipeline(name="DEITA")
@@ -58,7 +58,7 @@ load_data = LoadDataFromHub(
 
 [Evol-Instruct](https://arxiv.org/abs/2304.12244) automates the creation of complex instruction data for training large language models (LLMs) by progressively rewriting an initial set of instructions into more complex forms. This generated data is then used to fine-tune a model named WizardLM.
 
-Evaluations show that instructions from Evol-Instruct are superior to human-created ones, and WizardLM achieves performance close to or exceeding GPT3.5-turbo in many skills. In distilabel, we initialise each step of the data generation pipeline. Later, we'll connect them together.
+Evaluations show that instructions from Evol-Instruct are superior to human-created ones, and WizardLM achieves performance close to or exceeding GPT3.5-turbo in many skills. In fastdistill, we initialise each step of the data generation pipeline. Later, we'll connect them together.
 
 ```python
 evol_instruction_complexity = EvolInstruct(
@@ -126,7 +126,7 @@ instruction_1 = "Provide three recommendations for maintaining well-being, ensur
 
 With sequences of evolved instructions, we use a further LLM to automatically rank and score them. We provide the 6 instructions at the same time. By providing all instructions together, we force the scoring model to look at minor complexity differences between evolved instructions. Encouraging the model to discriminate between instructions. Taking the example below, $instruction_0$ and $instruction_1$ could deserve the same score independently, but when compared together we would notice the slight difference that makes $instruction_1$ more complex.
 
-In `distilabel`, we implement this like so:
+In `fastdistill`, we implement this like so:
 
 ```python
 instruction_complexity_scorer = ComplexityScorer(
@@ -309,9 +309,9 @@ generate_embeddings = GenerateEmbeddings(
 deita_filtering = DeitaFiltering(name="deita_filtering", pipeline=pipeline)
 ```
 
-## Build the ⚗ distilabel `Pipeline`
+## Build the ⚗ fastdistill `Pipeline`
 
-Now we're ready to build a `distilabel` pipeline using the DEITA method:
+Now we're ready to build a `fastdistill` pipeline using the DEITA method:
 
 ```python
 load_data.connect(evol_instruction_complexity)
@@ -331,7 +331,7 @@ Now we can run the pipeline. We use the step names to reference them in the pipe
 distiset = pipeline.run(
     parameters={
         "load_data": {
-            "repo_id": "distilabel-internal-testing/instruction-dataset-50",
+            "repo_id": "fastdistill-internal-testing/instruction-dataset-50",
             "split": "train",
         },
         "evol_instruction_complexity": {
@@ -353,7 +353,7 @@ distiset = pipeline.run(
 We can push the results to the Hugging Face Hub:
 
 ```python
-distiset.push_to_hub("distilabel-internal-testing/deita-colab")
+distiset.push_to_hub("fastdistill-internal-testing/deita-colab")
 ```
 
 ## Results

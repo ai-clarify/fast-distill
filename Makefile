@@ -1,4 +1,4 @@
-sources = src/distilabel tests
+sources = src/fastdistill tests
 
 .PHONY: format
 format:

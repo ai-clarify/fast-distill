@@ -1,6 +1,6 @@
 # Load groups and execution stages
 
-By default, the `distilabel` architecture loads all steps of a pipeline at the same time, as they are all supposed to process batches of data in parallel. However, loading all steps at once can waste resources in two scenarios: when using `GlobalStep`s that must wait for upstream steps to complete before processing data, or when running on machines with limited resources that cannot execute all steps simultaneously. In these cases, steps need to be loaded and executed in distinct **load stages**.
+By default, the `fastdistill` architecture loads all steps of a pipeline at the same time, as they are all supposed to process batches of data in parallel. However, loading all steps at once can waste resources in two scenarios: when using `GlobalStep`s that must wait for upstream steps to complete before processing data, or when running on machines with limited resources that cannot execute all steps simultaneously. In these cases, steps need to be loaded and executed in distinct **load stages**.
 
 ## Load stages
 
@@ -9,16 +9,16 @@ A load stage represents a point in the pipeline execution where a group of steps
 1. There are some kind of steps like the `GlobalStep`s that needs to receive all the data at once from their upstream steps i.e. needs their upstream steps to have finished its execution. It would be wasteful to load a `GlobalStep` at the same time as other steps of the pipeline as that would take resources (from the machine or cluster running the pipeline) that wouldn't be used until upstream steps have finished.
 2. When running on machines or clusters with limited resources, it may be not possible to load and execute all steps simultaneously as they would need to access the same limited resources (memory, CPU, GPU, etc.). 
 
-Having that said, the first element that will create a load stage when executing a pipeline are the [`GlobalStep`][distilabel.steps.base.GlobalStep], as they mark and divide a pipeline in three stages: one stage with the upstream steps of the global step, one stage with the global step, and one final stage with the downstream steps of the global step. For example, the following pipeline will contain three stages:
+Having that said, the first element that will create a load stage when executing a pipeline are the [`GlobalStep`][fastdistill.steps.base.GlobalStep], as they mark and divide a pipeline in three stages: one stage with the upstream steps of the global step, one stage with the global step, and one final stage with the downstream steps of the global step. For example, the following pipeline will contain three stages:
 
 ```python
 from typing import TYPE_CHECKING
 
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromDicts, StepInput, step
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromDicts, StepInput, step
 
 if TYPE_CHECKING:
-    from distilabel.typing import StepOutput
+    from fastdistill.typing import StepOutput
 
 
 @step(inputs=["instruction"], outputs=["instruction2"])
@@ -68,13 +68,13 @@ Let's see how it works with an example:
 ```python
 from datasets import load_dataset
 
-from distilabel.llms import vLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import StepResources
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.llms import vLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import StepResources
+from fastdistill.steps.tasks import TextGeneration
 
 dataset = load_dataset(
-    "distilabel-internal-testing/instruction-dataset-mini", split="test"
+    "fastdistill-internal-testing/instruction-dataset-mini", split="test"
 ).rename_column("prompt", "instruction")
 
 with Pipeline() as pipeline:
@@ -117,6 +117,6 @@ Some key points about load groups:
 
 ### Load groups modes
 
-In addition, `distilabel` allows passing some modes to the `load_groups` argument that will handle the creation of the load groups:
+In addition, `fastdistill` allows passing some modes to the `load_groups` argument that will handle the creation of the load groups:
 
 - `"sequential_step_execution"`: when passed, it will create a load group for each step i.e. the execution of the steps of the pipeline will be sequential.

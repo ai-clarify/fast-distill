@@ -2,20 +2,20 @@
 hide: toc
 ---
 
-# Image generation with `distilabel`
+# Image generation with `fastdistill`
 
-Create synthetic images using `distilabel`.
+Create synthetic images using `fastdistill`.
 
-This example shows how distilabel can be used to generate image data, either using [`InferenceEndpointsImageGeneration`](https://distilabel.argilla.io/dev/components-gallery/image_generation/inferenceendpointsimagegeneration/) or [`OpenAIImageGeneration`](https://distilabel.argilla.io/dev/components-gallery/image_generation/openaiimagegeneration/), thanks to the [`ImageGeneration`](https://distilabel.argilla.io/dev/components-gallery/task/imagegeneration/) task.
+This example shows how fastdistill can be used to generate image data, either using [`InferenceEndpointsImageGeneration`](https://fastdistill.argilla.io/dev/components-gallery/image_generation/inferenceendpointsimagegeneration/) or [`OpenAIImageGeneration`](https://fastdistill.argilla.io/dev/components-gallery/image_generation/openaiimagegeneration/), thanks to the [`ImageGeneration`](https://fastdistill.argilla.io/dev/components-gallery/task/imagegeneration/) task.
 
 
 === "Inference Endpoints - black-forest-labs/FLUX.1-schnell"
 
     ```python
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import KeepColumns
-    from distilabel.models.image_generation import InferenceEndpointsImageGeneration
-    from distilabel.steps.tasks import ImageGeneration
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import KeepColumns
+    from fastdistill.models.image_generation import InferenceEndpointsImageGeneration
+    from fastdistill.steps.tasks import ImageGeneration
 
     from datasets import load_dataset
 
@@ -46,10 +46,10 @@ This example shows how distilabel can be used to generate image data, either usi
 === "OpenAI - dall-e-3"
 
     ```python
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import KeepColumns
-    from distilabel.models.image_generation import OpenAIImageGeneration
-    from distilabel.steps.tasks import ImageGeneration
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import KeepColumns
+    from fastdistill.models.image_generation import OpenAIImageGeneration
+    from fastdistill.steps.tasks import ImageGeneration
 
     from datasets import load_dataset
 
@@ -95,7 +95,7 @@ This example shows how distilabel can be used to generate image data, either usi
 
     ```
 
-The full pipeline can be run at the following example. Keep in mind, you need to install `pillow` first: `pip install distilabel[vision]`.
+The full pipeline can be run at the following example. Keep in mind, you need to install `pillow` first: `pip install fastdistill[vision]`.
 
 ??? Run
 

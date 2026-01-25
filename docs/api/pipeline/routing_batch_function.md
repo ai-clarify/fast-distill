@@ -1,3 +1,3 @@
 # Routing batch function
 
-::: distilabel.pipeline.routing_batch_function
+::: fastdistill.pipeline.routing_batch_function

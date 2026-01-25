@@ -1,26 +1,17 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import os
 from unittest import mock
 from unittest.mock import patch
 
-import argilla as rg
 import pytest
 
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.argilla.text_generation import TextGenerationToArgilla
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.argilla.text_generation import TextGenerationToArgilla
+
+rg = pytest.importorskip("argilla")
 
 
 @pytest.fixture
@@ -157,7 +148,7 @@ class TestTextGenerationToArgilla:
             ],
             "use_cache": True,
             "type_info": {
-                "module": "distilabel.steps.argilla.text_generation",
+                "module": "fastdistill.steps.argilla.text_generation",
                 "name": "TextGenerationToArgilla",
             },
         }

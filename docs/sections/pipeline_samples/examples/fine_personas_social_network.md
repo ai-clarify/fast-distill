@@ -18,10 +18,10 @@ Let's jump to the demo.
 
 ## Creating our SocialAI Task
 
-Building on the new [`TextGeneration`](https://distilabel.argilla.io/dev/components-gallery/tasks/textgeneration/), creating custom tasks is easier than ever before. This powerful tool opens up a world of possibilities for creating tailored text-based content with ease and precision. We will create a `SocialAI` task that will be in charge of generating responses to user interactions, taking into account a given `follower_type`, and use the perspective from a given `persona`:
+Building on the new [`TextGeneration`](https://fastdistill.argilla.io/dev/components-gallery/tasks/textgeneration/), creating custom tasks is easier than ever before. This powerful tool opens up a world of possibilities for creating tailored text-based content with ease and precision. We will create a `SocialAI` task that will be in charge of generating responses to user interactions, taking into account a given `follower_type`, and use the perspective from a given `persona`:
 
 ```python
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.steps.tasks import TextGeneration
 
 class SocialAI(TextGeneration):
     follower_type: Literal["supporter", "troll", "alarmist"] = "supporter"
@@ -118,7 +118,7 @@ print(json.dumps(data[0], indent=4))
 }
 ```
 
-This will be our dataset, that we can ingest using the [`LoadDataFromDicts`](https://distilabel.argilla.io/dev/components-gallery/steps/loaddatafromdicts/):
+This will be our dataset, that we can ingest using the [`LoadDataFromDicts`](https://fastdistill.argilla.io/dev/components-gallery/steps/loaddatafromdicts/):
 
 ```python
 loader = LoadDataFromDicts(data=data)
@@ -130,7 +130,7 @@ With our data in hand, we're ready to explore the capabilities of our SocialAI t
 While this model has become something of a go-to choice recently, it's worth noting that experimenting with a variety of models could yield even more interesting results:
 
 ```python
-from distilabel.models import InferenceEndpointsLLM
+from fastdistill.models import InferenceEndpointsLLM
 
 llm = InferenceEndpointsLLM(
     model_id="meta-llama/Meta-Llama-3.1-70B-Instruct",
@@ -152,7 +152,7 @@ This setup simplifies the process, we only need to input the follower type, and 
 
 ## Building our Pipeline
 
-The foundation of our pipeline is now in place. At its core is a single, powerful LLM. This versatile model will be repurposed to drive three distinct `SocialAI` Tasks, each tailored to a specific `TextGeneration` task, and each one of them will be prepared for Supervised Fine Tuning using [`FormatTextGenerationSFT`](https://distilabel.argilla.io/dev/components-gallery/steps/formattextgenerationsft/):
+The foundation of our pipeline is now in place. At its core is a single, powerful LLM. This versatile model will be repurposed to drive three distinct `SocialAI` Tasks, each tailored to a specific `TextGeneration` task, and each one of them will be prepared for Supervised Fine Tuning using [`FormatTextGenerationSFT`](https://fastdistill.argilla.io/dev/components-gallery/steps/formattextgenerationsft/):
 
 ```python
 with Pipeline(name="Social AI Personas") as pipeline:

@@ -1,26 +1,16 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import json
 from typing import Any, List
 
 from typing_extensions import override
 
-from distilabel.models.llms.base import LLM
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.tasks.structured_generation import StructuredGeneration
-from distilabel.typing import GenerateOutput, StructuredInput
+from fastdistill.models.llms.base import LLM
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.tasks.structured_generation import StructuredGeneration
+from fastdistill.typing import GenerateOutput, StructuredInput
 
 
 class DummyStructuredLLM(LLM):
@@ -130,7 +120,7 @@ class TestStructuredGeneration:
                 },
                 "generation": '{"test": "output"}',
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_output_task": '{"test": "output"}',
                     "statistics_task": {"input_tokens": 12, "output_tokens": 12},
                 },

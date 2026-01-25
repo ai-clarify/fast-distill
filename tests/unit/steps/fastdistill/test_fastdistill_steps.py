@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import hashlib
 import json
@@ -20,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from distilabel.errors import DistilabelUserError
-from distilabel.steps.fastdistill import (
+from fastdistill.errors import FastDistillUserError
+from fastdistill.steps.fastdistill import (
     CanonicalizeFields,
     ComputeHash,
     DeduplicateByField,
@@ -32,13 +22,13 @@ from distilabel.steps.fastdistill import (
     ScoreFromExecEval,
     SelectByBool,
     SQLiteExecEval,
-    WriteMlxDataset,
     WriteManifest,
+    WriteMlxDataset,
     WriteQualityReport,
     WriteScoreAgreementReport,
     WriteTimingReport,
 )
-from distilabel.utils.serialization import read_json
+from fastdistill.utils.serialization import read_json
 
 
 def test_canonicalize_fields_stable_json() -> None:
@@ -55,7 +45,7 @@ def test_canonicalize_fields_stable_json() -> None:
 
 def test_canonicalize_fields_missing_field_raises() -> None:
     step = CanonicalizeFields(fields=["a", "missing"], output_field="canonical_input")
-    with pytest.raises(DistilabelUserError):
+    with pytest.raises(FastDistillUserError):
         next(step.process([{"a": 1}]))
 
 
@@ -64,11 +54,15 @@ def test_compute_hash_matches_expected() -> None:
     row = {"a": 1, "b": {"y": 1, "x": 2}}
     output = next(step.process([row]))
 
-    payload = json.dumps(1, ensure_ascii=True, separators=(",", ":")) + "|" + json.dumps(
-        {"x": 2, "y": 1},
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
+    payload = (
+        json.dumps(1, ensure_ascii=True, separators=(",", ":"))
+        + "|"
+        + json.dumps(
+            {"x": 2, "y": 1},
+            sort_keys=True,
+            ensure_ascii=True,
+            separators=(",", ":"),
+        )
     )
     expected = hashlib.sha256(payload.encode("utf-8")).hexdigest()
     assert output[0]["sample_id"] == expected

@@ -16,7 +16,7 @@
 - Exec/gold-match metrics were invalid (false negatives).
 
 ## Resolution
-- Added `SqlOutputCleaner` (`src/distilabel/steps/fastdistill/sql_output.py`).
+- Added `SqlOutputCleaner` (`src/fastdistill/steps/fastdistill/sql_output.py`).
 - Updated MLX eval to strip reasoning tags and extract SQL via `clean_sql_output`.
 
 ## Follow-ups

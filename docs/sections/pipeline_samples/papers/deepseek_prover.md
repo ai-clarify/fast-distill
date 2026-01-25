@@ -1,6 +1,6 @@
 # DeepSeek Prover
 
-["DeepSeek-Prover: Advancing Theorem Proving in LLMs through Large-Scale Synthetic Data"](https://arxiv.org/abs/2405.14333) presents an approach to generate mathematical proofs for theorems generated from informal math problems. This approach shows promising results to advance the capabilities of models towards theorem proving using synthetic data. Until this moment the dataset and the model trained on top of it haven't been opened, let's see how the approach works to reproduce the pipeline using `distilabel`. The following figure depicts the approach taken to generate the dataset:
+["DeepSeek-Prover: Advancing Theorem Proving in LLMs through Large-Scale Synthetic Data"](https://arxiv.org/abs/2405.14333) presents an approach to generate mathematical proofs for theorems generated from informal math problems. This approach shows promising results to advance the capabilities of models towards theorem proving using synthetic data. Until this moment the dataset and the model trained on top of it haven't been opened, let's see how the approach works to reproduce the pipeline using `fastdistill`. The following figure depicts the approach taken to generate the dataset:
 
 ![DeepSeep prover approach](../../../assets/tutorials-assets/deepseek_prover.png)
 
@@ -13,19 +13,19 @@ Here we show how to deal with steps 1 and 2, but the authors ensure the theorems
 ### Replication
 
 !!! Note
-    The section is named `Replication` but we will show how we can use `distilabel` to create the different steps outlined in the `DeepSeek-Prover` approach. We intentionally let some steps out of the pipeline, but this can easily be extended.
+    The section is named `Replication` but we will show how we can use `fastdistill` to create the different steps outlined in the `DeepSeek-Prover` approach. We intentionally let some steps out of the pipeline, but this can easily be extended.
 
-We will define the components needed to generate a dataset like the one depicted in the previous figure (we won't call lean4 or do the fine-tuning, this last step can be done outside of `distilabel`). The different blocks will have all the docstrings as we would have in the internal steps to showcase how they are done, but they can be omitted for brevity.
+We will define the components needed to generate a dataset like the one depicted in the previous figure (we won't call lean4 or do the fine-tuning, this last step can be done outside of `fastdistill`). The different blocks will have all the docstrings as we would have in the internal steps to showcase how they are done, but they can be omitted for brevity.
 
 ## Installation
 
-To reproduce the code below, we need to install `distilabel` as it follows:
+To reproduce the code below, we need to install `fastdistill` as it follows:
 
 ```bash
-pip install "distilabel[hf-inference-endpoints]"
+pip install "fastdistill[hf-inference-endpoints]"
 ```
 
-We have decided to use [`InferenceEndpointsLLM`](https://distilabel.argilla.io/latest/components-gallery/llms/inferenceendpointsllm/?h=inference#inferenceendpointsllm), but any other provider with a strong model could work.
+We have decided to use [`InferenceEndpointsLLM`](https://fastdistill.argilla.io/latest/components-gallery/llms/inferenceendpointsllm/?h=inference#inferenceendpointsllm), but any other provider with a strong model could work.
 
 ## Building blocks
 
@@ -286,7 +286,7 @@ Additionally, the original pipeline defined in the paper includes a step to chec
 
 ## Code
 
-Lets's put the building blocks together to create the final pipeline with `distilabel`. For this example we have generated a sample dataset [plaguss/informal-mathematical-statements-tiny](https://huggingface.co/datasets/plaguss/informal-mathematical-statements-tiny) of informal mathematical statements starting from [casey-martin/multilingual-mathematical-autoformalization](https://huggingface.co/datasets/casey-martin/multilingual-mathematical-autoformalization), but as the paper mentions, we can create formal statements and it's corresponding proofs starting from informal ones:
+Lets's put the building blocks together to create the final pipeline with `fastdistill`. For this example we have generated a sample dataset [plaguss/informal-mathematical-statements-tiny](https://huggingface.co/datasets/plaguss/informal-mathematical-statements-tiny) of informal mathematical statements starting from [casey-martin/multilingual-mathematical-autoformalization](https://huggingface.co/datasets/casey-martin/multilingual-mathematical-autoformalization), but as the paper mentions, we can create formal statements and it's corresponding proofs starting from informal ones:
 
 <details close>
 <summary>Click to see the full pipeline</summary>

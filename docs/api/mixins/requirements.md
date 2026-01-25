@@ -1,1 +1,1 @@
-::: distilabel.mixins.requirements.RequirementsMixin
+::: fastdistill.mixins.requirements.RequirementsMixin

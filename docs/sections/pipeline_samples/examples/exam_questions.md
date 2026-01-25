@@ -68,10 +68,10 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from distilabel.llms import InferenceEndpointsLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromDicts
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.llms import InferenceEndpointsLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromDicts
+from fastdistill.steps.tasks import TextGeneration
 
 import wikipedia
 
@@ -144,7 +144,7 @@ with Pipeline(name="ExamGenerator") as pipeline:
 
 4. Move the page content from wikipedia to a row in the dataset.
 
-5. The [`TextGeneration`](https://distilabel.argilla.io/dev/components-gallery/tasks/textgeneration/) task gets the system prompt, and the user prompt by means of the `template` argument, where we aid the model to generate the questions and answers based on the page content, that will be obtained from the corresponding column of the loaded data.
+5. The [`TextGeneration`](https://fastdistill.argilla.io/dev/components-gallery/tasks/textgeneration/) task gets the system prompt, and the user prompt by means of the `template` argument, where we aid the model to generate the questions and answers based on the page content, that will be obtained from the corresponding column of the loaded data.
 
 6. Connect both steps, and we are done.
 

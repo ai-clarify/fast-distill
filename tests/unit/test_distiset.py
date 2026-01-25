@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import copy
 import re
@@ -23,8 +13,8 @@ import yaml
 from datasets import Dataset, DatasetDict
 from upath import UPath
 
-from distilabel.distiset import Distiset
-from distilabel.utils.serialization import write_json
+from fastdistill.distiset import Distiset
+from fastdistill.utils.serialization import write_json
 
 
 @pytest.fixture(scope="function")
@@ -44,7 +34,7 @@ def make_fake_file(filename: Path) -> None:
 
 
 def add_config_to_distiset(distiset: Distiset, folder: Path) -> Distiset:
-    from distilabel.constants import DISTISET_CONFIG_FOLDER
+    from fastdistill.constants import DISTISET_CONFIG_FOLDER
 
     pipeline_yaml = folder / DISTISET_CONFIG_FOLDER / "pipeline.yaml"
     pipeline_log = folder / DISTISET_CONFIG_FOLDER / "pipeline.log"
@@ -56,7 +46,7 @@ def add_config_to_distiset(distiset: Distiset, folder: Path) -> Distiset:
 
 
 def add_artifacts_to_distiset(distiset: Distiset, folder: Path) -> Distiset:
-    from distilabel.constants import DISTISET_ARTIFACTS_FOLDER
+    from fastdistill.constants import DISTISET_ARTIFACTS_FOLDER
 
     artifacts_folder = folder / DISTISET_ARTIFACTS_FOLDER
 
@@ -234,16 +224,16 @@ class TestDistiset:
         metadata = yaml.safe_load(metadata)
         assert metadata == {
             "size_categories": "n<1K",
-            "tags": ["synthetic", "distilabel", "rlaif"],
+            "tags": ["synthetic", "fastdistill", "rlaif"],
         }
 
     def test_transform_columns_to_image(self):
         import numpy as np
         from PIL import Image
 
-        arr = np.random.randint(0, 255, (100, 100, 3))
+        arr = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
         image = Image.fromarray(arr, "RGB")
-        from distilabel.models.image_generation.utils import image_to_str
+        from fastdistill.models.image_generation.utils import image_to_str
 
         img_str = image_to_str(image)
 

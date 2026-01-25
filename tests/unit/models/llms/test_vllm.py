@@ -1,21 +1,14 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import Any, Dict, List
 from unittest import mock
 
 import pytest
+
+pytest.importorskip("openai")
+pytest.importorskip("transformers")
 from openai.pagination import SyncPage
 from openai.types import Model
 from openai.types.completion import Completion
@@ -24,8 +17,8 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel
 from transformers import AutoTokenizer
 
-from distilabel.models.llms import vLLM
-from distilabel.models.llms.vllm import ClientvLLM
+from fastdistill.models.llms import vLLM
+from fastdistill.models.llms.vllm import ClientvLLM
 
 
 class Character(BaseModel):
@@ -168,7 +161,7 @@ class TestvLLM:
     ) -> None:
         llm = vLLM(model="dummy")
         tokenizer = AutoTokenizer.from_pretrained(
-            "distilabel-internal-testing/tiny-random-mistral"
+            "fastdistill-internal-testing/tiny-random-mistral"
         )
         llm._tokenizer = tokenizer
         vllm_mock = mock.MagicMock()
@@ -262,7 +255,7 @@ class TestClientvLLM:
     ) -> None:
         llm = ClientvLLM(
             base_url="http://localhost:8000/v1",
-            tokenizer="distilabel-internal-testing/tiny-random-mistral",
+            tokenizer="fastdistill-internal-testing/tiny-random-mistral",
         )
 
         llm.load()

@@ -1,7 +1,7 @@
 # Embedding
 
-This section contains the API reference for the `distilabel` embeddings.
+This section contains the API reference for the `fastdistill` embeddings.
 
-For more information on how the [`Embeddings`][distilabel.steps.tasks.Task] works and see some examples.
+For more information on how the [`Embeddings`][fastdistill.steps.tasks.Task] works and see some examples.
 
-::: distilabel.models.embeddings.base
+::: fastdistill.models.embeddings.base

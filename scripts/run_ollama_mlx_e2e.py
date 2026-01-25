@@ -6,8 +6,8 @@ import sys
 import time
 from pathlib import Path
 
-from distilabel.utils.serialization import read_yaml, write_yaml
-from distilabel.steps.fastdistill import QualityGate, evaluate_quality_gate
+from fastdistill.utils.serialization import read_yaml, write_yaml
+from fastdistill.steps.fastdistill import QualityGate, evaluate_quality_gate
 
 
 def _load_repo_dotenv() -> None:

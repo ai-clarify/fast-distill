@@ -1,4 +1,4 @@
 # Step Wrapper
 
-::: distilabel.pipeline.step_wrapper._StepWrapper
-::: distilabel.pipeline.step_wrapper._StepWrapperException
+::: fastdistill.pipeline.step_wrapper._StepWrapper
+::: fastdistill.pipeline.step_wrapper._StepWrapperException

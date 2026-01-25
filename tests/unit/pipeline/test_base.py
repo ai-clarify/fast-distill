@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import logging
 import os
@@ -26,30 +16,30 @@ from fsspec.implementations.local import LocalFileSystem
 from pydantic import Field
 from upath import UPath
 
-from distilabel import constants
-from distilabel.constants import (
+from fastdistill import constants
+from fastdistill.constants import (
     INPUT_QUEUE_ATTR_NAME,
     LAST_BATCH_SENT_FLAG,
     STEPS_ARTIFACTS_PATH,
 )
-from distilabel.mixins.runtime_parameters import RuntimeParameter
-from distilabel.pipeline.base import (
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.pipeline.base import (
     _STEP_LOAD_FAILED_CODE,
     _STEP_NOT_LOADED_CODE,
     BasePipeline,
     _GlobalPipelineManager,
 )
-from distilabel.pipeline.batch import _Batch
-from distilabel.pipeline.batch_manager import _BatchManager
-from distilabel.pipeline.routing_batch_function import (
+from fastdistill.pipeline.batch import _Batch
+from fastdistill.pipeline.batch_manager import _BatchManager
+from fastdistill.pipeline.routing_batch_function import (
     routing_batch_function,
     sample_n_steps,
 )
-from distilabel.pipeline.write_buffer import _WriteBuffer
-from distilabel.steps.base import Step, StepInput, StepResources, _Step
-from distilabel.typing import StepOutput
-from distilabel.utils.requirements import requirements
-from distilabel.utils.serialization import TYPE_INFO_KEY
+from fastdistill.pipeline.write_buffer import _WriteBuffer
+from fastdistill.steps.base import Step, StepInput, StepResources, _Step
+from fastdistill.typing import StepOutput
+from fastdistill.utils.requirements import requirements
+from fastdistill.utils.serialization import TYPE_INFO_KEY
 
 from .utils import (
     DummyGeneratorStep,
@@ -214,10 +204,10 @@ class TestBasePipeline:
 
             with (
                 mock.patch(
-                    "distilabel.pipeline.base._BatchManager.load_from_cache"
+                    "fastdistill.pipeline.base._BatchManager.load_from_cache"
                 ) as mock_load_from_cache,
                 mock.patch(
-                    "distilabel.pipeline.base._BatchManager.from_dag"
+                    "fastdistill.pipeline.base._BatchManager.from_dag"
                 ) as mock_from_dag,
             ):
                 pipeline._load_batch_manager(use_cache=use_cache)
@@ -667,7 +657,7 @@ class TestBasePipeline:
         pipeline._setup_fsspec()
 
         with mock.patch(
-            "distilabel.pipeline.base._Batch.write_batch_data_to_fs"
+            "fastdistill.pipeline.base._Batch.write_batch_data_to_fs"
         ) as mock_write:
             batch = _Batch(seq_no=0, step_name=generator.name, last_batch=False)  # type: ignore
             pipeline._send_batch_to_step(batch)
@@ -682,7 +672,7 @@ class TestBasePipeline:
         mock_write.assert_not_called()
 
         with mock.patch(
-            "distilabel.pipeline.base._Batch.write_batch_data_to_fs"
+            "fastdistill.pipeline.base._Batch.write_batch_data_to_fs"
         ) as mock_write:
             pipeline._send_batch_to_step(
                 _Batch(seq_no=0, step_name=global_step.name, last_batch=False)  # type: ignore
@@ -698,7 +688,7 @@ class TestBasePipeline:
         pipeline._use_fs_to_pass_data = True
 
         with mock.patch(
-            "distilabel.pipeline.base._Batch.write_batch_data_to_fs"
+            "fastdistill.pipeline.base._Batch.write_batch_data_to_fs"
         ) as mock_write:
             pipeline._send_batch_to_step(
                 _Batch(seq_no=0, step_name=generator.name, last_batch=False)  # type: ignore
@@ -709,7 +699,7 @@ class TestBasePipeline:
         mock_write.assert_not_called()
 
         with mock.patch(
-            "distilabel.pipeline.base._Batch.write_batch_data_to_fs"
+            "fastdistill.pipeline.base._Batch.write_batch_data_to_fs"
         ) as mock_write:
             pipeline._send_batch_to_step(
                 _Batch(seq_no=0, step_name=step.name, last_batch=False)  # type: ignore
@@ -1189,7 +1179,7 @@ class TestBasePipeline:
 
     def test_cache_dir_env_variable(self) -> None:
         with mock.patch.dict(os.environ, clear=True):
-            os.environ["DISTILABEL_CACHE_DIR"] = "/tmp/unit-test"
+            os.environ["FASTDISTILL_CACHE_DIR"] = "/tmp/unit-test"
             pipeline = DummyPipeline(name="unit-test-pipeline")
             assert pipeline._cache_dir == Path("/tmp/unit-test")
 
@@ -1258,11 +1248,11 @@ class TestBasePipeline:
         "requirements, expected",
         [
             (None, []),
-            (["distilabel"], []),
-            (["distilabel", "yfinance"], ["yfinance"]),
+            (["fastdistill"], []),
+            (["fastdistill", "yfinance"], ["yfinance"]),
             (
-                ["distilabel>=3000", "yfinance==1.0.0"],
-                ["distilabel>=3000", "yfinance==1.0.0"],
+                ["fastdistill>=3000", "yfinance==1.0.0"],
+                ["fastdistill>=3000", "yfinance==1.0.0"],
             ),
         ],
     )
@@ -1275,7 +1265,7 @@ class TestBasePipeline:
             assert pipeline.requirements_to_install() == expected
 
     def test_pipeline_error_from_requirements(self):
-        @requirements(["distilabel>=0.0.1"])
+        @requirements(["fastdistill>=0.0.1"])
         class CustomStep(Step):
             @property
             def inputs(self) -> List[str]:
@@ -1292,7 +1282,7 @@ class TestBasePipeline:
 
         with pytest.raises(
             ModuleNotFoundError,
-            match=r"Please install the following requirements to run the pipeline: \ndistilabel>=0.0.1\nrandom_requirement",
+            match=r"Please install the following requirements to run the pipeline: \nfastdistill>=0.0.1\nrandom_requirement",
         ):
             with DummyPipeline(
                 name="unit-test-pipeline", requirements=["random_requirement"]
@@ -1319,7 +1309,7 @@ class TestBasePipeline:
             )
 
     def test_optional_name(self):
-        from distilabel.pipeline.base import _PIPELINE_DEFAULT_NAME
+        from fastdistill.pipeline.base import _PIPELINE_DEFAULT_NAME
 
         assert DummyPipeline().name == _PIPELINE_DEFAULT_NAME
 
@@ -1383,7 +1373,7 @@ class TestPipelineSerialization:
         "requirements, expected",
         [
             (None, []),
-            (["distilabel>=0.0.1"], ["distilabel>=0.0.1"]),
+            (["fastdistill>=0.0.1"], ["fastdistill>=0.0.1"]),
         ],
     )
     def test_base_pipeline_dump(
@@ -1393,7 +1383,7 @@ class TestPipelineSerialization:
         dump = pipeline.dump()
         assert len(dump.keys()) == 3
         assert "pipeline" in dump
-        assert "distilabel" in dump
+        assert "fastdistill" in dump
         assert "requirements" in dump
         assert TYPE_INFO_KEY in dump["pipeline"]
         assert (
@@ -1406,7 +1396,7 @@ class TestPipelineSerialization:
         "requirements",
         [
             None,
-            ["distilabel>=0.0.1"],
+            ["fastdistill>=0.0.1"],
         ],
     )
     def test_base_pipeline_from_dict(self, requirements: Optional[List[str]]):
@@ -1418,22 +1408,22 @@ class TestPipelineSerialization:
         "requirements, expected",
         [
             (None, []),
-            (["distilabel>=0.0.1"], ["distilabel>=0.0.1"]),
+            (["fastdistill>=0.0.1"], ["fastdistill>=0.0.1"]),
         ],
     )
     def test_pipeline_dump(
         self, requirements: Optional[List[str]], expected: List[str]
     ):
-        from distilabel.pipeline.local import Pipeline
+        from fastdistill.pipeline.local import Pipeline
 
         pipeline = Pipeline(name="unit-test-pipeline", requirements=requirements)
         dump = pipeline.dump()
         assert len(dump.keys()) == 3
         assert "pipeline" in dump
-        assert "distilabel" in dump
+        assert "fastdistill" in dump
         assert "requirements" in dump
         assert TYPE_INFO_KEY in dump["pipeline"]
-        assert dump["pipeline"][TYPE_INFO_KEY]["module"] == "distilabel.pipeline.local"
+        assert dump["pipeline"][TYPE_INFO_KEY]["module"] == "fastdistill.pipeline.local"
         assert dump["pipeline"][TYPE_INFO_KEY]["name"] == "Pipeline"
         assert dump["requirements"] == expected
 
@@ -1471,8 +1461,8 @@ class TestPipelineSerialization:
         assert pipeline.signature == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
         # Maybe not the best place for this test, but does the work for now
-        from distilabel.pipeline.local import Pipeline
-        from distilabel.pipeline.routing_batch_function import sample_n_steps
+        from fastdistill.pipeline.local import Pipeline
+        from fastdistill.pipeline.routing_batch_function import sample_n_steps
         from tests.unit.pipeline.utils import DummyGeneratorStep, DummyStep1, DummyStep2
 
         sample_two_steps = sample_n_steps(2)
@@ -1491,7 +1481,7 @@ class TestPipelineSerialization:
                 >> dummy_step_2
             )
 
-        assert pipeline.signature == "edff8f5bb8b51da406ff274e640f87264f014e3b"
+        assert pipeline.signature == "365d0c37ff0097920b1ba604b2f6f3aacfded84a"
 
         # attributes shouldn't affect in pipeline signature
         with Pipeline(name="unit-test-pipeline") as pipeline:
@@ -1508,7 +1498,7 @@ class TestPipelineSerialization:
                 >> dummy_step_2
             )
 
-        assert pipeline.signature == "edff8f5bb8b51da406ff274e640f87264f014e3b"
+        assert pipeline.signature == "365d0c37ff0097920b1ba604b2f6f3aacfded84a"
 
         with Pipeline(name="unit-test-pipeline") as pipeline:
             dummy_generator = DummyGeneratorStep(name="dummy_generator")
@@ -1541,7 +1531,7 @@ class TestPipelineSerialization:
                 >> dummy_step_2
             )
 
-        assert pipeline.signature == "806dad3fca0f8274af0f374660d4e3eb25d62d12"
+        assert pipeline.signature == "27b62901cdcc12b536b026a2378520bd0a0d8221"
 
         with Pipeline(name="unit-test-pipeline") as pipeline:
             dummy_generator = DummyGeneratorStep(name="dummy_generator_second_time")
@@ -1552,11 +1542,11 @@ class TestPipelineSerialization:
 
             (dummy_generator >> sample_two_steps >> [dummy_step_1_0, dummy_step_1_1])
 
-        assert pipeline.signature == "7222ce34c677bea3720ef3d08c2673b29b61ff9b"
+        assert pipeline.signature == "a007e35782d3452199cad24c42237ba17506403e"
 
     def test_binary_rshift_operator(self) -> None:
         # Tests the steps can be connected using the >> operator.
-        from distilabel.pipeline.local import Pipeline
+        from fastdistill.pipeline.local import Pipeline
         from tests.unit.pipeline.utils import DummyGeneratorStep, DummyStep1, DummyStep2
 
         with Pipeline(name="unit-test-pipeline-1") as pipeline_1:
@@ -1582,7 +1572,7 @@ class TestPipelineSerialization:
 
     def test_binary_rshift_operator_with_list(self) -> None:
         # Tests the steps can be connected using the >> operator when using a list.
-        from distilabel.pipeline.local import Pipeline
+        from fastdistill.pipeline.local import Pipeline
         from tests.unit.pipeline.utils import DummyGeneratorStep, DummyStep1, DummyStep2
 
         with Pipeline(name="unit-test-pipeline-1") as pipeline_1:
@@ -1611,7 +1601,7 @@ class TestPipelineSerialization:
         # It usses the __rrshift__ method instead of the __rshift__ as it applies to the list
         # instead of the Step.
 
-        from distilabel.pipeline.local import Pipeline
+        from fastdistill.pipeline.local import Pipeline
         from tests.unit.pipeline.utils import DummyGlobalStep, DummyStep1, DummyStep2
 
         with Pipeline(name="unit-test-pipeline-1") as pipeline_1:
@@ -1637,7 +1627,7 @@ class TestPipelineSerialization:
     def test_binary_operators(self) -> None:
         # Tests the steps can be connected with the binary operators,
         # the general case of step1 >> [step2, step3] >> step4
-        from distilabel.pipeline.local import Pipeline
+        from fastdistill.pipeline.local import Pipeline
         from tests.unit.pipeline.utils import (
             DummyGeneratorStep,
             DummyGlobalStep,

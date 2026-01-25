@@ -1,21 +1,11 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import pytest
 
-from distilabel.models.llms.openai import OpenAILLM
-from distilabel.steps.tasks.magpie.generator import MagpieGenerator
+from fastdistill.models.llms.openai import OpenAILLM
+from fastdistill.steps.tasks.magpie.generator import MagpieGenerator
 from tests.unit.conftest import DummyMagpieLLM
 
 
@@ -184,12 +174,12 @@ class TestMagpieGenerator:
                 {
                     "name": "add_raw_output",
                     "optional": True,
-                    "description": "Whether to include the raw output of the LLM in the key `raw_output_<TASK_NAME>` of the `distilabel_metadata` dictionary output column",
+                    "description": "Whether to include the raw output of the LLM in the key `raw_output_<TASK_NAME>` of the `fastdistill_metadata` dictionary output column",
                 },
                 {
                     "name": "add_raw_input",
                     "optional": True,
-                    "description": "Whether to include the raw input of the LLM in the key `raw_input_<TASK_NAME>` of the `distilabel_metadata` dictionary column",
+                    "description": "Whether to include the raw input of the LLM in the key `raw_input_<TASK_NAME>` of the `fastdistill_metadata` dictionary column",
                 },
                 {
                     "name": "num_generations",
@@ -204,7 +194,7 @@ class TestMagpieGenerator:
             ],
             "use_cache": True,
             "type_info": {
-                "module": "distilabel.steps.tasks.magpie.generator",
+                "module": "fastdistill.steps.tasks.magpie.generator",
                 "name": "MagpieGenerator",
             },
         }

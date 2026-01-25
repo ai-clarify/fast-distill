@@ -1,20 +1,10 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import textwrap
 
-from distilabel.utils.docstring import parse_google_docstring
+from fastdistill.utils.docstring import parse_google_docstring
 
 
 def test_parse_google_docstring() -> None:
@@ -64,7 +54,7 @@ def test_parse_google_docstring() -> None:
     }
 
 
-def test_parse_google_docstring_with_distilabel_peculiarities() -> None:
+def test_parse_google_docstring_with_fastdistill_peculiarities() -> None:
     class DummyClass:
         """This is a dummy function.
 

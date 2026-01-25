@@ -1,7 +1,7 @@
 # Exceptions
 
-This section contains the `distilabel` custom exceptions. Unlike [errors](errors.md), exceptions in `distilabel` are used to handle specific situations that can be anticipated and that can be handled in a controlled way internally by the library.
+This section contains the `fastdistill` custom exceptions. Unlike [errors](errors.md), exceptions in `fastdistill` are used to handle specific situations that can be anticipated and that can be handled in a controlled way internally by the library.
 
-:::distilabel.exceptions.DistilabelException
-:::distilabel.exceptions.DistilabelGenerationException
-:::distilabel.exceptions.DistilabelOfflineBatchGenerationNotFinishedException
+:::fastdistill.exceptions.FastDistillException
+:::fastdistill.exceptions.FastDistillGenerationException
+:::fastdistill.exceptions.FastDistillOfflineBatchGenerationNotFinishedException

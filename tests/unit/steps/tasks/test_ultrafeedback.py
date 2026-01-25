@@ -1,24 +1,16 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import Any, Dict, List, Union
 
 import pytest
 
-from distilabel.models.llms.base import LLM
-from distilabel.steps.tasks.ultrafeedback import UltraFeedback
-from distilabel.typing import ChatType, GenerateOutput
+pytest.importorskip("instructor")
+
+from fastdistill.models.llms.base import LLM
+from fastdistill.steps.tasks.ultrafeedback import UltraFeedback
+from fastdistill.typing import ChatType, GenerateOutput
 
 
 class UltraFeedbackLLM(LLM):
@@ -68,7 +60,7 @@ class TestUltraFeedback:
                 "ratings": [1, 2],
                 "rationales": ["text", "text"],
                 "model_name": "ultrafeedback-model",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_output_ultrafeedback": "Type: 1\nRationale: text\nRating: 1\nRationale: text\n\nType: 2\nRationale: text\nRating: 2\nRationale: text",
                     "statistics_ultrafeedback": {
                         "input_tokens": 12,
@@ -99,7 +91,7 @@ class TestUltraFeedback:
                 "ratings": [1, 2],
                 "rationales-for-ratings": ["text", "text"],
                 "model_name": "ultrafeedback-model",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_output_ultrafeedback": "Type: 1\nRationale: text\nRating: 1\nRationale: text\n\nType: 2\nRationale: text\nRating: 2\nRationale: text",
                     "statistics_ultrafeedback": {
                         "input_tokens": 12,

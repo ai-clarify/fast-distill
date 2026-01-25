@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 # Ported from https://mkdocstrings.github.io/recipes/#automatic-code-reference-pages
 
@@ -21,7 +11,7 @@ import mkdocs_gen_files
 nav = mkdocs_gen_files.Nav()
 
 src = Path(__file__).parent.parent.parent / "src"
-excluded = ["distilabel/utils"]
+excluded = ["fastdistill/utils"]
 
 for path in sorted(src.rglob("*.py")):
     if any(path.name.__contains__(exclude) for exclude in excluded):

@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import re
 from pathlib import Path
@@ -21,11 +11,11 @@ from jinja2 import Template
 from pydantic import PrivateAttr
 from typing_extensions import override
 
-from distilabel.models import InferenceEndpointsLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromHub
-from distilabel.steps.tasks.base import Task
-from distilabel.steps.tasks.typing import ChatType
+from fastdistill.models import InferenceEndpointsLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromHub
+from fastdistill.steps.tasks.base import Task
+from fastdistill.steps.tasks.typing import ChatType
 
 _PARSE_DEEPSEEK_PROVER_AUTOFORMAL_REGEX = r"```lean4(.*?)```"
 
@@ -67,8 +57,8 @@ class DeepSeekProverAutoFormalization(Task):
         Formalize a mathematical problem from natural language to Lean 4:
 
         ```python
-        from distilabel.steps.tasks import DeepSeekProverAutoFormalization
-        from distilabel.models import InferenceEndpointsLLM
+        from fastdistill.steps.tasks import DeepSeekProverAutoFormalization
+        from fastdistill.models import InferenceEndpointsLLM
 
         # Consider this as a placeholder for your actual LLM.
         prover_autoformal = DeepSeekProverAutoFormalization(
@@ -92,7 +82,7 @@ class DeepSeekProverAutoFormalization(Task):
         #     {
         #         'informal_statement': 'If a polynomial g is monic, then the root of g is integral over the ring R.',
         #         'formal_statement': 'theorem isIntegral_root (hg : g.Monic) : IsIntegral R (root g):=',
-        #         'distilabel_metadata': {
+        #         'fastdistill_metadata': {
         #             'raw_output_deep_seek_prover_auto_formalization_0': '```lean4\ntheorem isIntegral_root (hg : g.Monic) : IsIntegral R (root g):=\n```'
         #         },
         #         'model_name': 'deepseek-prover'
@@ -103,8 +93,8 @@ class DeepSeekProverAutoFormalization(Task):
         Use a few-shot setting to formalize a mathematical problem from natural language to Lean 4:
 
         ```python
-        from distilabel.steps.tasks import DeepSeekProverAutoFormalization
-        from distilabel.models import InferenceEndpointsLLM
+        from fastdistill.steps.tasks import DeepSeekProverAutoFormalization
+        from fastdistill.models import InferenceEndpointsLLM
 
         # You can gain inspiration from the following examples to create your own few-shot examples:
         # https://github.com/yangky11/miniF2F-lean4/blob/main/MiniF2F/Valid.lean
@@ -134,7 +124,7 @@ class DeepSeekProverAutoFormalization(Task):
         #     {
         #         'informal_statement': 'If a polynomial g is monic, then the root of g is integral over the ring R.',
         #         'formal_statement': 'theorem isIntegral_root (hg : g.Monic) : IsIntegral R (root g):=',
-        #         'distilabel_metadata': {
+        #         'fastdistill_metadata': {
         #             'raw_output_deep_seek_prover_auto_formalization_0': '```lean4\ntheorem isIntegral_root (hg : g.Monic) : IsIntegral R (root g):=\n```'
         #         },
         #         'model_name': 'deepseek-prover'
@@ -245,8 +235,8 @@ class DeepSeekProverScorer(Task):
         Analyse a formal statement in Lean 4:
 
         ```python
-        from distilabel.steps.tasks import DeepSeekProverScorer
-        from distilabel.models import InferenceEndpointsLLM
+        from fastdistill.steps.tasks import DeepSeekProverScorer
+        from fastdistill.models import InferenceEndpointsLLM
 
         # Consider this as a placeholder for your actual LLM.
         prover_scorer = DeepSeekProverAutoFormalization(
@@ -272,7 +262,7 @@ class DeepSeekProverScorer(Task):
         #         'informal_statement': 'INFORMAL',
         #         'analysis': 'ANALYSIS',
         #         'assessment': 'ASSESSMENT',
-        #         'distilabel_metadata': {
+        #         'fastdistill_metadata': {
         #             'raw_output_deep_seek_prover_scorer_0': 'Natural language:\nINFORMAL\nAnalysis:\nANALYSIS\nAssessment:\nASSESSMENT'
         #         },
         #         'model_name': 'deepseek-prover-scorer'

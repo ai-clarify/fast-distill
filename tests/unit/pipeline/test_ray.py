@@ -1,27 +1,19 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import Generator
 
 import pytest
 
-from distilabel.errors import DistilabelUserError
-from distilabel.models.llms.vllm import vLLM
-from distilabel.pipeline.ray import RayPipeline
-from distilabel.steps.base import StepResources
-from distilabel.steps.tasks.text_generation import TextGeneration
-from distilabel.utils.serialization import TYPE_INFO_KEY
+pytest.importorskip("ray")
+
+from fastdistill.errors import FastDistillUserError
+from fastdistill.models.llms.vllm import vLLM
+from fastdistill.pipeline.ray import RayPipeline
+from fastdistill.steps.base import StepResources
+from fastdistill.steps.tasks.text_generation import TextGeneration
+from fastdistill.utils.serialization import TYPE_INFO_KEY
 from tests.unit.conftest import DummyAsyncLLM, DummyTaskOfflineBatchGeneration
 
 
@@ -54,7 +46,7 @@ class TestRayPipeline:
         dump = pipeline.dump()
 
         assert dump["pipeline"][TYPE_INFO_KEY] == {
-            "module": "distilabel.pipeline.local",
+            "module": "fastdistill.pipeline.local",
             "name": "Pipeline",
         }
 
@@ -65,7 +57,7 @@ class TestRayPipeline:
             )
 
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match="Step 'unit-test' uses an `LLM` with offline batch generation",
         ):
             pipeline._check_no_llms_using_offline_batch_generation()

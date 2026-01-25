@@ -1,23 +1,15 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import json
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import pytest
 
-from distilabel.steps.tasks.math_shepherd.generator import (
+pytest.importorskip("instructor")
+
+from fastdistill.steps.tasks.math_shepherd.generator import (
     FEW_SHOTS_GSM8K,
     RULES_GSM8K,
     SYSTEM_PROMPT,
@@ -26,7 +18,7 @@ from distilabel.steps.tasks.math_shepherd.generator import (
 from tests.unit.conftest import DummyLLM
 
 if TYPE_CHECKING:
-    from distilabel.typing import GenerateOutput
+    from fastdistill.typing import GenerateOutput
 
 
 class MathShepherdGeneratorLLM(DummyLLM):

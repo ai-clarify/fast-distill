@@ -1,8 +1,8 @@
 # Types
 
-This section contains the different types used accross the distilabel codebase.
+This section contains the different types used accross the fastdistill codebase.
 
-::: distilabel.typing.base
-::: distilabel.typing.steps
-::: distilabel.typing.models
-::: distilabel.typing.pipeline
+::: fastdistill.typing.base
+::: fastdistill.typing.steps
+::: fastdistill.typing.models
+::: fastdistill.typing.pipeline

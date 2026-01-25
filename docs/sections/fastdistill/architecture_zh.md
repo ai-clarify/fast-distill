@@ -125,7 +125,7 @@ flowchart LR
    - 作用：Text2SQL 的确定性验收。
 
 5. **LLM 统计**
-   - 位于 `distilabel_metadata.statistics_<step_name>`。
+   - 位于 `fastdistill_metadata.statistics_<step_name>`。
    - 用于计算 `teacher_tokens_per_sec` 与成本/样本。
    - 学生侧统计使用 `statistics_text_generation_1`。
 

@@ -1,8 +1,8 @@
 # ImageGenerationModel Gallery
 
-This section contains the existing [`ImageGenerationModel`][distilabel.models.image_generation] subclasses implemented in `distilabel`.
+This section contains the existing [`ImageGenerationModel`][fastdistill.models.image_generation] subclasses implemented in `fastdistill`.
 
-::: distilabel.models.image_generation
+::: fastdistill.models.image_generation
     options:
         filters:
         - "!^ImageGenerationModel$"

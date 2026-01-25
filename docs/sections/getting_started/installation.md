@@ -1,5 +1,5 @@
 ---
-description: Distilabel is an AI Feedback (AIF) framework for building datasets with and for LLMs.
+description: FastDistill is an AI Feedback (AIF) framework for building datasets with and for LLMs.
 hide:
   - toc
 ---
@@ -11,13 +11,13 @@ You will need to have at least Python 3.9 or higher, up to Python 3.12, since su
 To install the latest release of the package from PyPI you can use the following command:
 
 ```sh
-pip install distilabel --upgrade
+pip install fastdistill --upgrade
 ```
 
 Alternatively, you may also want to install it from source i.e. the latest unreleased version, you can use the following command:
 
 ```sh
-pip install "distilabel @ git+https://github.com/argilla-io/distilabel.git@develop" --upgrade
+pip install "fastdistill @ git+https://github.com/argilla-io/fastdistill.git@develop" --upgrade
 ```
 
 !!! NOTE
@@ -25,7 +25,7 @@ pip install "distilabel @ git+https://github.com/argilla-io/distilabel.git@devel
 
 ## Extras
 
-Additionally, as part of `distilabel` some extra dependencies are available, mainly to add support for some of the LLM integrations we support. Here's a list of the available extras:
+Additionally, as part of `fastdistill` some extra dependencies are available, mainly to add support for some of the LLM integrations we support. Here's a list of the available extras:
 
 ### LLMs
 
@@ -77,9 +77,9 @@ Additionally, as part of `distilabel` some extra dependencies are available, mai
 
 ## Recommendations / Notes
 
-The [`mistralai`](https://github.com/mistralai/client-python) dependency requires Python 3.9 or higher, so if you're willing to use the `distilabel.models.llms.MistralLLM` implementation, you will need to have Python 3.9 or higher.
+The [`mistralai`](https://github.com/mistralai/client-python) dependency requires Python 3.9 or higher, so if you're willing to use the `fastdistill.models.llms.MistralLLM` implementation, you will need to have Python 3.9 or higher.
 
-In some cases like [`transformers`](https://github.com/huggingface/transformers) and [`vllm`](https://github.com/vllm-project/vllm), the installation of [`flash-attn`](https://github.com/Dao-AILab/flash-attention) is recommended if you are using a GPU accelerator since it will speed up the inference process, but the installation needs to be done separately, as it's not included in the `distilabel` dependencies.
+In some cases like [`transformers`](https://github.com/huggingface/transformers) and [`vllm`](https://github.com/vllm-project/vllm), the installation of [`flash-attn`](https://github.com/Dao-AILab/flash-attention) is recommended if you are using a GPU accelerator since it will speed up the inference process, but the installation needs to be done separately, as it's not included in the `fastdistill` dependencies.
 
 ```sh
 pip install flash-attn --no-build-isolation

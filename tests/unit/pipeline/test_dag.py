@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import tempfile
 from pathlib import Path
@@ -18,17 +8,17 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List
 
 import pytest
 
-from distilabel.constants import STEP_ATTR_NAME
-from distilabel.mixins.runtime_parameters import RuntimeParameter
-from distilabel.pipeline._dag import DAG
-from distilabel.pipeline.local import Pipeline
-from distilabel.pipeline.routing_batch_function import routing_batch_function
-from distilabel.steps.base import GeneratorStep, Step, StepInput, StepResources
+from fastdistill.constants import STEP_ATTR_NAME
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.pipeline._dag import DAG
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.pipeline.routing_batch_function import routing_batch_function
+from fastdistill.steps.base import GeneratorStep, Step, StepInput, StepResources
 
 from .utils import DummyGeneratorStep, DummyGlobalStep, DummyStep1, DummyStep2
 
 if TYPE_CHECKING:
-    from distilabel.typing import (
+    from fastdistill.typing import (
         GeneratorStepOutput,
         StepOutput,
     )
@@ -863,7 +853,7 @@ class TestDagSerialization:
 
 
 class TestDAGDraw:
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_basic(self, mock_get):
         # Mock the response from mermaid.ink
         mock_response = MagicMock()
@@ -888,7 +878,7 @@ class TestDAGDraw:
         called_url = mock_get.call_args[0][0]
         assert "https://mermaid.ink/img/" in called_url
 
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_top_to_bottom(self, mock_get):
         mock_response = MagicMock()
         mock_response.content = b"mocked_image_content"
@@ -909,7 +899,7 @@ class TestDAGDraw:
         ).decode("ascii")
         assert "flowchart TD" in decoded_graph
 
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_without_edge_labels(self, mock_get):
         mock_response = MagicMock()
         mock_response.content = b"mocked_image_content"
@@ -931,7 +921,7 @@ class TestDAGDraw:
         assert "generator --> step1" in decoded_graph
         assert "|" not in decoded_graph  # No edge labels
 
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_with_argilla_step(self, mock_get):
         mock_response = MagicMock()
         mock_response.content = b"mocked_image_content"
@@ -952,7 +942,7 @@ class TestDAGDraw:
         ).decode("ascii")
         assert 'to_argilla_0["Argilla"]' in decoded_graph
 
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_with_distiset_step(self, mock_get):
         mock_response = MagicMock()
         mock_response.content = b"mocked_image_content"
@@ -973,7 +963,7 @@ class TestDAGDraw:
         ).decode("ascii")
         assert 'distiset_0["Distiset"]' in decoded_graph
 
-    @patch("distilabel.pipeline._dag.requests.get")
+    @patch("fastdistill.pipeline._dag.requests.get")
     def test_draw_error_handling(self, mock_get):
         mock_get.side_effect = requests.RequestException("Mocked error")
 

@@ -1,5 +1,5 @@
 ---
-description: This is a step-by-step guide to help you develop distilabel.
+description: This is a step-by-step guide to help you develop fastdistill.
 hide:
   - footer
 ---
@@ -10,15 +10,15 @@ If you don't have the repository locally, and need any help, go to the [contribu
 
 ## Set up the Python environment
 
-To work on the `distilabel`, you must install the package on your system.
+To work on the `fastdistill`, you must install the package on your system.
 
 !!! Tip
     This guide will use `uv`, but `pip` and `venv` can be used as well, this guide can work quite similar with both options.
 
-From the root of the cloned Distilabel repository, you should move to the distilabel folder in your terminal.
+From the root of the cloned FastDistill repository, you should move to the fastdistill folder in your terminal.
 
 ```bash
-cd distilabel
+cd fastdistill
 ```
 
 ### Create a virtual environment

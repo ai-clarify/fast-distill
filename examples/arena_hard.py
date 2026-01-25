@@ -1,26 +1,16 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import re
 from typing import Any, Dict, List, Optional, Union
 
 from typing_extensions import override
 
-from distilabel.steps import GlobalStep, StepInput
-from distilabel.steps.tasks.base import Task
-from distilabel.steps.tasks.typing import ChatType
-from distilabel.steps.typing import StepOutput
+from fastdistill.steps import GlobalStep, StepInput
+from fastdistill.steps.tasks.base import Task
+from fastdistill.steps.tasks.typing import ChatType
+from fastdistill.steps.typing import StepOutput
 
 
 class ArenaHard(Task):
@@ -57,9 +47,9 @@ class ArenaHard(Task):
         Evaluate two assistant responses for a given instruction using Arean Hard prompts:
 
         ```python
-        from distilabel.pipeline import Pipeline
-        from distilabel.steps import GroupColumns, LoadDataFromDicts
-        from distilabel.steps.tasks import ArenaHard, TextGeneration
+        from fastdistill.pipeline import Pipeline
+        from fastdistill.steps import GroupColumns, LoadDataFromDicts
+        from fastdistill.steps.tasks import ArenaHard, TextGeneration
 
         with Pipeline() as pipeline:
             load_data = LoadDataFromDicts(
@@ -172,9 +162,9 @@ class ArenaHardResults(GlobalStep):
         Rate the ELO scores for two assistant responses for a given an evaluation / comparison between both using Arean Hard prompts:
 
         ```python
-        from distilabel.pipeline import Pipeline
-        from distilabel.steps import GroupColumns, LoadDataFromDicts
-        from distilabel.steps.tasks import ArenaHard, TextGeneration
+        from fastdistill.pipeline import Pipeline
+        from fastdistill.steps import GroupColumns, LoadDataFromDicts
+        from fastdistill.steps.tasks import ArenaHard, TextGeneration
 
         with Pipeline() as pipeline:
             load_data = LoadDataFromDicts(
@@ -225,7 +215,7 @@ class ArenaHardResults(GlobalStep):
             raise ImportError(
                 "In order to run `ArenaHardResults`, the `arena-hard` extra dependencies"
                 " must be installed i.e. `numpy`, `pandas`, and `scikit-learn`.\n"
-                "Please install the dependencies by running `pip install distilabel[arena-hard]`."
+                "Please install the dependencies by running `pip install fastdistill[arena-hard]`."
             ) from e
 
     # TODO: the `evaluation` is not really required as an input, so it could be removed, since
@@ -331,17 +321,17 @@ class ArenaHardResults(GlobalStep):
 if __name__ == "__main__":
     import json
 
-    from distilabel.models import InferenceEndpointsLLM, OpenAILLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import (
+    from fastdistill.models import InferenceEndpointsLLM, OpenAILLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import (
         GroupColumns,
         KeepColumns,
         LoadDataFromHub,
         StepInput,
         step,
     )
-    from distilabel.steps.tasks import TextGeneration
-    from distilabel.steps.typing import StepOutput
+    from fastdistill.steps.tasks import TextGeneration
+    from fastdistill.steps.typing import StepOutput
 
     @step(inputs=["turns"], outputs=["system_prompt", "instruction"])
     def PrepareForTextGeneration(*inputs: StepInput) -> StepOutput:

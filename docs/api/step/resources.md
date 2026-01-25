@@ -1,3 +1,3 @@
 # StepResources
 
-::: distilabel.steps.base.StepResources
+::: fastdistill.steps.base.StepResources

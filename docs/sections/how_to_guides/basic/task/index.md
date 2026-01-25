@@ -2,13 +2,13 @@
 
 ## Working with Tasks
 
-The [`Task`][distilabel.steps.tasks.Task] is a special kind of [`Step`][distilabel.steps.Step] that includes the [`LLM`][distilabel.models.llms.LLM] as a mandatory argument. As with a [`Step`][distilabel.steps.Step], it is normally used within a [`Pipeline`][distilabel.pipeline.Pipeline] but can also be used standalone.
+The [`Task`][fastdistill.steps.tasks.Task] is a special kind of [`Step`][fastdistill.steps.Step] that includes the [`LLM`][fastdistill.models.llms.LLM] as a mandatory argument. As with a [`Step`][fastdistill.steps.Step], it is normally used within a [`Pipeline`][fastdistill.pipeline.Pipeline] but can also be used standalone.
 
-For example, the most basic task is the [`TextGeneration`][distilabel.steps.tasks.TextGeneration] task, which generates text based on a given instruction.
+For example, the most basic task is the [`TextGeneration`][fastdistill.steps.tasks.TextGeneration] task, which generates text based on a given instruction.
 
 ```python
-from distilabel.models import InferenceEndpointsLLM
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import InferenceEndpointsLLM
+from fastdistill.steps.tasks import TextGeneration
 
 task = TextGeneration(
     name="text-generation",
@@ -24,7 +24,7 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 #   {
 #     "instruction": "What's the capital of Spain?",
 #     "generation": "The capital of Spain is Madrid.",
-#     "distilabel_metadata": {
+#     "fastdistill_metadata": {
 #       "raw_output_text-generation": "The capital of Spain is Madrid.",
 #       "raw_input_text-generation": [
 #         {
@@ -47,13 +47,13 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 !!! Note
     The `Step.load()` always needs to be executed when being used as a standalone. Within a pipeline, this will be done automatically during pipeline execution.
 
-As shown above, the [`TextGeneration`][distilabel.steps.tasks.TextGeneration] task adds a `generation` based on the `instruction`.
+As shown above, the [`TextGeneration`][fastdistill.steps.tasks.TextGeneration] task adds a `generation` based on the `instruction`.
 
 !!! Tip "New in version 1.2.0"
-    Since version `1.2.0`, we provide some metadata about the LLM call through `distilabel_metadata`. This can be disabled by setting the `add_raw_output` attribute to `False` when creating the task.
+    Since version `1.2.0`, we provide some metadata about the LLM call through `fastdistill_metadata`. This can be disabled by setting the `add_raw_output` attribute to `False` when creating the task.
 
     Additionally, since version `1.4.0`, the formatted input can also be included, which can be helpful when testing
-    custom templates (testing the pipeline using the [`dry_run`][distilabel.pipeline.local.Pipeline.dry_run] method).
+    custom templates (testing the pipeline using the [`dry_run`][fastdistill.pipeline.local.Pipeline.dry_run] method).
 
     ```python title="disable raw input and output"
     task = TextGeneration(
@@ -67,18 +67,18 @@ As shown above, the [`TextGeneration`][distilabel.steps.tasks.TextGeneration] ta
     ```
 
 !!! Tip "New in version 1.5.0"
-    Since version `1.5.0` `distilabel_metadata` includes a new `statistics` field out of the box. The generation from the LLM will not only contain the text, but also statistics associated with the text if available, like the input and output tokens. This field will be generated with `statistic_{STEP_NAME}` to avoid collisions between different steps in the pipeline, similar to how `raw_output_{STEP_NAME}` works.
+    Since version `1.5.0` `fastdistill_metadata` includes a new `statistics` field out of the box. The generation from the LLM will not only contain the text, but also statistics associated with the text if available, like the input and output tokens. This field will be generated with `statistic_{STEP_NAME}` to avoid collisions between different steps in the pipeline, similar to how `raw_output_{STEP_NAME}` works.
 
 ### Task.print
 
 !!! Info "New in version 1.4.0"
-    New since version `1.4.0`, [`Task.print`][distilabel.steps.tasks.base._Task.print] `Task.print` method.
+    New since version `1.4.0`, [`Task.print`][fastdistill.steps.tasks.base._Task.print] `Task.print` method.
 
-The `Tasks` include a handy method to show what the prompt formatted for an `LLM` would look like, let's see an example with [`UltraFeedback`][distilabel.steps.tasks.ultrafeedback.UltraFeedback], but it applies to any other `Task`.
+The `Tasks` include a handy method to show what the prompt formatted for an `LLM` would look like, let's see an example with [`UltraFeedback`][fastdistill.steps.tasks.ultrafeedback.UltraFeedback], but it applies to any other `Task`.
 
 ```python
-from distilabel.steps.tasks import UltraFeedback
-from distilabel.models import InferenceEndpointsLLM
+from fastdistill.steps.tasks import UltraFeedback
+from fastdistill.models import InferenceEndpointsLLM
 
 uf = UltraFeedback(
     llm=InferenceEndpointsLLM(
@@ -107,8 +107,8 @@ uf.print(
     In case you don't want to load an LLM to render the template, you can create a dummy one like the ones we could use for testing.
 
     ```python
-    from distilabel.models import LLM
-    from distilabel.models.mixins import MagpieChatTemplateMixin
+    from fastdistill.models import LLM
+    from fastdistill.models.mixins import MagpieChatTemplateMixin
 
     class DummyLLM(AsyncLLM, MagpieChatTemplateMixin):
         structured_output: Any = None
@@ -136,15 +136,15 @@ uf.print(
     ```
 
 !!! Note
-    When creating a custom task, the `print` method will be available by default, but it is limited to the most common scenarios for the inputs. If you test your new task and find it's not working as expected (for example, if your task contains one input consisting of a list of texts instead of a single one), you should override the `_sample_input` method. You can inspect the [`UltraFeedback`][distilabel.steps.tasks.ultrafeedback.UltraFeedback] source code for this.
+    When creating a custom task, the `print` method will be available by default, but it is limited to the most common scenarios for the inputs. If you test your new task and find it's not working as expected (for example, if your task contains one input consisting of a list of texts instead of a single one), you should override the `_sample_input` method. You can inspect the [`UltraFeedback`][fastdistill.steps.tasks.ultrafeedback.UltraFeedback] source code for this.
 
 ## Specifying the number of generations and grouping generations
 
 All the `Task`s have a `num_generations` attribute that allows defining the number of generations that we want to have per input. We can update the example above to generate 3 completions per input:
 
 ```python
-from distilabel.models import InferenceEndpointsLLM
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import InferenceEndpointsLLM
+from fastdistill.steps.tasks import TextGeneration
 
 task = TextGeneration(
     name="text-generation",
@@ -161,19 +161,19 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 #     {
 #         'instruction': "What's the capital of Spain?",
 #         'generation': 'The capital of Spain is Madrid.',
-#         'distilabel_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
+#         'fastdistill_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
 #         'model_name': 'meta-llama/Meta-Llama-3-70B-Instruct'
 #     },
 #     {
 #         'instruction': "What's the capital of Spain?",
 #         'generation': 'The capital of Spain is Madrid.',
-#         'distilabel_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
+#         'fastdistill_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
 #         'model_name': 'meta-llama/Meta-Llama-3-70B-Instruct'
 #     },
 #     {
 #         'instruction': "What's the capital of Spain?",
 #         'generation': 'The capital of Spain is Madrid.',
-#         'distilabel_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
+#         'fastdistill_metadata': {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
 #         'model_name': 'meta-llama/Meta-Llama-3-70B-Instruct'
 #     }
 # ]
@@ -182,8 +182,8 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 In addition, we might want to group the generations in a single output row as maybe one downstream step expects a single row with multiple generations. We can achieve this by setting the `group_generations` attribute to `True`:
 
 ```python
-from distilabel.models import InferenceEndpointsLLM
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import InferenceEndpointsLLM
+from fastdistill.steps.tasks import TextGeneration
 
 task = TextGeneration(
     name="text-generation",
@@ -201,7 +201,7 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 #     {
 #         'instruction': "What's the capital of Spain?",
 #         'generation': ['The capital of Spain is Madrid.', 'The capital of Spain is Madrid.', 'The capital of Spain is Madrid.'],
-#         'distilabel_metadata': [
+#         'fastdistill_metadata': [
 #             {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
 #             {'raw_output_text-generation': 'The capital of Spain is Madrid.'},
 #             {'raw_output_text-generation': 'The capital of Spain is Madrid.'}
@@ -213,27 +213,27 @@ next(task.process([{"instruction": "What's the capital of Spain?"}]))
 
 ## Defining custom Tasks
 
-We can define a custom step by creating a new subclass of the [`Task`][distilabel.steps.tasks.Task] and defining the following:
+We can define a custom step by creating a new subclass of the [`Task`][fastdistill.steps.tasks.Task] and defining the following:
 
 - `inputs`: is a property that returns a list of strings with the names of the required input fields or a dictionary in which the keys are the names of the columns and the values are boolean indicating whether the column is required or not.
 
-- `format_input`: is a method that receives a dictionary with the input data and returns a [`ChatType`][distilabel.typing.models.ChatType] following [the chat-completion OpenAI message formatting](https://platform.openai.com/docs/guides/text-generation).
+- `format_input`: is a method that receives a dictionary with the input data and returns a [`ChatType`][fastdistill.typing.models.ChatType] following [the chat-completion OpenAI message formatting](https://platform.openai.com/docs/guides/text-generation).
 
 - `outputs`: is a property that returns a list of strings with the names of the output fields or a dictionary in which the keys are the names of the columns and the values are boolean indicating whether the column is required or not. This property should always include `model_name` as one of the outputs since that's automatically injected from the LLM.
 
-- `format_output`: is a method that receives the output from the [`LLM`][distilabel.models.llms.LLM] and optionally also the input data (which may be useful to build the output in some scenarios), and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`. Note that there's no need to include the `model_name` in the output.
+- `format_output`: is a method that receives the output from the [`LLM`][fastdistill.models.llms.LLM] and optionally also the input data (which may be useful to build the output in some scenarios), and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`. Note that there's no need to include the `model_name` in the output.
 
 === "Inherit from `Task`"
 
-    When using the `Task` class inheritance method for creating a custom task, we can also optionally override the `Task.process` method to define a more complex processing logic involving an `LLM`, as the default one just calls the `LLM.generate` method once previously formatting the input and subsequently formatting the output. For example, [EvolInstruct][distilabel.steps.tasks.EvolInstruct] task overrides this method to call the `LLM.generate` multiple times (one for each evolution).
+    When using the `Task` class inheritance method for creating a custom task, we can also optionally override the `Task.process` method to define a more complex processing logic involving an `LLM`, as the default one just calls the `LLM.generate` method once previously formatting the input and subsequently formatting the output. For example, [EvolInstruct][fastdistill.steps.tasks.EvolInstruct] task overrides this method to call the `LLM.generate` multiple times (one for each evolution).
 
     ```python
     from typing import Any, Dict, List, Union, TYPE_CHECKING
 
-    from distilabel.steps.tasks import Task
+    from fastdistill.steps.tasks import Task
 
     if TYPE_CHECKING:
-        from distilabel.typing import StepColumns, ChatType
+        from fastdistill.typing import StepColumns, ChatType
 
 
     class MyCustomTask(Task):
@@ -265,7 +265,7 @@ We can define a custom step by creating a new subclass of the [`Task`][distilabe
 
     ```python
     from typing import Any, Dict, Union
-    from distilabel.steps.tasks import task
+    from fastdistill.steps.tasks import task
 
 
     @task(inputs=["input_field"], outputs=["output_field"])
@@ -284,4 +284,4 @@ We can define a custom step by creating a new subclass of the [`Task`][distilabe
     ```
 
 !!! Warning
-    Most `Tasks` reuse the `Task.process` method to process the generations, but if a new `Task` defines a custom `process` method, like happens for example with [`Magpie`][distilabel.steps.tasks.magpie.base.Magpie], one hast to deal with the `statistics` returned by the `LLM`.
+    Most `Tasks` reuse the `Task.process` method to process the generations, but if a new `Task` defines a custom `process` method, like happens for example with [`Magpie`][fastdistill.steps.tasks.magpie.base.Magpie], one hast to deal with the `statistics` returned by the `LLM`.

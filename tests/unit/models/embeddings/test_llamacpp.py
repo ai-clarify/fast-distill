@@ -1,22 +1,14 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 
 import numpy as np
 import pytest
 
-from distilabel.models.embeddings import LlamaCppEmbeddings
+pytest.importorskip("llama_cpp")
+
+from fastdistill.models.embeddings import LlamaCppEmbeddings
 
 
 class TestLlamaCppEmbeddings:
@@ -115,9 +107,9 @@ class TestLlamaCppEmbeddings:
         for result in results:
             # Check if the embedding is normalized (L2 norm should be close to 1)
             norm = np.linalg.norm(result)
-            assert np.isclose(
-                norm, 1.0, atol=1e-6
-            ), f"Norm is {norm}, expected close to 1.0"
+            assert np.isclose(norm, 1.0, atol=1e-6), (
+                f"Norm is {norm}, expected close to 1.0"
+            )
 
     def test_normalize_embeddings_false(self, test_inputs):
         """
@@ -129,15 +121,15 @@ class TestLlamaCppEmbeddings:
         for result in results:
             # Check if the embedding is not normalized (L2 norm should not be close to 1)
             norm = np.linalg.norm(result)
-            assert not np.isclose(
-                norm, 1.0, atol=1e-6
-            ), f"Norm is {norm}, expected not close to 1.0"
+            assert not np.isclose(norm, 1.0, atol=1e-6), (
+                f"Norm is {norm}, expected not close to 1.0"
+            )
 
         # Additional check: ensure that at least one embedding has a norm significantly different from 1
         norms = [np.linalg.norm(result) for result in results]
-        assert any(
-            not np.isclose(norm, 1.0, atol=0.1) for norm in norms
-        ), "Expected at least one embedding with norm not close to 1.0"
+        assert any(not np.isclose(norm, 1.0, atol=0.1) for norm in norms), (
+            "Expected at least one embedding with norm not close to 1.0"
+        )
 
     def test_encode_batch(self) -> None:
         """
@@ -149,20 +141,20 @@ class TestLlamaCppEmbeddings:
             inputs = [f"This is test sentence {i}" for i in range(batch_size)]
             results = self.embeddings.encode(inputs=inputs)
 
-            assert (
-                len(results) == batch_size
-            ), f"Expected {batch_size} results, got {len(results)}"
+            assert len(results) == batch_size, (
+                f"Expected {batch_size} results, got {len(results)}"
+            )
             for result in results:
-                assert (
-                    len(result) == 384
-                ), f"Expected embedding dimension 384, got {len(result)}"
+                assert len(result) == 384, (
+                    f"Expected embedding dimension 384, got {len(result)}"
+                )
 
         # Test with a large batch to ensure it doesn't cause issues
         large_batch = ["Large batch test" for _ in range(100)]
         large_results = self.embeddings.encode(inputs=large_batch)
-        assert (
-            len(large_results) == 100
-        ), f"Expected 100 results for large batch, got {len(large_results)}"
+        assert len(large_results) == 100, (
+            f"Expected 100 results for large batch, got {len(large_results)}"
+        )
 
     def test_encode_batch_consistency(self) -> None:
         """
@@ -180,6 +172,6 @@ class TestLlamaCppEmbeddings:
         batch_result = self.embeddings.encode([input_text, "Another sentence"])[0]
 
         # Compare the embeddings
-        assert np.allclose(
-            single_result, batch_result, atol=1e-5
-        ), "Embeddings are not consistent between single and batch processing"
+        assert np.allclose(single_result, batch_result, atol=1e-5), (
+            "Embeddings are not consistent between single and batch processing"
+        )

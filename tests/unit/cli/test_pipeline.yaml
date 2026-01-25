@@ -1,4 +1,4 @@
-distilabel:
+fastdistill:
   version: 1.0.0.b0
 pipeline:
   name: test-pipeline
@@ -26,7 +26,7 @@ pipeline:
               The configuration of the dataset to load. This is optional and
               only needed if the dataset has multiple configurations.
         type_info:
-          module: distilabel.steps.generators.huggingface
+          module: fastdistill.steps.generators.huggingface
           name: LoadDataFromHub
       name: load_hub_dataset
     - step:
@@ -40,7 +40,7 @@ pipeline:
           model: gpt-3.5-turbo
           base_url: https://api.openai.com/v1
           type_info:
-            module: distilabel.models.llms.openai
+            module: fastdistill.models.llms.openai
             name: OpenAILLM
         group_generations: false
         num_generations: 3
@@ -80,7 +80,7 @@ pipeline:
             optional: true
             description: The number of generations to be produced per input.
         type_info:
-          module: distilabel.steps.tasks.text_generation
+          module: fastdistill.steps.tasks.text_generation
           name: TextGeneration
       name: text_generation_gpt
     - step:
@@ -94,7 +94,7 @@ pipeline:
           model: gpt-3.5-turbo
           base_url: https://api.openai.com/v1
           type_info:
-            module: distilabel.models.llms.openai
+            module: fastdistill.models.llms.openai
             name: OpenAILLM
         group_generations: true
         num_generations: 3
@@ -134,7 +134,7 @@ pipeline:
             optional: true
             description: The number of generations to be produced per input.
         type_info:
-          module: distilabel.steps.tasks.text_generation
+          module: fastdistill.steps.tasks.text_generation
           name: TextGeneration
       name: text_generation_gpt_2
     - step:
@@ -169,7 +169,7 @@ pipeline:
               library will try to use the token from the local Hugging Face CLI configuration.
               Defaults to `None`
         type_info:
-          module: distilabel.steps.globals.huggingface
+          module: fastdistill.steps.globals.huggingface
           name: PushToHub
       name: push_to_hub
     - step:
@@ -204,7 +204,7 @@ pipeline:
               library will try to use the token from the local Hugging Face CLI configuration.
               Defaults to `None`
         type_info:
-          module: distilabel.steps.globals.huggingface
+          module: fastdistill.steps.globals.huggingface
           name: PushToHub
       name: push_to_hub_2
   connections:
@@ -223,5 +223,5 @@ pipeline:
     - from: push_to_hub_2
       to: []
   type_info:
-    module: distilabel.pipeline.local
+    module: fastdistill.pipeline.local
     name: Pipeline

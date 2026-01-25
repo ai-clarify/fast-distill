@@ -2,11 +2,11 @@
 
 ## How to create a pipeline
 
-[`Pipeline`][distilabel.pipeline.Pipeline] organise the Steps and Tasks in a sequence, where the output of one step is the input of the next one.
-A [`Pipeline`][distilabel.pipeline.Pipeline] should be created by making use of the context manager along with passing a **name**, and optionally a **description**.
+[`Pipeline`][fastdistill.pipeline.Pipeline] organise the Steps and Tasks in a sequence, where the output of one step is the input of the next one.
+A [`Pipeline`][fastdistill.pipeline.Pipeline] should be created by making use of the context manager along with passing a **name**, and optionally a **description**.
 
 ```python
-from distilabel.pipeline import Pipeline
+from fastdistill.pipeline import Pipeline
 
 with Pipeline("pipe-name", description="My first pipe") as pipeline:
     ...
@@ -14,15 +14,15 @@ with Pipeline("pipe-name", description="My first pipe") as pipeline:
 
 ### Connecting steps with the `Step.connect` method
 
-Now, we can define the steps of our [`Pipeline`][distilabel.pipeline.Pipeline].
+Now, we can define the steps of our [`Pipeline`][fastdistill.pipeline.Pipeline].
 
 !!! NOTE
-    Steps without predecessors (i.e. root steps), need to be [`GeneratorStep`][distilabel.steps.GeneratorStep]s such as [`LoadDataFromDicts`][distilabel.steps.LoadDataFromDicts] or [`LoadDataFromHub`][distilabel.steps.LoadDataFromHub]. After this, other steps can be defined.
+    Steps without predecessors (i.e. root steps), need to be [`GeneratorStep`][fastdistill.steps.GeneratorStep]s such as [`LoadDataFromDicts`][fastdistill.steps.LoadDataFromDicts] or [`LoadDataFromHub`][fastdistill.steps.LoadDataFromHub]. After this, other steps can be defined.
 
 
 ```python
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromHub
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromHub
 
 with Pipeline("pipe-name", description="My first pipe") as pipeline:
     load_dataset = LoadDataFromHub(name="load_dataset")
@@ -31,13 +31,13 @@ with Pipeline("pipe-name", description="My first pipe") as pipeline:
 
 !!! Tip "Easily load your datasets"
 
-    If you are already used to work with Hugging Face's `Dataset` via `load_dataset` or `pd.DataFrame`, you can create the `GeneratorStep` directly from the dataset (or dataframe), and create the step with the help of [`make_generator_step`][distilabel.steps.generators.utils.make_generator_step]:
+    If you are already used to work with Hugging Face's `Dataset` via `load_dataset` or `pd.DataFrame`, you can create the `GeneratorStep` directly from the dataset (or dataframe), and create the step with the help of [`make_generator_step`][fastdistill.steps.generators.utils.make_generator_step]:
 
     === "From a list of dicts"
 
         ```python
-        from distilabel.pipeline import Pipeline
-        from distilabel.steps import make_generator_step
+        from fastdistill.pipeline import Pipeline
+        from fastdistill.steps import make_generator_step
 
         dataset = [{"instruction": "Tell me a joke."}]
 
@@ -50,8 +50,8 @@ with Pipeline("pipe-name", description="My first pipe") as pipeline:
 
         ```python
         from datasets import load_dataset
-        from distilabel.pipeline import Pipeline
-        from distilabel.steps import make_generator_step
+        from fastdistill.pipeline import Pipeline
+        from fastdistill.steps import make_generator_step
 
         dataset = load_dataset(
             "DIBT/10k_prompts_ranked",
@@ -69,8 +69,8 @@ with Pipeline("pipe-name", description="My first pipe") as pipeline:
 
         ```python
         import pandas as pd
-        from distilabel.pipeline import Pipeline
-        from distilabel.steps import make_generator_step
+        from fastdistill.pipeline import Pipeline
+        from fastdistill.steps import make_generator_step
 
         dataset = pd.read_csv("path/to/dataset.csv")
 
@@ -85,10 +85,10 @@ Next, we will use `prompt` column from the dataset obtained through `LoadDataFro
     The order of the execution of the steps will be determined by the connections of the steps. In this case, the `TextGeneration` tasks will be executed after the `LoadDataFromHub` step.
 
 ```python
-from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromHub
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromHub
+from fastdistill.steps.tasks import TextGeneration
 
 with Pipeline("pipe-name", description="My first pipe") as pipeline:
     load_dataset = LoadDataFromHub(name="load_dataset")
@@ -110,10 +110,10 @@ For each row of the dataset, the `TextGeneration` task will generate a text base
     In this case, the `GroupColumns` tasks will be executed after all `TextGeneration` steps.
 
 ```python
-from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import GroupColumns, LoadDataFromHub
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import GroupColumns, LoadDataFromHub
+from fastdistill.steps.tasks import TextGeneration
 
 with Pipeline("pipe-name", description="My first pipe") as pipeline:
     load_dataset = LoadDataFromHub(name="load_dataset")
@@ -143,10 +143,10 @@ Besides the `Step.connect` method: `step1.connect(step2)`, there's an alternativ
     Each call to `step1.connect(step2)` has been exchanged by `step1 >> step2` within the loop.
 
     ```python
-    from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import GroupColumns, LoadDataFromHub
-    from distilabel.steps.tasks import TextGeneration
+    from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import GroupColumns, LoadDataFromHub
+    from fastdistill.steps.tasks import TextGeneration
 
     with Pipeline("pipe-name", description="My first pipe") as pipeline:
         load_dataset = LoadDataFromHub(name="load_dataset")
@@ -171,10 +171,10 @@ Besides the `Step.connect` method: `step1.connect(step2)`, there's an alternativ
     Each task is first appended to a list, and then all the calls to connections are done in a single call.
 
     ```python
-    from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import GroupColumns, LoadDataFromHub
-    from distilabel.steps.tasks import TextGeneration
+    from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import GroupColumns, LoadDataFromHub
+    from fastdistill.steps.tasks import TextGeneration
 
     with Pipeline("pipe-name", description="My first pipe") as pipeline:
         load_dataset = LoadDataFromHub(name="load_dataset")
@@ -202,14 +202,14 @@ Besides the `Step.connect` method: `step1.connect(step2)`, there's an alternativ
 
 In some pipelines, you may want to send batches from a single upstream step to specific downstream steps based on certain conditions. To achieve this, you can use a `routing_batch_function`. This function takes a list of downstream steps and returns a list of step names to which each batch should be routed.
 
-Let's update the example above to route the batches loaded by the `LoadDataFromHub` step to just 2 of the `TextGeneration` tasks. First, we will create our custom [`routing_batch_function`][distilabel.pipeline.routing_batch_function.routing_batch_function], and then we will update the pipeline to use it:
+Let's update the example above to route the batches loaded by the `LoadDataFromHub` step to just 2 of the `TextGeneration` tasks. First, we will create our custom [`routing_batch_function`][fastdistill.pipeline.routing_batch_function.routing_batch_function], and then we will update the pipeline to use it:
 
 ```python
 import random
-from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-from distilabel.pipeline import Pipeline, routing_batch_function
-from distilabel.steps import GroupColumns, LoadDataFromHub
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+from fastdistill.pipeline import Pipeline, routing_batch_function
+from fastdistill.steps import GroupColumns, LoadDataFromHub
+from fastdistill.steps.tasks import TextGeneration
 
 @routing_batch_function
 def sample_two_steps(steps: list[str]) -> list[str]:
@@ -240,7 +240,7 @@ with Pipeline("pipe-name", description="My first pipe") as pipeline:
     load_dataset >> sample_two_steps >> tasks >> combine_generations
 ```
 
- The `routing_batch_function` that we just built is a common one, so `distilabel` comes with a builtin function that can be used to achieve the same behavior:
+ The `routing_batch_function` that we just built is a common one, so `fastdistill` comes with a builtin function that can be used to achieve the same behavior:
 
 ```python
 from distilable.pipeline import sample_n_steps
@@ -274,7 +274,7 @@ if __name__ == "__main__":
     distiset = pipeline.run(
         parameters={
             "load_dataset": {
-                "repo_id": "distilabel-internal-testing/instruction-dataset-mini",
+                "repo_id": "fastdistill-internal-testing/instruction-dataset-mini",
                 "split": "test",
             },
             "text_generation_with_gpt-4-0125-preview": {
@@ -329,26 +329,26 @@ If we execute the pipeline again, it will run successfully and we will have a `D
 ```python
 if __name__ == "__main__":
     distiset = pipeline.run(...)
-    distiset.push_to_hub("distilabel-internal-testing/instruction-dataset-mini-with-generations")
+    distiset.push_to_hub("fastdistill-internal-testing/instruction-dataset-mini-with-generations")
 ```
 
 #### Pipeline.run with a dataset
 
-Note that in most cases if you don't need the extra flexibility the [`GeneratorSteps`][distilabel.steps.base.GeneratorStep] bring you, you can create a dataset as you would normally do and pass it to the [Pipeline.run][distilabel.pipeline.base.BasePipeline.run] method directly. Look at the highlighted lines to see the updated lines:
+Note that in most cases if you don't need the extra flexibility the [`GeneratorSteps`][fastdistill.steps.base.GeneratorStep] bring you, you can create a dataset as you would normally do and pass it to the [Pipeline.run][fastdistill.pipeline.base.BasePipeline.run] method directly. Look at the highlighted lines to see the updated lines:
 
 ```python hl_lines="11-14 33 38"
 import random
-from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-from distilabel.pipeline import Pipeline, routing_batch_function
-from distilabel.steps import GroupColumns
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+from fastdistill.pipeline import Pipeline, routing_batch_function
+from fastdistill.steps import GroupColumns
+from fastdistill.steps.tasks import TextGeneration
 
 @routing_batch_function
 def sample_two_steps(steps: list[str]) -> list[str]:
     return random.sample(steps, 2)
 
 dataset = load_dataset(
-    "distilabel-internal-testing/instruction-dataset-mini",
+    "fastdistill-internal-testing/instruction-dataset-mini",
     split="test"
 )
 
@@ -403,10 +403,10 @@ if __name__ == "__main__":
 Memory issues can arise when processing large datasets or when using large models. To avoid this, we can use the `input_batch_size` argument of individual tasks. `TextGeneration` task will receive 5 dictionaries, while the `LoadDataFromHub` step will send 10 dictionaries per batch:
 
 ```python
-from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import GroupColumns, LoadDataFromHub
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import GroupColumns, LoadDataFromHub
+from fastdistill.steps.tasks import TextGeneration
 
 with Pipeline("pipe-name", description="My first pipe") as pipeline:
     load_dataset = LoadDataFromHub(
@@ -489,10 +489,10 @@ To sum up, here is the full code of the pipeline we have created in this section
 
 ??? Code
     ```python
-    from distilabel.models import MistralLLM, OpenAILLM, VertexAILLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps import GroupColumns, LoadDataFromHub
-    from distilabel.steps.tasks import TextGeneration
+    from fastdistill.models import MistralLLM, OpenAILLM, VertexAILLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps import GroupColumns, LoadDataFromHub
+    from fastdistill.steps.tasks import TextGeneration
 
     with Pipeline("pipe-name", description="My first pipe") as pipeline:
         load_dataset = LoadDataFromHub(
@@ -521,7 +521,7 @@ To sum up, here is the full code of the pipeline we have created in this section
         distiset = pipeline.run(
             parameters={
                 "load_dataset": {
-                    "repo_id": "distilabel-internal-testing/instruction-dataset-mini",
+                    "repo_id": "fastdistill-internal-testing/instruction-dataset-mini",
                     "split": "test",
                 },
                 "text_generation_with_gpt-4-0125-preview": {
@@ -551,7 +551,7 @@ To sum up, here is the full code of the pipeline we have created in this section
             },
         )
         distiset.push_to_hub(
-            "distilabel-internal-testing/instruction-dataset-mini-with-generations"
+            "fastdistill-internal-testing/instruction-dataset-mini-with-generations"
         )
     ```
 

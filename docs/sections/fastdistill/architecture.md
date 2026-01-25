@@ -20,7 +20,7 @@ graph TD
         RawData[Raw Task Data<br/>Schema, Instructions]:::data
     end
 
-    subgraph FastDistillPipeline ["Fast Distill Pipeline (Distilabel)"]
+    subgraph FastDistillPipeline ["Fast Distill Pipeline (FastDistill)"]
         direction TB
         
         %% Data Prep Phase
@@ -183,7 +183,7 @@ These are the first-class analysis tools in the fastdistill steps:
    - Purpose: deterministic pass/fail for Text2SQL.
 
 5. **LLM token statistics**
-   - Available in `distilabel_metadata.statistics_<step_name>`.
+   - Available in `fastdistill_metadata.statistics_<step_name>`.
    - Use to compute `teacher_tokens_per_sec` and cost per sample.
    - For student generation, use `statistics_text_generation_1`.
 

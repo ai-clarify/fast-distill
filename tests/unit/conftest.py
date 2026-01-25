@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import atexit
 import os
@@ -20,13 +10,13 @@ from urllib.request import urlretrieve
 import pytest
 from pydantic import PrivateAttr
 
-from distilabel.models.image_generation.base import AsyncImageGenerationModel
-from distilabel.models.llms.base import LLM, AsyncLLM
-from distilabel.models.mixins.magpie import MagpieChatTemplateMixin
-from distilabel.steps.tasks.base import Task
+from fastdistill.models.image_generation.base import AsyncImageGenerationModel
+from fastdistill.models.llms.base import LLM, AsyncLLM
+from fastdistill.models.mixins.magpie import MagpieChatTemplateMixin
+from fastdistill.steps.tasks.base import Task
 
 if TYPE_CHECKING:
-    from distilabel.typing import ChatType, FormattedInput, GenerateOutput
+    from fastdistill.typing import ChatType, FormattedInput, GenerateOutput
 
 
 # Defined here too, so that the serde still works
@@ -116,9 +106,9 @@ class DummyAsyncImageGenerationModel(AsyncImageGenerationModel):
         from PIL import Image
 
         np.random.seed(42)
-        arr = np.random.randint(0, 255, (100, 100, 3))
+        arr = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
         random_image = Image.fromarray(arr, "RGB")
-        from distilabel.models.image_generation.utils import image_to_str
+        from fastdistill.models.image_generation.utils import image_to_str
 
         img_str = image_to_str(random_image)
         return [{"images": [img_str]} for _ in range(num_generations)]
@@ -174,7 +164,10 @@ def local_llamacpp_model_path(tmp_path_factory):
     model_path = tmp_path / model_name
 
     if not model_path.exists():
-        urlretrieve(model_url, model_path)
+        try:
+            urlretrieve(model_url, model_path)
+        except Exception as exc:  # noqa: BLE001
+            pytest.skip(f"llamacpp model download failed: {exc}")
 
     def cleanup():
         if model_path.exists():

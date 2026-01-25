@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import os
 from typing import Any, Dict
@@ -18,7 +8,7 @@ from unittest import mock
 
 import pytest
 
-from distilabel.models.llms.azure import AzureOpenAILLM
+from fastdistill.models.llms.azure import AzureOpenAILLM
 
 from .utils import DummyUserDetail
 
@@ -43,7 +33,7 @@ class TestAzureOpenAILLM:
         assert llm.api_version == self.api_version
 
     def test_azure_openai_llm_env_vars(self) -> None:
-        from distilabel.models.llms.azure import (
+        from fastdistill.models.llms.azure import (
             _AZURE_OPENAI_API_KEY_ENV_VAR_NAME,
             _AZURE_OPENAI_ENDPOINT_ENV_VAR_NAME,
         )
@@ -79,7 +69,7 @@ class TestAzureOpenAILLM:
                     "offline_batch_generation_block_until_done": None,
                     "use_offline_batch_generation": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.azure",
+                        "module": "fastdistill.models.llms.azure",
                         "name": "AzureOpenAILLM",
                     },
                 },
@@ -107,7 +97,7 @@ class TestAzureOpenAILLM:
                     "offline_batch_generation_block_until_done": None,
                     "use_offline_batch_generation": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.azure",
+                        "module": "fastdistill.models.llms.azure",
                         "name": "AzureOpenAILLM",
                     },
                 },

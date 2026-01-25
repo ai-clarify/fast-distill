@@ -1,8 +1,8 @@
 # Embedding Gallery
 
-This section contains the existing [`Embeddings`][distilabel.models.embeddings] subclasses implemented in `distilabel`.
+This section contains the existing [`Embeddings`][fastdistill.models.embeddings] subclasses implemented in `fastdistill`.
 
-::: distilabel.models.embeddings
+::: fastdistill.models.embeddings
     options:
         filters:
         - "!^Embeddings$"

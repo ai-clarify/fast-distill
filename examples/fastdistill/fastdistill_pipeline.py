@@ -4,10 +4,10 @@ import sqlite3
 import time
 from pathlib import Path
 
-from distilabel.models.llms import OllamaLLM, OpenAILLM, SGLangLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import KeepColumns, LoadDataFromDicts, LoadDataFromFileSystem
-from distilabel.steps.fastdistill import (
+from fastdistill.models.llms import OllamaLLM, OpenAILLM, SGLangLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import KeepColumns, LoadDataFromDicts, LoadDataFromFileSystem
+from fastdistill.steps.fastdistill import (
     CanonicalizeFields,
     ComputeHash,
     DeduplicateByField,
@@ -20,7 +20,7 @@ from distilabel.steps.fastdistill import (
     WriteMlxDataset,
     WriteQualityReport,
 )
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.steps.tasks import TextGeneration
 
 
 def _load_repo_dotenv() -> None:

@@ -2,19 +2,19 @@
 hide: toc
 ---
 
-# Text generation with images in `distilabel`
+# Text generation with images in `fastdistill`
 
-Answer questions about images using `distilabel`.
+Answer questions about images using `fastdistill`.
 
-Image-text-to-text models take in an image and text prompt and output text. In this example we will use an LLM [`InferenceEndpointsLLM`](https://distilabel.argilla.io/dev/components-gallery/llms/inferenceendpointsllm/) with [meta-llama/Llama-3.2-11B-Vision-Instruct](https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct) to ask a question about an image, and [`OpenAILLM`](https://distilabel.argilla.io/dev/components-gallery/llms/openaillm/) with `gpt-4o-mini`. We will ask a simple question to showcase how the [`TextGenerationWithImage`](https://distilabel.argilla.io/dev/components-gallery/tasks/textgenerationwithimage/) task can be used in a pipeline.
+Image-text-to-text models take in an image and text prompt and output text. In this example we will use an LLM [`InferenceEndpointsLLM`](https://fastdistill.argilla.io/dev/components-gallery/llms/inferenceendpointsllm/) with [meta-llama/Llama-3.2-11B-Vision-Instruct](https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct) to ask a question about an image, and [`OpenAILLM`](https://fastdistill.argilla.io/dev/components-gallery/llms/openaillm/) with `gpt-4o-mini`. We will ask a simple question to showcase how the [`TextGenerationWithImage`](https://fastdistill.argilla.io/dev/components-gallery/tasks/textgenerationwithimage/) task can be used in a pipeline.
 
 === "Inference Endpoints - meta-llama/Llama-3.2-11B-Vision-Instruct"
 
     ```python
-    from distilabel.models.llms import InferenceEndpointsLLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps.tasks.text_generation_with_image import TextGenerationWithImage
-    from distilabel.steps import LoadDataFromDicts
+    from fastdistill.models.llms import InferenceEndpointsLLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps.tasks.text_generation_with_image import TextGenerationWithImage
+    from fastdistill.steps import LoadDataFromDicts
 
 
     with Pipeline(name="vision_generation_pipeline") as pipeline:
@@ -40,7 +40,7 @@ Image-text-to-text models take in an image and text prompt and output text. In t
         loader >> vision
     ```
 
-    1. The *image_type* can be a url pointing to the image, the base64 string representation, or a PIL image, take a look at the [`TextGenerationWithImage`](https://distilabel.argilla.io/dev/components-gallery/tasks/textgenerationwithimage/) for more information.
+    1. The *image_type* can be a url pointing to the image, the base64 string representation, or a PIL image, take a look at the [`TextGenerationWithImage`](https://fastdistill.argilla.io/dev/components-gallery/tasks/textgenerationwithimage/) for more information.
 
     Image:
 
@@ -57,10 +57,10 @@ Image-text-to-text models take in an image and text prompt and output text. In t
 === "OpenAI - gpt-4o-mini"
 
     ```python
-    from distilabel.models.llms import OpenAILLM
-    from distilabel.pipeline import Pipeline
-    from distilabel.steps.tasks.text_generation_with_image import TextGenerationWithImage
-    from distilabel.steps import LoadDataFromDicts
+    from fastdistill.models.llms import OpenAILLM
+    from fastdistill.pipeline import Pipeline
+    from fastdistill.steps.tasks.text_generation_with_image import TextGenerationWithImage
+    from fastdistill.steps import LoadDataFromDicts
 
 
     with Pipeline(name="vision_generation_pipeline") as pipeline:
@@ -86,7 +86,7 @@ Image-text-to-text models take in an image and text prompt and output text. In t
         loader >> vision
     ```
 
-    1. The *image_type* can be a url pointing to the image, the base64 string representation, or a PIL image, take a look at the [`VisionGeneration`](https://distilabel.argilla.io/dev/components-gallery/tasks/visiongeneration/) for more information.
+    1. The *image_type* can be a url pointing to the image, the base64 string representation, or a PIL image, take a look at the [`VisionGeneration`](https://fastdistill.argilla.io/dev/components-gallery/tasks/visiongeneration/) for more information.
 
     Image:
 

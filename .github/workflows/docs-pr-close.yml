@@ -5,7 +5,7 @@ on:
     types: [closed]
 
 concurrency:
-  group: distilabel-docs
+  group: fastdistill-docs
   cancel-in-progress: false
 
 permissions:

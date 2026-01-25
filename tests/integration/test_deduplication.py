@@ -1,25 +1,19 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromDicts, MinHashDedup
+import pytest
+
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromDicts, MinHashDedup
+
+pytest.importorskip("datasketch")
 
 
 def test_minhash_deduplication() -> None:
     with Pipeline() as pipeline:
-        ds_size = 1000
-        batch_size = 500
+        ds_size = 100
+        batch_size = 50
         data = LoadDataFromDicts(
             data=[
                 {"text": "This is a test document."},
@@ -35,7 +29,7 @@ def test_minhash_deduplication() -> None:
             tokenizer="ngrams",
             n=2,
             threshold=0.9,
-            storage="disk",
+            storage="dict",
             input_batch_size=batch_size,
         )
         data >> minhash

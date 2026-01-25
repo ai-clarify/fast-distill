@@ -1,25 +1,15 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import json
 from typing import Any, List
 
 import pytest
 
-from distilabel.models.llms.base import LLM
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.tasks.improving_text_embeddings import (
+from fastdistill.models.llms.base import LLM
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.tasks.improving_text_embeddings import (
     BitextRetrievalGenerator,
     EmbeddingTaskGenerator,
     GenerateLongTextMatchingData,
@@ -28,7 +18,7 @@ from distilabel.steps.tasks.improving_text_embeddings import (
     GenerateTextRetrievalData,
     MonolingualTripletGenerator,
 )
-from distilabel.typing import ChatType, GenerateOutput
+from fastdistill.typing import ChatType, GenerateOutput
 
 
 class MockLLM(LLM):
@@ -86,7 +76,7 @@ class TestEmbeddingTaskGenerator:
                     {
                         "tasks": ["A", "B", "C"],
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_embedding_task_generator": {
                                 "input_tokens": 12,
                                 "output_tokens": 12,
@@ -102,7 +92,7 @@ class TestEmbeddingTaskGenerator:
                     {
                         "task": "A",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_embedding_task_generator": {
                                 "input_tokens": 12,
                                 "output_tokens": 12,
@@ -112,7 +102,7 @@ class TestEmbeddingTaskGenerator:
                     {
                         "task": "B",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_embedding_task_generator": {
                                 "input_tokens": 12,
                                 "output_tokens": 12,
@@ -122,7 +112,7 @@ class TestEmbeddingTaskGenerator:
                     {
                         "task": "C",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_embedding_task_generator": {
                                 "input_tokens": 12,
                                 "output_tokens": 12,
@@ -185,7 +175,7 @@ class TestBitextRetrievalGenerator:
                     "S2": "B",
                     "S3": "C",
                     "model_name": "test",
-                    "distilabel_metadata": {
+                    "fastdistill_metadata": {
                         "statistics_bitext_retrieval_generator": {
                             "input_tokens": 12,
                             "output_tokens": 12,
@@ -259,7 +249,7 @@ class TestMonolingualTripletGenerator:
                     "S2": "B",
                     "S3": "C",
                     "model_name": "test",
-                    "distilabel_metadata": {
+                    "fastdistill_metadata": {
                         "statistics_monolingual_triplet_generator": {
                             "input_tokens": 12,
                             "output_tokens": 12,
@@ -320,7 +310,7 @@ class TestGenerateLongTextMatchingData:
                 "input": "A",
                 "positive_document": "B",
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_generate_long_text_matching_data": {
                         "input_tokens": 12,
                         "output_tokens": 12,
@@ -361,7 +351,7 @@ class TestGenerateShortTextMatchingData:
                 "input": "A",
                 "positive_document": "B",
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_generate_short_text_matching_data": {
                         "input_tokens": 12,
                         "output_tokens": 12,
@@ -429,7 +419,7 @@ class TestGenerateTextClassificationData:
                 "label": "B",
                 "misleading_label": "C",
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_generate_text_classification_data": {
                         "input_tokens": 12,
                         "output_tokens": 12,
@@ -512,7 +502,7 @@ class TestGenerateTextRetrievalData:
                 "positive_document": "B",
                 "hard_negative_document": "C",
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_generate_text_retrieval_data": {
                         "input_tokens": 12,
                         "output_tokens": 12,

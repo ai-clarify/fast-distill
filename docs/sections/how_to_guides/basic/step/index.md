@@ -2,16 +2,16 @@
 
 ## Working with Steps
 
-The [`Step`][distilabel.steps.Step] is intended to be used within the scope of a [`Pipeline`][distilabel.pipeline.Pipeline], which will orchestrate the different steps defined but can also be used standalone.
+The [`Step`][fastdistill.steps.Step] is intended to be used within the scope of a [`Pipeline`][fastdistill.pipeline.Pipeline], which will orchestrate the different steps defined but can also be used standalone.
 
-Assuming that we have a [`Step`][distilabel.steps.Step] already defined as it follows:
+Assuming that we have a [`Step`][fastdistill.steps.Step] already defined as it follows:
 
 ```python
 from typing import TYPE_CHECKING
-from distilabel.steps import Step, StepInput
+from fastdistill.steps import Step, StepInput
 
 if TYPE_CHECKING:
-    from distilabel.typing import StepColumns, StepOutput
+    from fastdistill.typing import StepColumns, StepOutput
 
 class MyStep(Step):
     @property
@@ -53,7 +53,7 @@ next(step.process([{"input_field": "value"}]))
 `Step`s can also have `RuntimeParameter`, which are parameters that can only be used after the pipeline initialisation when calling the `Pipeline.run`.
 
 ```python
-from distilabel.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
 
 class Step(...):
     input_batch_size: RuntimeParameter[PositiveInt] = Field(
@@ -65,17 +65,17 @@ class Step(...):
 
 ## Types of Steps
 
-There are two special types of [`Step`][distilabel.steps.Step] in `distilabel`:
+There are two special types of [`Step`][fastdistill.steps.Step] in `fastdistill`:
 
-* [`GeneratorStep`][distilabel.steps.GeneratorStep]: is a step that only generates data, and it doesn't need any input data from previous steps and normally is the first node in a [`Pipeline`][distilabel.pipeline.Pipeline]. More information: [Components -> Step - GeneratorStep](./generator_step.md).
+* [`GeneratorStep`][fastdistill.steps.GeneratorStep]: is a step that only generates data, and it doesn't need any input data from previous steps and normally is the first node in a [`Pipeline`][fastdistill.pipeline.Pipeline]. More information: [Components -> Step - GeneratorStep](./generator_step.md).
 
-* [`GlobalStep`][distilabel.steps.GlobalStep]: is a step with the standard interface i.e. receives inputs and generates outputs, but it processes all the data at once, and often is the final step in the [`Pipeline`][distilabel.pipeline.Pipeline]. The fact that a [`GlobalStep`][distilabel.steps.GlobalStep] requires the previous steps  to finish before being able to start. More information: [Components - Step - GlobalStep](global_step.md).
+* [`GlobalStep`][fastdistill.steps.GlobalStep]: is a step with the standard interface i.e. receives inputs and generates outputs, but it processes all the data at once, and often is the final step in the [`Pipeline`][fastdistill.pipeline.Pipeline]. The fact that a [`GlobalStep`][fastdistill.steps.GlobalStep] requires the previous steps  to finish before being able to start. More information: [Components - Step - GlobalStep](global_step.md).
 
-* [`Task`][distilabel.steps.tasks.Task], is essentially the same as a default [`Step`][distilabel.steps.Step], but it relies on an [`LLM`][distilabel.models.llms.LLM] as an attribute, and the `process` method will be in charge of calling that LLM. More information: [Components - Task](../task/index.md).
+* [`Task`][fastdistill.steps.tasks.Task], is essentially the same as a default [`Step`][fastdistill.steps.Step], but it relies on an [`LLM`][fastdistill.models.llms.LLM] as an attribute, and the `process` method will be in charge of calling that LLM. More information: [Components - Task](../task/index.md).
 
 ## Defining custom Steps
 
-We can define a custom step by creating a new subclass of the [`Step`][distilabel.steps.Step] and defining the following:
+We can define a custom step by creating a new subclass of the [`Step`][fastdistill.steps.Step] and defining the following:
 
 - `inputs`: is a property that returns a list of strings with the names of the required input fields or a dictionary in which the keys are the names of the columns and the values are boolean indicating whether the column is required or not.
 
@@ -84,10 +84,10 @@ We can define a custom step by creating a new subclass of the [`Step`][distilabe
 - `process`: is a method that receives the input data and returns the output data, and it should be a generator, meaning that it should `yield` the output data.
 
 !!! NOTE
-    The default signature for the `process` method is `process(self, *inputs: StepInput) -> StepOutput`. The argument `inputs` should be respected, no more arguments can be provided, and the type-hints and return type-hints should be respected too because it should be able to receive any number of inputs by default i.e. more than one [`Step`][distilabel.steps.Step] at a time could be connected to the current one.
+    The default signature for the `process` method is `process(self, *inputs: StepInput) -> StepOutput`. The argument `inputs` should be respected, no more arguments can be provided, and the type-hints and return type-hints should be respected too because it should be able to receive any number of inputs by default i.e. more than one [`Step`][fastdistill.steps.Step] at a time could be connected to the current one.
 
 !!! WARNING
-    For the custom [`Step`][distilabel.steps.Step] subclasses to work properly with `distilabel` and with the validation and serialization performed by default over each [`Step`][distilabel.steps.Step] in the [`Pipeline`][distilabel.pipeline.Pipeline], the type-hint for both [`StepInput`][distilabel.steps.StepInput] and [`StepOutput`][distilabel.typing.StepOutput] should be used and not surrounded with double-quotes or imported under `typing.TYPE_CHECKING`, otherwise, the validation and/or serialization will fail.
+    For the custom [`Step`][fastdistill.steps.Step] subclasses to work properly with `fastdistill` and with the validation and serialization performed by default over each [`Step`][fastdistill.steps.Step] in the [`Pipeline`][fastdistill.pipeline.Pipeline], the type-hint for both [`StepInput`][fastdistill.steps.StepInput] and [`StepOutput`][fastdistill.typing.StepOutput] should be used and not surrounded with double-quotes or imported under `typing.TYPE_CHECKING`, otherwise, the validation and/or serialization will fail.
 
 === "Inherit from `Step`"
 
@@ -95,10 +95,10 @@ We can define a custom step by creating a new subclass of the [`Step`][distilabe
 
     ```python
     from typing import TYPE_CHECKING
-    from distilabel.steps import Step, StepInput
+    from fastdistill.steps import Step, StepInput
 
     if TYPE_CHECKING:
-        from distilabel.typing import StepColumns, StepOutput
+        from fastdistill.typing import StepColumns, StepOutput
 
     class CustomStep(Step):
         @property
@@ -124,15 +124,15 @@ We can define a custom step by creating a new subclass of the [`Step`][distilabe
 
 === "Using the `@step` decorator"
 
-    The `@step` decorator will take care of the boilerplate code, and will allow to define the `inputs`, `outputs`, and `process` methods in a more straightforward way. One downside is that it won't let you access the `self` attributes if any, neither set those, so if you need to access or set any attribute, you should go with the first approach of defining the custom [`Step`][distilabel.steps.Step] subclass.
+    The `@step` decorator will take care of the boilerplate code, and will allow to define the `inputs`, `outputs`, and `process` methods in a more straightforward way. One downside is that it won't let you access the `self` attributes if any, neither set those, so if you need to access or set any attribute, you should go with the first approach of defining the custom [`Step`][fastdistill.steps.Step] subclass.
 
 
     ```python
     from typing import TYPE_CHECKING
-    from distilabel.steps import StepInput, step
+    from fastdistill.steps import StepInput, step
 
     if TYPE_CHECKING:
-        from distilabel.typing import StepOutput
+        from fastdistill.typing import StepOutput
 
     @step(inputs=[...], outputs=[...])
     def CustomStep(inputs: StepInput) -> "StepOutput":

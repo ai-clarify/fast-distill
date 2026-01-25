@@ -23,16 +23,16 @@ On four direct assessment benchmarks and four pairwise ranking benchmarks, Prome
 ### Replication
 
 !!! NOTE
-    The section is named `Replication` but in this case we're not replicating the Prometheus 2 paper per se, but rather showing how to use the [`PrometheusEval`][distilabel.steps.tasks.PrometheusEval] task implemented within `distilabel` to evaluate the quality of the responses from a given instruction using the Prometheus 2 model.
+    The section is named `Replication` but in this case we're not replicating the Prometheus 2 paper per se, but rather showing how to use the [`PrometheusEval`][fastdistill.steps.tasks.PrometheusEval] task implemented within `fastdistill` to evaluate the quality of the responses from a given instruction using the Prometheus 2 model.
 
-To showcase Prometheus 2 we will be using the [`PrometheusEval`][distilabel.steps.tasks.PrometheusEval] task implemented in `distilabel` and a smaller dataset created by the Hugging Face H4 team named [`HuggingFaceH4/instruction-dataset`](https://hf.co/datasets/HuggingFaceH4/instruction-dataset) for testing purposes.
+To showcase Prometheus 2 we will be using the [`PrometheusEval`][fastdistill.steps.tasks.PrometheusEval] task implemented in `fastdistill` and a smaller dataset created by the Hugging Face H4 team named [`HuggingFaceH4/instruction-dataset`](https://hf.co/datasets/HuggingFaceH4/instruction-dataset) for testing purposes.
 
 #### Installation
 
-To reproduce the code below, one will need to install `distilabel` as it follows:
+To reproduce the code below, one will need to install `fastdistill` as it follows:
 
 ```bash
-pip install "distilabel[vllm]>=1.1.0"
+pip install "fastdistill[vllm]>=1.1.0"
 ```
 
 Alternatively, it's recommended to install [`Dao-AILab/flash-attention`](https://github.com/Dao-AILab/flash-attention) to benefit from Flash Attention 2 speed ups during inference via `vllm`.
@@ -46,25 +46,25 @@ pip install flash-attn --no-build-isolation
 
 #### Building blocks
 
-- [`LoadDataFromHub`][distilabel.steps.LoadDataFromHub]: [`GeneratorStep`][distilabel.steps.GeneratorStep] to load a dataset from the Hugging Face Hub.
+- [`LoadDataFromHub`][fastdistill.steps.LoadDataFromHub]: [`GeneratorStep`][fastdistill.steps.GeneratorStep] to load a dataset from the Hugging Face Hub.
 
-- [`PrometheusEval`][distilabel.steps.tasks.PrometheusEval]: [`Task`][distilabel.steps.tasks.Task] that assesses the quality of a response for a given instruction using any of the Prometheus 2 models.
-    - [`vLLM`][distilabel.models.vLLM]: [`LLM`][distilabel.models.LLM] that loads a model from the Hugging Face Hub via [vllm-project/vllm](https://github.com/vllm-project/vllm).
+- [`PrometheusEval`][fastdistill.steps.tasks.PrometheusEval]: [`Task`][fastdistill.steps.tasks.Task] that assesses the quality of a response for a given instruction using any of the Prometheus 2 models.
+    - [`vLLM`][fastdistill.models.vLLM]: [`LLM`][fastdistill.models.LLM] that loads a model from the Hugging Face Hub via [vllm-project/vllm](https://github.com/vllm-project/vllm).
 
     !!! NOTE
         Since the Prometheus 2 models use a slightly different chat template than [`mistralai/Mistral-7B-Instruct-v0.2`](https://hf.co/mistralai/Mistral-7B-Instruct-v0.2), we need to set the `chat_template` parameter to `[INST] {{ messages[0]['content'] }}\n{{ messages[1]['content'] }}[/INST]` so as to properly format the input for Prometheus 2.
 
-- (Optional) [`KeepColumns`][distilabel.steps.KeepColumns]: [`Task`][distilabel.steps.tasks.Task] that keeps only the specified columns in the dataset, used to remove the undesired columns.
+- (Optional) [`KeepColumns`][fastdistill.steps.KeepColumns]: [`Task`][fastdistill.steps.tasks.Task] that keeps only the specified columns in the dataset, used to remove the undesired columns.
 
 #### Code
 
-As mentioned before, we will put the previously mentioned building blocks together to see how Prometheus 2 can be used via `distilabel`.
+As mentioned before, we will put the previously mentioned building blocks together to see how Prometheus 2 can be used via `fastdistill`.
 
 ```python
-from distilabel.models import vLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import KeepColumns, LoadDataFromHub
-from distilabel.steps.tasks import PrometheusEval
+from fastdistill.models import vLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import KeepColumns, LoadDataFromHub
+from fastdistill.steps.tasks import PrometheusEval
 
 if __name__ == "__main__":
     with Pipeline(name="prometheus") as pipeline:
@@ -113,7 +113,7 @@ distiset = pipeline.run(
 )
 ```
 
-Finally, we can optionally push the generated dataset, named [`Distiset`][distilabel.distiset.Distiset], to the Hugging Face Hub via the `push_to_hub` method, so that each subset generated in the leaf steps is pushed to the Hub.
+Finally, we can optionally push the generated dataset, named [`Distiset`][fastdistill.distiset.Distiset], to the Hugging Face Hub via the `push_to_hub` method, so that each subset generated in the leaf steps is pushed to the Hub.
 
 ```python
 distiset.push_to_hub(

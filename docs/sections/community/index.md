@@ -4,7 +4,7 @@ hide:
     - footer
 ---
 
-We are an open-source community-driven project not only focused on building a great product but also on building a great community, where you can get support, share your experiences, and contribute to the project! We would love to hear from you and help you get started with distilabel.
+We are an open-source community-driven project not only focused on building a great product but also on building a great community, where you can get support, share your experiences, and contribute to the project! We would love to hear from you and help you get started with fastdistill.
 
 <div class="grid cards" markdown>
 
@@ -29,9 +29,9 @@ We are an open-source community-driven project not only focused on building a gr
 
     ---
 
-    The changelog is where you can find the latest updates and changes to the distilabel project.
+    The changelog is where you can find the latest updates and changes to the fastdistill project.
 
-    [:octicons-arrow-right-24: Changelog ↗](https://github.com/argilla-io/distilabel/releases)
+    [:octicons-arrow-right-24: Changelog ↗](https://github.com/argilla-io/fastdistill/releases)
 
 -   __Roadmap__
 
@@ -45,16 +45,16 @@ We are an open-source community-driven project not only focused on building a gr
 
 ## Badges
 
-If you build something cool with `distilabel` consider adding one of these badges to your dataset or model card.
+If you build something cool with `fastdistill` consider adding one of these badges to your dataset or model card.
 
-    [<img src="https://raw.githubusercontent.com/argilla-io/distilabel/main/docs/assets/distilabel-badge-light.png" alt="Built with Distilabel" width="200" height="32"/>](https://github.com/argilla-io/distilabel)
+    [<img src="https://raw.githubusercontent.com/argilla-io/fastdistill/main/docs/assets/fastdistill-badge-light.png" alt="Built with FastDistill" width="200" height="32"/>](https://github.com/argilla-io/fastdistill)
 
-[<img src="https://raw.githubusercontent.com/argilla-io/distilabel/main/docs/assets/distilabel-badge-light.png" alt="Built with Distilabel" width="200" height="32"/>](https://github.com/argilla-io/distilabel)
+[<img src="https://raw.githubusercontent.com/argilla-io/fastdistill/main/docs/assets/fastdistill-badge-light.png" alt="Built with FastDistill" width="200" height="32"/>](https://github.com/argilla-io/fastdistill)
 
-    [<img src="https://raw.githubusercontent.com/argilla-io/distilabel/main/docs/assets/distilabel-badge-dark.png" alt="Built with Distilabel" width="200" height="32"/>](https://github.com/argilla-io/distilabel)
+    [<img src="https://raw.githubusercontent.com/argilla-io/fastdistill/main/docs/assets/fastdistill-badge-dark.png" alt="Built with FastDistill" width="200" height="32"/>](https://github.com/argilla-io/fastdistill)
 
-[<img src="https://raw.githubusercontent.com/argilla-io/distilabel/main/docs/assets/distilabel-badge-dark.png" alt="Built with Distilabel" width="200" height="32"/>](https://github.com/argilla-io/distilabel)
+[<img src="https://raw.githubusercontent.com/argilla-io/fastdistill/main/docs/assets/fastdistill-badge-dark.png" alt="Built with FastDistill" width="200" height="32"/>](https://github.com/argilla-io/fastdistill)
 
 ## Contribute
 
-To directly contribute with `distilabel`, check our [good first issues](https://github.com/argilla-io/distilabel/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or [open a new one](https://github.com/argilla-io/distilabel/issues/new/choose).
+To directly contribute with `fastdistill`, check our [good first issues](https://github.com/argilla-io/fastdistill/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or [open a new one](https://github.com/argilla-io/fastdistill/issues/new/choose).

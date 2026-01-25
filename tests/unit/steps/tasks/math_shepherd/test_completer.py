@@ -1,27 +1,17 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import textwrap
 from typing import TYPE_CHECKING, Any, Dict, List
 
 import pytest
 
-from distilabel.steps.tasks.math_shepherd.completer import MathShepherdCompleter
+from fastdistill.steps.tasks.math_shepherd.completer import MathShepherdCompleter
 from tests.unit.conftest import DummyLLM
 
 if TYPE_CHECKING:
-    from distilabel.typing import GenerateOutput
+    from fastdistill.typing import GenerateOutput
 
 
 class MathShepherdCompleterLLM(DummyLLM):
@@ -157,7 +147,7 @@ class TestMathShepherdCompleter:
                         "Step 3: Those 9 eggs are worth 9 * $2 = $<<9*2=18>>18. The answer is: 18 +",
                     ],
                 ],
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_math_shepherd_completer_0": {
                         "input_tokens": [12],
                         "output_tokens": [12],
@@ -340,7 +330,7 @@ The answer is: 18""",
                     ],
                 ],
                 "model_name": "math-shepherd-completer",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_math_shepherd_completer_0": {
                         "input_tokens": [12],
                         "output_tokens": [12],
@@ -466,7 +456,7 @@ The answer is: 18""",
                 ],
                 "solutions": [[], [], []],
                 "model_name": "math-shepherd-completer",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "statistics_math_shepherd_completer_0": {
                         "input_tokens": [12],
                         "output_tokens": [12],

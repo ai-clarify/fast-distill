@@ -1,10 +1,10 @@
 # Scaling and distributing a pipeline with Ray
 
-Although the local [Pipeline][distilabel.pipeline.local.Pipeline] based on [`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html) + [serving LLMs with an external service](serving_an_llm_for_reuse.md) is enough for executing most of the pipelines used to create SFT and preference datasets, there are scenarios where you might need to scale your pipeline across multiple machines. In such cases, distilabel leverages [Ray](https://www.ray.io/) to distribute the workload efficiently. This allows you to generate larger datasets, reduce execution time, and maximize resource utilization across a cluster of machines, without needing to change a single line of code.
+Although the local [Pipeline][fastdistill.pipeline.local.Pipeline] based on [`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html) + [serving LLMs with an external service](serving_an_llm_for_reuse.md) is enough for executing most of the pipelines used to create SFT and preference datasets, there are scenarios where you might need to scale your pipeline across multiple machines. In such cases, fastdistill leverages [Ray](https://www.ray.io/) to distribute the workload efficiently. This allows you to generate larger datasets, reduce execution time, and maximize resource utilization across a cluster of machines, without needing to change a single line of code.
 
-## Relation between distilabel steps and Ray Actors
+## Relation between fastdistill steps and Ray Actors
 
-A `distilabel` pipeline consist of several [`Step`][distilabel.steps.base.Step]s. An `Step` is a class that defines a basic life-cycle:
+A `fastdistill` pipeline consist of several [`Step`][fastdistill.steps.base.Step]s. An `Step` is a class that defines a basic life-cycle:
 
 1. It will load or create the resources (LLMs, clients, etc) required to run its logic.
 2. It will run a loop waiting for incoming batches received using a queue. Once it receives one batch, it will process it and put the processed batch into an output queue.
@@ -27,11 +27,11 @@ graph TD
 
 ## Executing a pipeline with Ray
 
-The recommended way to execute a `distilabel` pipeline using Ray is using the [Ray Jobs API](https://docs.ray.io/en/latest/cluster/running-applications/job-submission/index.html#ray-jobs-api).
+The recommended way to execute a `fastdistill` pipeline using Ray is using the [Ray Jobs API](https://docs.ray.io/en/latest/cluster/running-applications/job-submission/index.html#ray-jobs-api).
 
 Before jumping on the explanation, let's first install the prerequisites:
 ```bash
-pip install distilabel[ray]
+pip install fastdistill[ray]
 ```
 
 !!! tip
@@ -41,10 +41,10 @@ pip install distilabel[ray]
 For the purpose of explaining how to execute a pipeline with Ray, we'll use the following pipeline throughout the examples:
 
 ```python
-from distilabel.models import vLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import LoadDataFromHub
-from distilabel.steps.tasks import TextGeneration
+from fastdistill.models import vLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import LoadDataFromHub
+from fastdistill.steps.tasks import TextGeneration
 
 with Pipeline(name="text-generation-ray-pipeline") as pipeline:
     load_data_from_hub = LoadDataFromHub(output_mappings={"prompt": "instruction"})
@@ -78,11 +78,11 @@ if __name__ == "__main__":
     )
 
     distiset.push_to_hub(
-        "<YOUR_HF_USERNAME_OR_ORGANIZATION>/text-generation-distilabel-ray" # (2)
+        "<YOUR_HF_USERNAME_OR_ORGANIZATION>/text-generation-fastdistill-ray" # (2)
     )
 ```
 
-1. We're setting [resources](assigning_resources_to_step.md) for the `text_generation` step and defining that we want two replicas and one GPU per replica. `distilabel` will create two replicas of the step i.e. two actors in the Ray cluster, and each actor will request to be allocated in a node of the cluster that have at least one GPU. You can read more about how Ray manages the resources [here](https://docs.ray.io/en/latest/ray-core/scheduling/resources.html#resources).
+1. We're setting [resources](assigning_resources_to_step.md) for the `text_generation` step and defining that we want two replicas and one GPU per replica. `fastdistill` will create two replicas of the step i.e. two actors in the Ray cluster, and each actor will request to be allocated in a node of the cluster that have at least one GPU. You can read more about how Ray manages the resources [here](https://docs.ray.io/en/latest/ray-core/scheduling/resources.html#resources).
 2. You should modify this and add your user or organization on the Hugging Face Hub.
 
 It's a basic pipeline with just two steps: one to load a dataset from the Hub with an `instruction` column and one to generate a `response` for that instruction using Llama 3 8B Instruct with [vLLM](../../../components-gallery/llms/vllm.md). Simple but enough to demonstrate how to distribute and scale the workload using a Ray cluster!
@@ -110,12 +110,12 @@ The first file contains the code of the pipeline, while the second one (`runtime
 
 ```yaml
 pip:
-  - distilabel[ray,vllm] >= 1.3.0
+  - fastdistill[ray,vllm] >= 1.3.0
 env_vars:
   HF_TOKEN: <YOUR_HF_TOKEN>
 ```
 
-With this file we're basically informing to the Ray cluster that it will have to install `distilabel` with the `vllm` and `ray` extra dependencies to be able to run the job. In addition, we're defining the `HF_TOKEN` environment variable that will be used (by the `push_to_hub` method) to upload the resulting dataset to the Hugging Face Hub. 
+With this file we're basically informing to the Ray cluster that it will have to install `fastdistill` with the `vllm` and `ray` extra dependencies to be able to run the job. In addition, we're defining the `HF_TOKEN` environment variable that will be used (by the `push_to_hub` method) to upload the resulting dataset to the Hugging Face Hub. 
 
 After that, we can proceed to execute the `ray` command that will submit the job to the Ray cluster:
 ```bash
@@ -129,7 +129,7 @@ What this will do, it's to basically upload the `--working-dir` to the Ray clust
 
 ## File system requirements
 
-As described in [Using a file system to pass data to steps](fs_to_pass_data.md), `distilabel` relies on the file system to pass the data to the `GlobalStep`s, so if the pipeline to be executed in the Ray cluster have any `GlobalStep` or do you want to set the `use_fs_to_pass_data=True` of the [run][distilabel.pipeline.local.Pipeline.run] method, then you will need to setup a file system to which all the nodes of the Ray cluster have access:
+As described in [Using a file system to pass data to steps](fs_to_pass_data.md), `fastdistill` relies on the file system to pass the data to the `GlobalStep`s, so if the pipeline to be executed in the Ray cluster have any `GlobalStep` or do you want to set the `use_fs_to_pass_data=True` of the [run][fastdistill.pipeline.local.Pipeline.run] method, then you will need to setup a file system to which all the nodes of the Ray cluster have access:
 
 ```python
 if __name__ == "__main__":
@@ -144,11 +144,11 @@ if __name__ == "__main__":
 
 ## Executing a `RayPipeline` in a cluster with Slurm
 
-If you have access to an HPC, then you're probably also a user of [Slurm](https://slurm.schedmd.com/), a workload manager typically used on HPCs. We can create Slurm job that takes some nodes and deploy a Ray cluster to run a distributed `distilabel` pipeline:
+If you have access to an HPC, then you're probably also a user of [Slurm](https://slurm.schedmd.com/), a workload manager typically used on HPCs. We can create Slurm job that takes some nodes and deploy a Ray cluster to run a distributed `fastdistill` pipeline:
 
 ```bash
 #!/bin/bash
-#SBATCH --job-name=distilabel-ray-text-generation
+#SBATCH --job-name=fastdistill-ray-text-generation
 #SBATCH --partition=your-partition
 #SBATCH --qos=normal
 #SBATCH --nodes=2 # (1)

@@ -1,6 +1,6 @@
 # How-to guides
 
-Welcome to the how-to guides section! Here you will find a collection of guides that will help you get started with Distilabel. We have divided the guides into two categories: basic and advanced. The basic guides will help you get started with the core concepts of Distilabel, while the advanced guides will help you explore more advanced features.
+Welcome to the how-to guides section! Here you will find a collection of guides that will help you get started with FastDistill. We have divided the guides into two categories: basic and advanced. The basic guides will help you get started with the core concepts of FastDistill, while the advanced guides will help you explore more advanced features.
 
 ## Basic
 

@@ -1,8 +1,8 @@
 # Task Gallery
 
-This section contains the existing [`Task`][distilabel.steps.tasks.Task] subclasses implemented in `distilabel`.
+This section contains the existing [`Task`][fastdistill.steps.tasks.Task] subclasses implemented in `fastdistill`.
 
-::: distilabel.steps.tasks
+::: fastdistill.steps.tasks
     options:
         filters:
         - "!Task"

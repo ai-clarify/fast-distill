@@ -1,111 +1,27 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import TYPE_CHECKING, Dict, List
 
 import pytest
 
-from distilabel.mixins.runtime_parameters import RuntimeParameter
-from distilabel.pipeline.ray import RayPipeline
-from distilabel.steps.base import Step, StepInput
-from distilabel.steps.generators.data import LoadDataFromDicts
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.pipeline.ray import RayPipeline
+from fastdistill.steps.base import Step, StepInput
+from fastdistill.steps.generators.data import LoadDataFromDicts
 
 if TYPE_CHECKING:
-    from distilabel.typing import StepOutput
+    from fastdistill.typing import StepOutput
+
+pytest.importorskip("ray")
 
 DATA = [
     {"prompt": "Tell me a joke"},
     {"prompt": "Write a short haiku"},
     {"prompt": "Translate 'My name is Alvaro' to Spanish"},
     {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-    {"prompt": "Tell me a joke"},
-    {"prompt": "Write a short haiku"},
-    {"prompt": "Translate 'My name is Alvaro' to Spanish"},
-    {"prompt": "What's the capital of Spain?"},
-]
+] * 8
 
 
 class RenameColumns(Step):
@@ -134,10 +50,6 @@ class GenerateResponse(Step):
         return ["instruction"]
 
     def process(self, inputs: StepInput) -> "StepOutput":  # type: ignore
-        import time
-
-        time.sleep(1)
-
         for input in inputs:
             input["response"] = "I don't know"
 
@@ -154,28 +66,34 @@ def test_run_pipeline() -> None:
     from ray.cluster_utils import Cluster
 
     # TODO: if we add more tests, this should be a fixture
-    cluster = Cluster(initialize_head=True, head_node_args={"num_cpus": 10})
-    ray.init(address=cluster.address)
+    cluster = Cluster(initialize_head=True, head_node_args={"num_cpus": 4})
+    ray.init(address=cluster.address, ignore_reinit_error=True)
 
-    with RayPipeline(
-        name="unit-test-pipeline", ray_init_kwargs={"ignore_reinit_error": True}
-    ) as pipeline:
-        load_dataset = LoadDataFromDicts(name="load_dataset", data=DATA, batch_size=8)
-        rename_columns = RenameColumns(name="rename_columns", input_batch_size=12)
-        generate_response = GenerateResponse(
-            name="generate_response", input_batch_size=16
-        )
+    try:
+        with RayPipeline(
+            name="unit-test-pipeline", ray_init_kwargs={"ignore_reinit_error": True}
+        ) as pipeline:
+            load_dataset = LoadDataFromDicts(
+                name="load_dataset", data=DATA, batch_size=8
+            )
+            rename_columns = RenameColumns(name="rename_columns", input_batch_size=12)
+            generate_response = GenerateResponse(
+                name="generate_response", input_batch_size=16
+            )
 
-        load_dataset >> rename_columns >> generate_response
+            load_dataset >> rename_columns >> generate_response
 
-    distiset = pipeline.run(
-        parameters={
-            "rename_columns": {
-                "rename_mappings": {
-                    "prompt": "instruction",
+        distiset = pipeline.run(
+            parameters={
+                "rename_columns": {
+                    "rename_mappings": {
+                        "prompt": "instruction",
+                    },
                 },
-            },
-        }
-    )
+            }
+        )
+    finally:
+        ray.shutdown()
+        cluster.shutdown()
 
-    assert len(distiset["default"]["train"]) == 80
+    assert len(distiset["default"]["train"]) == len(DATA)

@@ -1,4 +1,4 @@
-distilabel:
+fastdistill:
   version: 1.0.0.b0
 pipeline:
   name: fastdistill-text2sql
@@ -20,7 +20,7 @@ pipeline:
               n: 1
             system_prompt: Return SQL only.
         type_info:
-          module: distilabel.steps.generators.data
+          module: fastdistill.steps.generators.data
           name: LoadDataFromDicts
       name: load_data
     - step:
@@ -30,7 +30,7 @@ pipeline:
         fields: [schema, instruction]
         output_field: canonical_input
         type_info:
-          module: distilabel.steps.fastdistill.canonicalize
+          module: fastdistill.steps.fastdistill.canonicalize
           name: CanonicalizeFields
       name: canonicalize_fields
     - step:
@@ -40,7 +40,7 @@ pipeline:
         fields: [schema]
         output_field: schema_hash
         type_info:
-          module: distilabel.steps.fastdistill.hashing
+          module: fastdistill.steps.fastdistill.hashing
           name: ComputeHash
       name: schema_hash
     - step:
@@ -50,7 +50,7 @@ pipeline:
         fields: [task_id, schema_hash, canonical_input, decode_profile]
         output_field: sample_id
         type_info:
-          module: distilabel.steps.fastdistill.hashing
+          module: fastdistill.steps.fastdistill.hashing
           name: ComputeHash
       name: sample_id
     - step:
@@ -65,7 +65,7 @@ pipeline:
             temperature: 0.2
             max_new_tokens: 128
           type_info:
-            module: distilabel.models.llms.openai
+            module: fastdistill.models.llms.openai
             name: OpenAILLM
         system_prompt: Return SQL only.
         template: "Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:"
@@ -73,7 +73,7 @@ pipeline:
         group_generations: false
         num_generations: 1
         type_info:
-          module: distilabel.steps.tasks.text_generation
+          module: fastdistill.steps.tasks.text_generation
           name: TextGeneration
       name: teacher_gen
     - step:
@@ -83,7 +83,7 @@ pipeline:
         stage: teacher_candidates
         output_dir: artifacts/manifests
         type_info:
-          module: distilabel.steps.fastdistill.manifest
+          module: fastdistill.steps.fastdistill.manifest
           name: WriteManifest
       name: write_manifest
     - step:
@@ -93,7 +93,7 @@ pipeline:
         stage: teacher_candidates
         output_dir: artifacts/reports
         type_info:
-          module: distilabel.steps.fastdistill.quality_report
+          module: fastdistill.steps.fastdistill.quality_report
           name: WriteQualityReport
       name: write_quality_report
   connections:
@@ -112,5 +112,5 @@ pipeline:
     - from: write_quality_report
       to: []
   type_info:
-    module: distilabel.pipeline.local
+    module: fastdistill.pipeline.local
     name: Pipeline

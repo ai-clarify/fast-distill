@@ -2,16 +2,16 @@
 
 ## Working with ImageTasks
 
-The [`ImageTask`][distilabel.steps.tasks.ImageTask] is a custom implementation of a [`Task`][distilabel.steps.tasks.Task] special to deal images. These tasks behave exactly as any other [`Task`][distilabel.steps.tasks.Task], but instead of relying on an [`LLM`][distilabel.models.llms.LLM], they work with a [`ImageGenerationModel`][distilabel.models.image_generation.ImageGenerationModel].
+The [`ImageTask`][fastdistill.steps.tasks.ImageTask] is a custom implementation of a [`Task`][fastdistill.steps.tasks.Task] special to deal images. These tasks behave exactly as any other [`Task`][fastdistill.steps.tasks.Task], but instead of relying on an [`LLM`][fastdistill.models.llms.LLM], they work with a [`ImageGenerationModel`][fastdistill.models.image_generation.ImageGenerationModel].
 
 !!! info "New in version 1.5.0"
     This task is new and is expected to work with Image Generation Models.
 
-These tasks take as attribute an `image_generation_model` instead of `llm` as we would have with the standard `Task`, but everything else remains the same. Let's see an example with [`ImageGeneration`](https://distilabel.argilla.io/dev/components-gallery/tasks/imagegeneration/):
+These tasks take as attribute an `image_generation_model` instead of `llm` as we would have with the standard `Task`, but everything else remains the same. Let's see an example with [`ImageGeneration`](https://fastdistill.argilla.io/dev/components-gallery/tasks/imagegeneration/):
 
 ```python
-from distilabel.steps.tasks import ImageGeneration
-from distilabel.models.image_generation import InferenceEndpointsImageGeneration
+from fastdistill.steps.tasks import ImageGeneration
+from fastdistill.models.image_generation import InferenceEndpointsImageGeneration
 
 task = ImageGeneration(
     name="image-generation",
@@ -28,7 +28,7 @@ next(task.process([{"prompt": "a white siamese cat"}]))
     to see the rendered image:
 
     ```python
-    from distilabel.models.image_generation.utils import image_from_str
+    from fastdistill.models.image_generation.utils import image_from_str
 
     result = next(task.process([{"prompt": "a white siamese cat"}]))
     image_from_str(result[0]["image"])  # Returns a `PIL.Image.Image` that renders directly
@@ -39,9 +39,9 @@ next(task.process([{"prompt": "a white siamese cat"}]))
 
 ## Defining custom ImageTasks
 
-We can define a custom generator task by creating a new subclass of the [`ImageTask`][distilabel.steps.tasks.ImageTask] and defining the following:
+We can define a custom generator task by creating a new subclass of the [`ImageTask`][fastdistill.steps.tasks.ImageTask] and defining the following:
 
-- `process`: is a method that generates the data based on the [`ImageGenerationModel`][distilabel.models.image_generation.ImageGenerationModel] and the `prompt` provided within the class instance, and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`.
+- `process`: is a method that generates the data based on the [`ImageGenerationModel`][fastdistill.models.image_generation.ImageGenerationModel] and the `prompt` provided within the class instance, and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`.
 
 - `inputs`: is a property that returns a list of strings with the names of the required input fields or a dictionary in which the keys are the names of the columns and the values are boolean indicating whether the column is required or not.
 
@@ -49,17 +49,17 @@ We can define a custom generator task by creating a new subclass of the [`ImageT
 
 - `format_input`: is a method that receives a dictionary with the input data and returns a *prompt* to be passed to the model.
 
-- `format_output`: is a method that receives the output from the [`ImageGenerationModel`][distilabel.models.image_generation.ImageGenerationModel] and optionally also the input data (which may be useful to build the output in some scenarios), and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`.
+- `format_output`: is a method that receives the output from the [`ImageGenerationModel`][fastdistill.models.image_generation.ImageGenerationModel] and optionally also the input data (which may be useful to build the output in some scenarios), and returns a dictionary with the output data formatted as needed i.e. with the values for the columns in `outputs`.
 
 ```python
 from typing import TYPE_CHECKING
 
-from distilabel.models.image_generation.utils import image_from_str, image_to_str
-from distilabel.steps.base import StepInput
-from distilabel.steps.tasks.base import ImageTask
+from fastdistill.models.image_generation.utils import image_from_str, image_to_str
+from fastdistill.steps.base import StepInput
+from fastdistill.steps.tasks.base import ImageTask
 
 if TYPE_CHECKING:
-    from distilabel.typing import StepColumns, StepOutput
+    from fastdistill.typing import StepColumns, StepOutput
 
 
 class MyCustomImageTask(ImageTask):

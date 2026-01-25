@@ -1,6 +1,6 @@
 # Extra
 
-::: distilabel.steps
+::: fastdistill.steps
     options:
         filters:
         - "!Argilla"

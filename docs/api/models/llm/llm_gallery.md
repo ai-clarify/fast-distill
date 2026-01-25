@@ -1,8 +1,8 @@
 # LLM Gallery
 
-This section contains the existing [`LLM`][distilabel.models.llms] subclasses implemented in `distilabel`.
+This section contains the existing [`LLM`][fastdistill.models.llms] subclasses implemented in `fastdistill`.
 
-::: distilabel.models.llms
+::: fastdistill.models.llms
     options:
         filters:
         - "!^LLM$"

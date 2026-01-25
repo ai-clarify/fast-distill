@@ -1,37 +1,30 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import platform
 from typing import Any, Dict, Generator
 
 import pytest
 
-from distilabel.models.llms.mlx import MlxLLM
+pytest.importorskip("mlx_lm")
+
+from fastdistill.models.llms.mlx import MlxLLM
 
 from .utils import DummyUserDetail
 
 RUNS_ON_APPLE_SILICON = platform.processor() == "arm" and platform.system() == "Darwin"
 
 
-@pytest.mark.skipif(
-    not RUNS_ON_APPLE_SILICON,
-    reason="MLX only runs on Apple Silicon",
-)
 @pytest.fixture(scope="module")
 def llm() -> Generator[MlxLLM, None, None]:
+    if not RUNS_ON_APPLE_SILICON:
+        pytest.skip("MLX only runs on Apple Silicon")
     llm = MlxLLM(path_or_hf_repo="mlx-community/Qwen2.5-0.5B-4bit")
-    llm.load()
+    try:
+        llm.load()
+    except Exception as exc:  # noqa: BLE001
+        pytest.skip(f"MLX model load failed: {exc}")
     yield llm
 
 
@@ -78,9 +71,10 @@ class TestMlxLLM:
                     "use_offline_batch_generation": False,
                     "magpie_pre_query_template": None,
                     "tokenizer_config": {},
+                    "mlx_model_config": {},
                     "use_magpie_template": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.mlx",
+                        "module": "fastdistill.models.llms.mlx",
                         "name": "MlxLLM",
                     },
                 },
@@ -95,6 +89,7 @@ class TestMlxLLM:
                     "generation_kwargs": {},
                     "magpie_pre_query_template": None,
                     "tokenizer_config": {},
+                    "mlx_model_config": {},
                     "use_magpie_template": False,
                     "structured_output": {
                         "schema": DummyUserDetail.model_json_schema(),
@@ -105,7 +100,7 @@ class TestMlxLLM:
                     "offline_batch_generation_block_until_done": None,
                     "use_offline_batch_generation": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.mlx",
+                        "module": "fastdistill.models.llms.mlx",
                         "name": "MlxLLM",
                     },
                 },

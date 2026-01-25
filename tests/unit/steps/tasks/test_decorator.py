@@ -1,30 +1,20 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import Any, Dict, Union
 
 import pytest
 
-from distilabel.errors import DistilabelUserError
-from distilabel.steps.tasks.decorator import task
+from fastdistill.errors import FastDistillUserError
+from fastdistill.steps.tasks.decorator import task
 from tests.unit.conftest import DummyLLM
 
 
 class TestTaskDecorator:
     def test_decoraror_raise_if_no_docstring(self) -> None:
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"When using the `task` decorator, including a docstring in the formatting function is mandatory",
         ):
 
@@ -36,7 +26,7 @@ class TestTaskDecorator:
 
     def test_decorator_raise_if_docstring_invalid(self) -> None:
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"Formatting function decorated with `task` doesn't follow the expected format.",
         ):
 
@@ -48,7 +38,7 @@ class TestTaskDecorator:
                 return {"response": output}
 
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"Formatting function decorated with `task` doesn't follow the expected format.",
         ):
 
@@ -68,7 +58,7 @@ class TestTaskDecorator:
 
     def test_decorator_raise_if_no_system_prompt_or_user_message_template(self) -> None:
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"The formatting function decorated with `task` must include both the `system_prompt` and `user_message_template` keys in the docstring",
         ):
 
@@ -84,7 +74,7 @@ class TestTaskDecorator:
                 return {"response": output}
 
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"The formatting function decorated with `task` must include both the `system_prompt` and `user_message_template` keys in the docstring",
         ):
 
@@ -101,7 +91,7 @@ class TestTaskDecorator:
 
     def test_decorator_raise_if_template_invalid_placeholders(self) -> None:
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"The formatting function decorated with `task` includes invalid placeholders in the extracted `system_prompt`",
         ):
 
@@ -121,7 +111,7 @@ class TestTaskDecorator:
                 return {"response": output}
 
         with pytest.raises(
-            DistilabelUserError,
+            FastDistillUserError,
             match=r"The formatting function decorated with `task` includes invalid placeholders in the extracted `user_message_template`",
         ):
 
@@ -183,7 +173,7 @@ class TestTaskDecorator:
                 "instruction": "The cell...",
                 "response": "output 0",
                 "model_name": "test",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_input_my_task_0": [
                         {
                             "content": "You are an AI assistant designed to summarize",

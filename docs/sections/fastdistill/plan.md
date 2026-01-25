@@ -35,7 +35,7 @@ examples/
   fastdistill/
     fastdistill_pipeline.py
 
-src/distilabel/steps/
+src/fastdistill/steps/
   fastdistill/
     __init__.py
     canonicalize.py
@@ -51,7 +51,7 @@ docs/sections/fastdistill/
 
 Notes:
 - Only new steps + pipelines are added. No changes to core scheduling or pipeline execution.
-- Provider Gateway stays external; distilabel calls it via OpenAI-compatible LLM clients.
+- Provider Gateway stays external; fastdistill calls it via OpenAI-compatible LLM clients.
 
 ## Provider Gateway (OpenAI-compatible surface)
 

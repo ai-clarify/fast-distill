@@ -1,32 +1,22 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import List
 
 import pytest
 
-from distilabel.pipeline import Pipeline
-from distilabel.steps import Step
-from distilabel.steps.base import StepInput
-from distilabel.typing import StepOutput
-from distilabel.utils.requirements import requirements
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import Step
+from fastdistill.steps.base import StepInput
+from fastdistill.typing import StepOutput
+from fastdistill.utils.requirements import requirements
 
 from ..pipeline.utils import DummyGeneratorStep
 
 
 def test_add_requirements_decorator():
-    @requirements(["distilabel>=0.0.1"])
+    @requirements(["fastdistill>=0.0.1"])
     class CustomStep(Step):
         @property
         def inputs(self) -> List[str]:
@@ -41,14 +31,14 @@ def test_add_requirements_decorator():
                 input["response"] = "unit test"
             yield inputs
 
-    assert CustomStep.requirements == ["distilabel>=0.0.1"]
+    assert CustomStep.requirements == ["fastdistill>=0.0.1"]
 
 
 @pytest.mark.parametrize(
     "requirements_pipeline, expected",
     [
-        ([], ["distilabel>=0.0.1", "numpy"]),
-        (["candle_holder"], ["candle_holder", "distilabel>=0.0.1", "numpy"]),
+        ([], ["fastdistill>=0.0.1", "numpy"]),
+        (["candle_holder"], ["candle_holder", "fastdistill>=0.0.1", "numpy"]),
     ],
 )
 def test_add_requirements_to_pipeline(
@@ -56,7 +46,7 @@ def test_add_requirements_to_pipeline(
 ) -> None:
     # Check the pipeline has the requirements from the steps defined within it.
 
-    @requirements(["distilabel>=0.0.1"])
+    @requirements(["fastdistill>=0.0.1"])
     class CustomStep(Step):
         @property
         def inputs(self) -> List[str]:
@@ -100,10 +90,10 @@ def test_add_requirements_to_pipeline(
 
 
 def test_requirements_on_step_decorator() -> None:
-    from distilabel.mixins.runtime_parameters import RuntimeParameter
-    from distilabel.steps.decorator import step
+    from fastdistill.mixins.runtime_parameters import RuntimeParameter
+    from fastdistill.steps.decorator import step
 
-    @requirements(["distilabel>=0.0.1"])
+    @requirements(["fastdistill>=0.0.1"])
     @step(inputs=["instruction"], outputs=["generation"])
     def UnitTestStep(
         inputs: StepInput,
@@ -113,4 +103,4 @@ def test_requirements_on_step_decorator() -> None:
         """A dummy step for the unit test"""
         yield []
 
-    assert UnitTestStep.requirements == ["distilabel>=0.0.1"]
+    assert UnitTestStep.requirements == ["fastdistill>=0.0.1"]

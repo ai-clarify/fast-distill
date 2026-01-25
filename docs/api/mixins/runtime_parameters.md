@@ -1,1 +1,1 @@
-::: distilabel.mixins.runtime_parameters.RuntimeParametersMixin
+::: fastdistill.mixins.runtime_parameters.RuntimeParametersMixin

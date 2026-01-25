@@ -1,22 +1,12 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from typing import TYPE_CHECKING
 from unittest import mock
 
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.base import StepResources
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.base import StepResources
 
 from .utils import DummyGeneratorStep, DummyStep1, DummyStep2
 
@@ -25,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class TestPipeline:
-    @mock.patch("distilabel.pipeline.local._StepWrapper")
+    @mock.patch("fastdistill.pipeline.local._StepWrapper")
     def test_run_steps(self, step_wrapper_mock: mock.MagicMock) -> None:
         with Pipeline(name="unit-test-pipeline") as pipeline:
             dummy_generator = DummyGeneratorStep(name="dummy_generator_step")
@@ -144,11 +134,12 @@ class TestPipeline:
 
         with (
             mock.patch(
-                "distilabel.pipeline.local.script_executed_in_ray_cluster",
+                "fastdistill.pipeline.local.script_executed_in_ray_cluster",
                 return_value=True,
             ),
             mock.patch(
-                "distilabel.pipeline.local.Pipeline.ray", return_value=run_pipeline_mock
+                "fastdistill.pipeline.local.Pipeline.ray",
+                return_value=run_pipeline_mock,
             ) as ray_mock,
         ):
             pipeline.run()

@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import sys
 from dataclasses import field
@@ -19,9 +9,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 import pytest
 from pydantic import ValidationError
 
-from distilabel.mixins.runtime_parameters import RuntimeParameter
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.tasks.base import Task
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.tasks.base import Task
 from tests.unit.conftest import (
     DummyAsyncLLM,
     DummyTask,
@@ -107,7 +97,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_0",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -125,7 +115,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_0",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -143,7 +133,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_1",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -161,7 +151,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_1",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -179,7 +169,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_2",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -197,7 +187,7 @@ class TestTask:
                         "output": "output",
                         "info_from_input": "additional_info_2",
                         "model_name": "test",
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "raw_output_task": "output",
                             "raw_input_task": [
                                 {"content": "", "role": "system"},
@@ -228,7 +218,7 @@ class TestTask:
                             "additional_info_0",
                         ],
                         "model_name": "test",
-                        "distilabel_metadata": [
+                        "fastdistill_metadata": [
                             {
                                 "raw_output_task": "output",
                                 "raw_input_task": [
@@ -274,7 +264,7 @@ class TestTask:
                             "additional_info_1",
                         ],
                         "model_name": "test",
-                        "distilabel_metadata": [
+                        "fastdistill_metadata": [
                             {
                                 "raw_output_task": "output",
                                 "raw_input_task": [
@@ -320,7 +310,7 @@ class TestTask:
                             "additional_info_2",
                         ],
                         "model_name": "test",
-                        "distilabel_metadata": [
+                        "fastdistill_metadata": [
                             {
                                 "raw_output_task": "output",
                                 "raw_input_task": [
@@ -407,7 +397,7 @@ class TestTask:
         assert result == [
             {
                 "additional_info": "info",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_input_task": [
                         {
                             "content": "",
@@ -429,7 +419,7 @@ class TestTask:
             },
             {
                 "additional_info": "info",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_input_task": [
                         {
                             "content": "",
@@ -451,7 +441,7 @@ class TestTask:
             },
             {
                 "additional_info": "info",
-                "distilabel_metadata": {
+                "fastdistill_metadata": {
                     "raw_input_task": [
                         {
                             "content": "",
@@ -623,12 +613,12 @@ class TestTask:
                         ],
                     },
                     {
-                        "description": "Whether to include the raw output of the LLM in the key `raw_output_<TASK_NAME>` of the `distilabel_metadata` dictionary output column",
+                        "description": "Whether to include the raw output of the LLM in the key `raw_output_<TASK_NAME>` of the `fastdistill_metadata` dictionary output column",
                         "name": "add_raw_output",
                         "optional": True,
                     },
                     {
-                        "description": "Whether to include the raw input of the LLM in the key `raw_input_<TASK_NAME>` of the `distilabel_metadata` dictionary column",
+                        "description": "Whether to include the raw input of the LLM in the key `raw_input_<TASK_NAME>` of the `fastdistill_metadata` dictionary column",
                         "name": "add_raw_input",
                         "optional": True,
                     },
@@ -677,10 +667,11 @@ class TestTask:
         if add_raw_output or add_raw_input:
             if add_raw_output:
                 assert (
-                    "raw_output_dummy_task_0" in result[0]["distilabel_metadata"].keys()
+                    "raw_output_dummy_task_0"
+                    in result[0]["fastdistill_metadata"].keys()
                 )
             if add_raw_input:
                 assert (
-                    "raw_input_dummy_task_0" in result[0]["distilabel_metadata"].keys()
+                    "raw_input_dummy_task_0" in result[0]["fastdistill_metadata"].keys()
                 )
-        assert "statistics_dummy_task_0" in result[0]["distilabel_metadata"].keys()
+        assert "statistics_dummy_task_0" in result[0]["fastdistill_metadata"].keys()

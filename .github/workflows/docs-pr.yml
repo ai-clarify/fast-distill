@@ -7,7 +7,7 @@ on:
       - synchronize
 
 concurrency:
-  group: distilabel-docs
+  group: fastdistill-docs
   cancel-in-progress: false
 
 permissions:
@@ -78,6 +78,6 @@ jobs:
                 issue_number: pr_number,
                 owner: owner,
                 repo: repo,
-                body: `Documentation for this PR has been built. You can view it at: https://distilabel.argilla.io/pr-${pr_number}/`
+                body: `Documentation for this PR has been built. You can view it at: https://fastdistill.argilla.io/pr-${pr_number}/`
               });
             }

@@ -1,24 +1,14 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import json
 from typing import Union
 
 import pytest
 
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.columns.expand import ExpandColumns
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.columns.expand import ExpandColumns
 
 
 class TestExpandColumns:
@@ -41,7 +31,7 @@ class TestExpandColumns:
                     {
                         "column1": [1, 2, 3],
                         "column2": ["a", "b", "c"],
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_column1": {
                                 "input_tokens": [12],
                                 "output_tokens": [12],
@@ -93,7 +83,7 @@ class TestExpandColumns:
                     {
                         "column1": json.dumps([1, 2, 3]),
                         "column2": json.dumps(["a", "b", "c"]),
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_column1": {
                                 "input_tokens": [12],
                                 "output_tokens": [12],
@@ -145,7 +135,7 @@ class TestExpandColumns:
                     {
                         "column1": [1, 2, 3],
                         "column2": ["a", "b", "c"],
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_column1": {
                                 "input_tokens": [12],
                                 "output_tokens": [12],
@@ -197,7 +187,7 @@ class TestExpandColumns:
                     {
                         "column1": [1, 2, 3],
                         "column2": ["a", "b", "c"],
-                        "distilabel_metadata": {
+                        "fastdistill_metadata": {
                             "statistics_column1": {
                                 "input_tokens": [793],
                                 "output_tokens": [361],
@@ -263,16 +253,16 @@ class TestExpandColumns:
             {
                 "column1": 1,
                 "column2": "a",
-                "distilabel_metadata": stats[0],
+                "fastdistill_metadata": stats[0],
             },
             {
                 "column1": 2,
                 "column2": "b",
-                "distilabel_metadata": stats[1],
+                "fastdistill_metadata": stats[1],
             },
             {
                 "column1": 3,
                 "column2": "c",
-                "distilabel_metadata": stats[2],
+                "fastdistill_metadata": stats[2],
             },
         ]

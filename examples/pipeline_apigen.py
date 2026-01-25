@@ -1,30 +1,20 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 from pathlib import Path
 
 from datasets import load_dataset
 
-from distilabel.models import InferenceEndpointsLLM
-from distilabel.pipeline import Pipeline
-from distilabel.steps import CombineOutputs, DataSampler, LoadDataFromDicts
-from distilabel.steps.tasks import (
+from fastdistill.models import InferenceEndpointsLLM
+from fastdistill.pipeline import Pipeline
+from fastdistill.steps import CombineOutputs, DataSampler, LoadDataFromDicts
+from fastdistill.steps.tasks import (
     APIGenExecutionChecker,
     APIGenGenerator,
     APIGenSemanticChecker,
 )
-from distilabel.steps.tasks.apigen.utils import PrepareExamples, load_module_from_path
+from fastdistill.steps.tasks.apigen.utils import PrepareExamples, load_module_from_path
 
 libpath = Path(__file__).parent / "lib_apigen.py"
 

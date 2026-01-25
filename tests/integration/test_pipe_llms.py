@@ -1,30 +1,20 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import os
 from typing import TYPE_CHECKING, Dict, List
 
-from distilabel.mixins.runtime_parameters import RuntimeParameter
-from distilabel.models.llms.huggingface.transformers import TransformersLLM
-from distilabel.models.llms.openai import OpenAILLM
-from distilabel.pipeline.local import Pipeline
-from distilabel.steps.base import Step, StepInput
-from distilabel.steps.generators.huggingface import LoadDataFromHub
-from distilabel.steps.tasks.text_generation import TextGeneration
+from fastdistill.mixins.runtime_parameters import RuntimeParameter
+from fastdistill.models.llms.huggingface.transformers import TransformersLLM
+from fastdistill.models.llms.openai import OpenAILLM
+from fastdistill.pipeline.local import Pipeline
+from fastdistill.steps.base import Step, StepInput
+from fastdistill.steps.generators.huggingface import LoadDataFromHub
+from fastdistill.steps.tasks.text_generation import TextGeneration
 
 if TYPE_CHECKING:
-    from distilabel.typing import StepOutput
+    from fastdistill.typing import StepOutput
 
 
 class RenameColumns(Step):

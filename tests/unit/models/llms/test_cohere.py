@@ -1,16 +1,6 @@
-# Copyright 2023-present, Argilla, Inc.
+# Copyright 2026 cklxx
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the MIT License.
 
 import os
 import sys
@@ -19,9 +9,12 @@ from unittest import mock
 
 import nest_asyncio
 import pytest
+
+pytest.importorskip("cohere")
+pytest.importorskip("tokenizers")
 from tokenizers import Tokenizer
 
-from distilabel.models.llms.cohere import CohereLLM
+from fastdistill.models.llms.cohere import CohereLLM
 
 from .utils import DummyUserDetail
 
@@ -145,13 +138,13 @@ class TestCohereLLM:
                     "generation_kwargs": {},
                     "base_url": "https://api.cohere.ai/v1",
                     "timeout": 120,
-                    "client_name": "distilabel",
+                    "client_name": "fastdistill",
                     "structured_output": None,
                     "jobs_ids": None,
                     "offline_batch_generation_block_until_done": None,
                     "use_offline_batch_generation": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.cohere",
+                        "module": "fastdistill.models.llms.cohere",
                         "name": "CohereLLM",
                     },
                 },
@@ -167,7 +160,7 @@ class TestCohereLLM:
                     "generation_kwargs": {},
                     "base_url": "https://api.cohere.ai/v1",
                     "timeout": 120,
-                    "client_name": "distilabel",
+                    "client_name": "fastdistill",
                     "structured_output": {
                         "schema": DummyUserDetail.model_json_schema(),
                         "mode": "tool_call",
@@ -177,7 +170,7 @@ class TestCohereLLM:
                     "offline_batch_generation_block_until_done": None,
                     "use_offline_batch_generation": False,
                     "type_info": {
-                        "module": "distilabel.models.llms.cohere",
+                        "module": "fastdistill.models.llms.cohere",
                         "name": "CohereLLM",
                     },
                 },
