@@ -19,4 +19,4 @@ Date: 2026-01-25
 - [x] Applied rounded-corner masks to README assets.
 - [x] Validated asset outputs.
 - [x] Ran lint + tests.
-- [ ] Committed changes.
+- [x] Committed changes.
