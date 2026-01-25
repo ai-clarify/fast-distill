@@ -286,9 +286,9 @@ class ComponentsGalleryPlugin(BasePlugin[ComponentsGalleryConfig]):
                 docstring["icon"] = _STEPS_CATEGORY_TO_ICON.get(first_category, "")
 
             if docstring["icon"]:
-                assert docstring["icon"] in _STEPS_CATEGORY_TO_ICON.values(), (
-                    f"Icon {docstring['icon']} not found in _STEPS_CATEGORY_TO_ICON"
-                )
+                assert (
+                    docstring["icon"] in _STEPS_CATEGORY_TO_ICON.values()
+                ), f"Icon {docstring['icon']} not found in _STEPS_CATEGORY_TO_ICON"
 
             name = step["name"]
 
@@ -354,9 +354,9 @@ class ComponentsGalleryPlugin(BasePlugin[ComponentsGalleryConfig]):
                 first_category = docstring["categories"][0]
                 docstring["icon"] = _STEPS_CATEGORY_TO_ICON.get(first_category, "")
             if docstring["icon"]:
-                assert docstring["icon"] in _STEPS_CATEGORY_TO_ICON.values(), (
-                    f"Icon {docstring['icon']} not found in _STEPS_CATEGORY_TO_ICON"
-                )
+                assert (
+                    docstring["icon"] in _STEPS_CATEGORY_TO_ICON.values()
+                ), f"Icon {docstring['icon']} not found in _STEPS_CATEGORY_TO_ICON"
 
             name = task["name"]
 
