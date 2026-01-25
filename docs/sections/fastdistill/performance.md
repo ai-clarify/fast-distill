@@ -1,5 +1,17 @@
 # FastDistill Performance Analysis
 
+## Run (2026-01-25, OpenRouter WikiSQL 1k)
+
+### Key metrics (WikiSQL 1k)
+- Distillation wall time: 1023.000s for 1000 samples (~3517 samples/hour).
+- Keep rate: 11.9% (119/1000 kept after filtering).
+- Teacher exec_pass_rate: 0.119; gold_match_rate: 0.062; judge_score mean: 0.0905.
+- MLX eval wall time (pre): 889.301s; MLX train wall time: 294.597s; MLX eval wall time (post): 479.854s.
+- Student exec_pass_rate: 0.53 → 0.929; gold_match_rate: 0.0 → 0.309; judge_score mean: 0.265 → 0.619.
+
+### Notes
+- Teacher eval gate failed at default thresholds; the run proceeded with `FASTDISTILL_TEACHER_EVAL_GATE=0`.
+
 ## Run (2026-01-25, OpenRouter quick distill)
 
 ### Key metrics (Text2SQL mini set)

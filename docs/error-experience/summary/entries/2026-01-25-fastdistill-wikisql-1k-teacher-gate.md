@@ -1,0 +1,1 @@
+- 2026-01-25: WikiSQL 1k run failed the teacher eval gate (exec_pass_rate 0.119, gold_match_rate 0.062, judge_score mean 0.0905); continued with `FASTDISTILL_TEACHER_EVAL_GATE=0` and `FASTDISTILL_SKIP_DISTILL=1`.

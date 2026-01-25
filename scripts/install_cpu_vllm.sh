@@ -27,8 +27,20 @@ latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 echo "Checking out to '$latest_tag' tag..."
 git checkout "$latest_tag"
 
-echo "Installing vLLM CPU requirements..."
-python -m pip install -r requirements-cpu.txt --extra-index-url https://download.pytorch.org/whl/cpu
+requirements_file=""
+for candidate in requirements-cpu.txt requirements/cpu.txt requirements.txt; do
+    if [ -f "$candidate" ]; then
+        requirements_file="$candidate"
+        break
+    fi
+done
+if [ -z "$requirements_file" ]; then
+    echo "No vLLM requirements file found for CPU install."
+    exit 1
+fi
+
+echo "Installing vLLM requirements from ${requirements_file}..."
+python -m pip install -r "$requirements_file" --extra-index-url https://download.pytorch.org/whl/cpu
 
 echo "Installing vLLM for CPU..."
 export CMAKE_ARGS="-DPYTHON_EXECUTABLE=$(which python) -DPYTHON_INCLUDE_DIR=$(python -c "from sysconfig import get_path; print(get_path('include'))") -DPYTHON_LIBRARY=$(python -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")"

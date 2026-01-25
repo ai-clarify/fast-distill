@@ -1,5 +1,55 @@
 # FastDistill Baselines
 
+## Run (2026-01-25, OpenRouter WikiSQL 1k)
+
+### Run configuration
+- Pipeline: `scripts/run_ollama_mlx_e2e.py`
+- Provider: OpenRouter (remote)
+- Teacher model: `deepseek/deepseek-v3.2`
+- Student training model: `Qwen/Qwen3-0.6B` (MLX LoRA)
+- Dataset size: 1k train + 1k eval (WikiSQL 1k)
+- Artifacts root: `~/.cache/fastdistill/artifacts`
+- Gate override: `FASTDISTILL_TEACHER_EVAL_GATE=0` (teacher gate failed on full 1k)
+
+### Distillation quality results
+From `~/.cache/fastdistill/artifacts/reports/teacher_eval/quality_report.json`:
+- total: 1000
+- exec_pass_rate: 0.119
+- gold_match_rate: 0.062
+- judge_score: min 0.0, max 1.0, mean 0.0905
+
+From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
+- total: 119
+- kept: 119
+- rejected: 881
+- p_keep: 0.119
+- exec_pass_rate: 1.0
+- gold_match_rate: 0.5210
+- judge_score: min 0.0, max 1.0, mean 0.7605
+
+### Student eval (MLX)
+From `~/.cache/fastdistill/artifacts/reports/student_eval_pre/quality_report.json`:
+- total: 1000
+- exec_pass_rate: 0.53
+- gold_match_rate: 0.0
+- judge_score: min 0.0, max 1.0, mean 0.265
+
+From `~/.cache/fastdistill/artifacts/reports/student_eval_post/quality_report.json`:
+- total: 1000
+- exec_pass_rate: 0.929
+- gold_match_rate: 0.309
+- judge_score: min 0.0, max 1.0, mean 0.619
+
+### Distillation timing
+- distillation_wall_time_s: 1023.000 (pipeline log, 19:14:57 → 19:32:00)
+- mlx_eval_pre_wall_time_s: 889.301
+- mlx_train_wall_time_s: 294.597 (mlx_train.yaml → adapters.safetensors)
+- mlx_eval_post_wall_time_s: 479.854
+
+### Notes
+- Teacher eval gate failed at default thresholds (exec_pass_rate 0.119, gold_match_rate 0.062, judge_score mean 0.0905).
+- Distillation continued with the gate disabled; the keep rate was 11.9% (119/1000).
+
 ## Run (2026-01-25, Ollama standard flow)
 
 ### Run configuration

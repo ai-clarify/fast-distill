@@ -1,5 +1,17 @@
 # FastDistill 性能分析
 
+## 运行（2026-01-25，OpenRouter WikiSQL 1k）
+
+### 关键指标（WikiSQL 1k）
+- 蒸馏耗时：1000 条样本 1023.000s（约 3517 samples/hour）。
+- 保留率：11.9%（119/1000）。
+- Teacher exec_pass_rate：0.119；gold_match_rate：0.062；judge_score mean：0.0905。
+- MLX 评测耗时（预训练）：889.301s；MLX 训练耗时：294.597s；MLX 评测耗时（训练后）：479.854s。
+- 学生指标：exec_pass_rate 0.53 → 0.929；gold_match_rate 0.0 → 0.309；judge_score mean 0.265 → 0.619。
+
+### 备注
+- Teacher gate 默认阈值失败，使用 `FASTDISTILL_TEACHER_EVAL_GATE=0` 继续流程。
+
 ## 运行（2026-01-25，OpenRouter 快速蒸馏）
 
 ### 关键指标（Text2SQL 迷你集）
