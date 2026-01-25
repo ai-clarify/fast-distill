@@ -35,12 +35,15 @@ def ReceiveArrays(inputs: StepInput) -> "StepOutput":
 
 
 @pytest.mark.benchmark
-def test_cache_time() -> None:
-    with Pipeline(name="dummy") as pipeline:
-        numpy_generator = NumpyBigArrayGenerator(num_batches=2, batch_size=100)
+def test_cache_time(benchmark) -> None:
+    def run_pipeline() -> None:
+        with Pipeline(name="dummy") as pipeline:
+            numpy_generator = NumpyBigArrayGenerator(num_batches=2, batch_size=100)
 
-        receive_arrays = ReceiveArrays()
+            receive_arrays = ReceiveArrays()
 
-        numpy_generator >> receive_arrays
+            numpy_generator >> receive_arrays
 
-    pipeline.run(use_cache=False)
+        pipeline.run(use_cache=False)
+
+    benchmark(run_pipeline)

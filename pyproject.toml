@@ -70,7 +70,7 @@ tests = [
     "pytest-asyncio",
     "nest-asyncio",
     "pytest-timeout",
-    "pytest-codspeed",
+    "pytest-benchmark",
 ]
 
 # Optional LLMs, integrations, etc

@@ -1,0 +1,1 @@
+- 2026-01-25: CodSpeed benchmarks failed with 401 unauthorized due to missing/unauthorized `CODSPEED_TOKEN`; replaced with pytest-benchmark artifacts.
