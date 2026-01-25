@@ -17,4 +17,4 @@ Date: 2026-01-25
 - [x] Inspected failing test files.
 - [x] Reordered imports / adjusted optional dependency handling.
 - [x] Ran lint + tests.
-- [ ] Committed changes.
+- [x] Committed changes.
