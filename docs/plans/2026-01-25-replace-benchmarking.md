@@ -7,7 +7,7 @@ Replace the CodSpeed-based benchmark workflow with an in-repo pytest-benchmark f
 - [x] Swap test dependency from `pytest-codspeed` to `pytest-benchmark`.
 - [x] Update the benchmark workflow to run pytest-benchmark and upload artifacts.
 - [x] Run lint + unit + integration tests.
-- [ ] Commit changes.
+- [x] Commit changes.
 
 ## Progress
 - Swapped the test dependency and replaced the CodSpeed CI step with pytest-benchmark + artifacts.
