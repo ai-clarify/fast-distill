@@ -19,7 +19,7 @@
 </div>
 
 <div align="center">
-  <img src="assets/architecture.png" alt="Fast Distill Architecture" width="100%"/>
+  <img src="assets/architecture.png" alt="Fast Distill Architecture" width="100%" style="border-radius:20px;"/>
 </div>
 
 ---
