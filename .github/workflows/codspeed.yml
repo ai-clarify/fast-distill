@@ -37,6 +37,7 @@ jobs:
         run: ./scripts/install_dependencies.sh
 
       - name: Run benchmarks
+        if: ${{ secrets.CODSPEED_TOKEN != '' }}
         uses: CodSpeedHQ/action@v3
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
