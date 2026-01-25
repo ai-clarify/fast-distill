@@ -96,6 +96,13 @@ As mentioned, we use mkdocs to build the documentation. You can write the docume
 
 - Update the table of contents: If you add a new page, include it in the relevant index.md or the mkdocs.yml file.
 
+### Codebase walkthrough
+
+If you are new to the internals, start here:
+
+- [Codebase Walkthrough](codebase_walkthrough.md)
+- [代码库导读](codebase_walkthrough_zh.md)
+
 ### Components gallery
 
 The components gallery section of the documentation is automatically generated thanks to a custom plugin, it will be run when `mkdocs serve` is called. This guide to the steps helps us visualize each step, as well as examples of use.

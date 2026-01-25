@@ -8,3 +8,4 @@
 - summary/entries/2026-01-25-fastdistill-standard-flow-gate.md
 - summary/entries/2026-01-25-fastdistill-wikisql-1k-teacher-gate.md
 - summary/entries/2026-01-25-codspeed-unauthorized.md
+- summary/entries/2026-01-25-tests-missing-extras.md

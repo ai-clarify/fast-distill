@@ -269,4 +269,6 @@ nav:
       - sections/community/index.md
       - How to contribute?: sections/community/contributor.md
       - Developer Documentation: sections/community/developer_documentation.md
+      - Codebase Walkthrough: sections/community/codebase_walkthrough.md
+      - 代码库导读: sections/community/codebase_walkthrough_zh.md
       - Issue dashboard: sections/community/popular_issues.md

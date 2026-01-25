@@ -1,0 +1,1 @@
+- 2026-01-25: unit/integration tests failed in a fresh venv due to missing test extras (Pillow, pytest-asyncio, pytest-benchmark); install `.[tests]` before running test suites.
