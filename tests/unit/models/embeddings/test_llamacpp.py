@@ -17,7 +17,7 @@ class TestLlamaCppEmbeddings:
         """
         Fixture to set up embeddings for each test, considering CPU usage.
         """
-        self.model_name = "all-MiniLM-L6-v2-Q2_K.gguf"
+        self.model_name = "all-MiniLM-L6-v2-Q4_0.gguf"
         self.repo_id = "second-state/All-MiniLM-L6-v2-Embedding-GGUF"
         self.disable_cuda_device_placement = True
         self.n_gpu_layers = 0

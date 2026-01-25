@@ -53,10 +53,10 @@ class LlamaCppEmbeddings(Embeddings, CudaDevicePlacementMixin):
 
         # You can follow along this example downloading the following model running the following
         # command in the terminal, that will download the model to the `Downloads` folder:
-        # curl -L -o ~/Downloads/all-MiniLM-L6-v2-Q2_K.gguf https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-Q2_K.gguf
+        # curl -L -o ~/Downloads/all-MiniLM-L6-v2-Q4_0.gguf https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-Q4_0.gguf
 
         model_path = "Downloads/"
-        model = "all-MiniLM-L6-v2-Q2_K.gguf"
+        model = "all-MiniLM-L6-v2-Q4_0.gguf"
         embeddings = LlamaCppEmbeddings(
             model=model,
             model_path=str(Path.home() / model_path),
@@ -76,7 +76,7 @@ class LlamaCppEmbeddings(Embeddings, CudaDevicePlacementMixin):
         # You need to set environment variable to download private model to the local machine
 
         repo_id = "second-state/All-MiniLM-L6-v2-Embedding-GGUF"
-        model = "all-MiniLM-L6-v2-Q2_K.gguf"
+        model = "all-MiniLM-L6-v2-Q4_0.gguf"
         embeddings = LlamaCppEmbeddings(model=model,repo_id=repo_id)
 
         embeddings.load()
@@ -98,10 +98,10 @@ class LlamaCppEmbeddings(Embeddings, CudaDevicePlacementMixin):
 
         # You can follow along this example downloading the following model running the following
         # command in the terminal, that will download the model to the `Downloads` folder:
-        # curl -L -o ~/Downloads/all-MiniLM-L6-v2-Q2_K.gguf https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-Q2_K.gguf
+        # curl -L -o ~/Downloads/all-MiniLM-L6-v2-Q4_0.gguf https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-Q4_0.gguf
 
         model_path = "Downloads/"
-        model = "all-MiniLM-L6-v2-Q2_K.gguf"
+        model = "all-MiniLM-L6-v2-Q4_0.gguf"
         embeddings = LlamaCppEmbeddings(
             model=model,
             model_path=str(Path.home() / model_path),

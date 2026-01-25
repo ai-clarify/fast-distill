@@ -1,0 +1,1 @@
+- 2026-01-25: LlamaCpp embedding tests failed with `llama_decode returned -1` using Q2_K; switched test model to Q4_0.

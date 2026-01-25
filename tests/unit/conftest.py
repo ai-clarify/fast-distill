@@ -158,7 +158,7 @@ def local_llamacpp_model_path(tmp_path_factory):
     Returns:
         str: The path to the local LlamaCpp model file.
     """
-    model_name = "all-MiniLM-L6-v2-Q2_K.gguf"
+    model_name = "all-MiniLM-L6-v2-Q4_0.gguf"
     model_url = f"https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/{model_name}"
     tmp_path = tmp_path_factory.getbasetemp()
     model_path = tmp_path / model_name
