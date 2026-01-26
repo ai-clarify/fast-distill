@@ -24,6 +24,21 @@
 
 ---
 
+## 📊 WikiSQL 1k Distillation Results (2026-01-25)
+
+**Teacher pass rate** and **student performance** from the 1k-sample Text2SQL distillation run (OpenRouter, WikiSQL 1k).  
+Source: `docs/sections/fastdistill/baseline.md`
+
+| Stage | Model | Exec pass rate | Gold match rate | Judge score mean |
+| :--- | :--- | :--- | :--- | :--- |
+| Teacher eval | `deepseek/deepseek-v3.2` | **11.9%** | 6.2% | 0.0905 |
+| Student eval (pre) | `Qwen/Qwen3-0.6B` (MLX LoRA) | 53.0% | 0.0% | 0.265 |
+| Student eval (post) | `Qwen/Qwen3-0.6B` (MLX LoRA) | **92.9%** | **30.9%** | **0.619** |
+
+> Note: Teacher eval gate was overridden for the full 1k run; keep rate after filtering was 11.9% (119/1000).
+
+---
+
 ## 📖 Introduction
 
 **Fast Distill** is a production-grade data distillation framework designed to bridge the gap between raw data potential and high-quality student model training. It orchestrates a unified provider gateway, deterministic data contracts, and rigorous quality gates to produce datasets you can trust.
