@@ -37,6 +37,10 @@ def run(
         List[Any],
         typer.Option(help="", parser=parse_runtime_param, default_factory=list),
     ],
+    param_file: Optional[str] = typer.Option(
+        None,
+        help="YAML file or URL with runtime parameters (merged before --param).",
+    ),
     config: Optional[str] = typer.Option(
         None, help="Path or URL to the fastdistill pipeline configuration file."
     ),
@@ -73,7 +77,12 @@ def run(
         None, help="The Hugging Face Hub API token to use when pushing the dataset."
     ),
 ) -> None:
-    from fastdistill.cli.pipeline.utils import get_pipeline, parse_runtime_parameters
+    from fastdistill.cli.pipeline.utils import (
+        get_pipeline,
+        load_runtime_parameters_from_file,
+        merge_runtime_parameters,
+        parse_runtime_parameters,
+    )
 
     if script:
         if config:
@@ -113,6 +122,9 @@ def run(
         raise typer.Exit(code=1) from e
 
     parameters = parse_runtime_parameters(param)
+    if param_file:
+        file_parameters = load_runtime_parameters_from_file(param_file)
+        parameters = merge_runtime_parameters(file_parameters, parameters)
     distiset = pipeline.run(parameters=parameters, use_cache=not ignore_cache)
 
     if repo_id is not None:

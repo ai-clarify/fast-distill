@@ -8,3 +8,4 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 TEST_PIPELINE_PATH = os.path.join(current_dir, "test_pipeline.yaml")
 TEST_PIPELINE_ENV_PATH = os.path.join(current_dir, "test_pipeline_env.yaml")
+TEST_PIPELINE_PARAMS_PATH = os.path.join(current_dir, "test_runtime_params.yaml")

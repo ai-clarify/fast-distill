@@ -1,0 +1,2 @@
+load_hub_dataset:
+  repo_id: fastdistill-internal-testing/from-file

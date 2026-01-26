@@ -5,7 +5,9 @@
 import typer
 
 from fastdistill.cli.pipeline import app as pipeline_app
+from fastdistill.cli.registry import app as registry_app
 
 app = typer.Typer(name="fastdistill")
 
 app.add_typer(pipeline_app, name="pipeline")
+app.add_typer(registry_app, name="registry")

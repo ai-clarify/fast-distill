@@ -13,7 +13,7 @@ import yaml
 from pydantic import HttpUrl, ValidationError
 from pydantic.type_adapter import TypeAdapter
 
-from fastdistill.config import load_layered_config
+from fastdistill.config import deep_merge_dicts, load_layered_config, load_yaml_config
 from fastdistill.constants import ROUTING_BATCH_FUNCTION_ATTR_NAME, STEP_ATTR_NAME
 from fastdistill.errors import FastDistillUserError
 from fastdistill.pipeline.local import Pipeline
@@ -48,6 +48,25 @@ def parse_runtime_parameters(
             else:
                 current = current.setdefault(key, {})
     return runtime_params
+
+
+def load_runtime_parameters_from_file(path: str) -> Dict[str, Any]:
+    """Loads runtime parameters from a YAML file.
+
+    Args:
+        path: path or URL to the YAML runtime parameters file.
+
+    Returns:
+        A dictionary of runtime parameters.
+    """
+    return load_yaml_config(path)
+
+
+def merge_runtime_parameters(
+    base: Dict[str, Any], override: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Merge runtime parameters with override precedence."""
+    return deep_merge_dicts(base, override)
 
 
 def valid_http_url(url: str) -> bool:

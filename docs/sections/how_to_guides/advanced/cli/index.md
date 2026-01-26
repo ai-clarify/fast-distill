@@ -126,3 +126,28 @@ fastdistill pipeline run \
 ```
 
 The same overlay flags are supported on `fastdistill pipeline info`.
+
+#### Runtime parameters file
+
+You can load runtime parameters from a YAML file and override them with `--param`:
+
+```bash
+fastdistill pipeline run \
+  --config configs/pipeline.yaml \
+  --param-file configs/runtime_params.yaml \
+  --param teacher_gen.llm.generation_kwargs.temperature=0.7
+```
+
+#### Registry commands
+
+List available components:
+
+```bash
+fastdistill registry list --kind llm
+```
+
+Inspect a single component:
+
+```bash
+fastdistill registry show --kind llm --name OpenAILLM
+```

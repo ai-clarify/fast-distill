@@ -7,7 +7,11 @@ from unittest import mock
 from typer.testing import CliRunner
 
 from fastdistill.cli.app import app
-from tests.unit.cli.utils import TEST_PIPELINE_ENV_PATH, TEST_PIPELINE_PATH
+from tests.unit.cli.utils import (
+    TEST_PIPELINE_ENV_PATH,
+    TEST_PIPELINE_PARAMS_PATH,
+    TEST_PIPELINE_PATH,
+)
 
 runner = CliRunner()
 
@@ -107,6 +111,35 @@ class TestPipelineRun:
         )
 
         pipeline_run_mock.assert_called_once_with(parameters={}, use_cache=True)
+        assert result.exit_code == 0
+
+    @mock.patch("fastdistill.pipeline.local.Pipeline.run")
+    def test_pipeline_run_with_param_file(
+        self, pipeline_run_mock: mock.MagicMock
+    ) -> None:
+        result = runner.invoke(
+            app,
+            [
+                "pipeline",
+                "run",
+                "--config",
+                TEST_PIPELINE_PATH,
+                "--param-file",
+                TEST_PIPELINE_PARAMS_PATH,
+                "--param",
+                "load_hub_dataset.split=test",
+            ],
+        )
+
+        pipeline_run_mock.assert_called_once_with(
+            parameters={
+                "load_hub_dataset": {
+                    "repo_id": "fastdistill-internal-testing/from-file",
+                    "split": "test",
+                }
+            },
+            use_cache=True,
+        )
         assert result.exit_code == 0
 
     @mock.patch("fastdistill.pipeline.local.Pipeline.run")
