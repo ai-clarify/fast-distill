@@ -4,6 +4,9 @@ set -euo pipefail
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"$script_dir/ensure_venv.sh"
+
 changes="$(
   {
     git diff --name-only --diff-filter=AMRT

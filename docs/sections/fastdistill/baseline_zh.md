@@ -85,6 +85,37 @@
 - Teacher 评测 gate 失败：`total 2 < min_total 50`。
 - 可设置 `FASTDISTILL_TEACHER_EVAL_MIN_TOTAL=2` 或 `FASTDISTILL_TEACHER_EVAL_GATE=0` 继续流程。
 
+## 运行（2026-01-26，Ollama 快速蒸馏）
+
+### 运行配置
+- Pipeline：`examples/fastdistill/fastdistill_pipeline.py`
+- Provider：Ollama（本地）
+- Teacher 模型：`lfm2.5-thinking:latest`
+- 数据集规模：2 条样本（Text2SQL 迷你集）
+- Artifacts 根目录：`~/.cache/fastdistill/artifacts`
+
+### 蒸馏质量结果
+来自 `~/.cache/fastdistill/artifacts/reports/teacher_eval/quality_report.json`：
+- total：2
+- exec_pass_rate：1.0
+- gold_match_rate：1.0
+- judge_score：min 1.0，max 1.0，mean 1.0
+
+来自 `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`：
+- total：2
+- kept：2
+- rejected：0
+- p_keep：1.0
+- exec_pass_rate：1.0
+- gold_match_rate：1.0
+- judge_score：min 1.0，max 1.0，mean 1.0
+
+### 蒸馏耗时
+- pipeline_wall_time_s：41.012
+
+### 备注
+- 该运行用于验证本地 Ollama 模型接入，规模为 2 条样本。
+
 ## 运行（2026-01-25，OpenRouter 快速蒸馏）
 
 ### 运行配置

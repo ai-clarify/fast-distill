@@ -4,7 +4,11 @@
 
 import pytest
 
-from fastdistill.steps.fastdistill.sql_output import SqlOutputCleaner, clean_sql_output
+from fastdistill.steps.fastdistill.sql_output import (
+    CleanSqlOutput,
+    SqlOutputCleaner,
+    clean_sql_output,
+)
 
 
 @pytest.mark.parametrize(
@@ -39,3 +43,12 @@ def test_clean_sql_output_allows_no_keyword_when_configured() -> None:
     cleaner = SqlOutputCleaner(require_sql_keyword=False)
     assert cleaner.clean("<think>only reasoning</think>") == ""
     assert cleaner.clean("result: ok") == "result: ok"
+
+
+def test_clean_sql_output_step_overwrites_field() -> None:
+    step = CleanSqlOutput()
+    rows = [
+        {"generation": "```sql\nSELECT a FROM b\n```"},
+    ]
+    output = next(step.process(rows))
+    assert output[0]["generation"] == "SELECT a FROM b"

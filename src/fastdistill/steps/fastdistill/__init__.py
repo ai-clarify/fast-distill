@@ -20,11 +20,16 @@ from fastdistill.steps.fastdistill.quality_report import WriteQualityReport
 from fastdistill.steps.fastdistill.score_agreement import WriteScoreAgreementReport
 from fastdistill.steps.fastdistill.scoring import KeepByScore, ScoreFromExecEval
 from fastdistill.steps.fastdistill.sql_eval import SQLiteExecEval
-from fastdistill.steps.fastdistill.sql_output import SqlOutputCleaner, clean_sql_output
+from fastdistill.steps.fastdistill.sql_output import (
+    CleanSqlOutput,
+    SqlOutputCleaner,
+    clean_sql_output,
+)
 from fastdistill.steps.fastdistill.timing import MarkTime, WriteTimingReport
 
 __all__ = [
     "CanonicalizeFields",
+    "CleanSqlOutput",
     "ComputeHash",
     "DeduplicateByField",
     "FilterByBool",

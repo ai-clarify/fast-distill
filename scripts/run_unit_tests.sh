@@ -2,6 +2,9 @@
 
 set -e
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"$script_dir/ensure_venv.sh"
+
 if python - <<'PY'
 import importlib.util
 import sys

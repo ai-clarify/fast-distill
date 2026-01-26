@@ -9,6 +9,7 @@ from fastdistill.pipeline import Pipeline
 from fastdistill.steps import KeepColumns, LoadDataFromDicts, LoadDataFromFileSystem
 from fastdistill.steps.fastdistill import (
     CanonicalizeFields,
+    CleanSqlOutput,
     ComputeHash,
     DeduplicateByField,
     FilterByBool,
@@ -59,6 +60,27 @@ def _ensure_sample_db(artifacts_root: str) -> str:
     return db_path
 
 
+def _parse_stop_sequences(value: str | None) -> str | list[str] | None:
+    if not value:
+        return None
+    if "|" in value:
+        return [item for item in (part.strip() for part in value.split("|")) if item]
+    return value.strip() or None
+
+
+def _openrouter_generation_kwargs() -> dict:
+    kwargs: dict[str, object] = {}
+    if (value := os.getenv("OPENROUTER_TEMPERATURE")):
+        kwargs["temperature"] = float(value)
+    if (value := os.getenv("OPENROUTER_TOP_P")):
+        kwargs["top_p"] = float(value)
+    if (value := os.getenv("OPENROUTER_MAX_TOKENS")):
+        kwargs["max_new_tokens"] = int(value)
+    if (value := _parse_stop_sequences(os.getenv("OPENROUTER_STOP"))):
+        kwargs["stop"] = value
+    return kwargs
+
+
 def build_pipeline():
     _load_repo_dotenv()
     artifacts_root = os.getenv(
@@ -94,11 +116,13 @@ def build_pipeline():
         model = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-v3.2")
         api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
         timeout = int(os.getenv("OPENROUTER_TIMEOUT", "120"))
+        generation_kwargs = _openrouter_generation_kwargs()
         teacher_llm = OpenAILLM(
             model=model,
             base_url=base_url,
             api_key=api_key,
             timeout=timeout,
+            generation_kwargs=generation_kwargs,
         )
 
     with Pipeline(name="fastdistill-text2sql") as pipeline:
@@ -142,6 +166,7 @@ def build_pipeline():
             **teacher_kwargs,
         )
 
+        clean_sql = CleanSqlOutput(input_field="generation", output_field="generation")
         rule_filter = RuleFilter(text_field="generation", min_chars=1, max_chars=512)
         sql_eval = SQLiteExecEval(db_path=db_path, sql_field="generation")
         teacher_score = ScoreFromExecEval(
@@ -194,6 +219,7 @@ def build_pipeline():
             >> sample_id
             >> dedup
             >> teacher
+            >> clean_sql
             >> rule_filter
             >> sql_eval
             >> teacher_score

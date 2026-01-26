@@ -2,11 +2,14 @@
 #
 # Licensed under the MIT License.
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 from typing import Iterable, Tuple
+
+from pydantic import Field
+from typing_extensions import override
+
+from fastdistill.steps.base import Step, StepInput
 
 _SQL_FENCE_RE = re.compile(r"```\s*(?:sql)?\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 _SQL_PREFIX_RE = re.compile(r"(?is)\bsql\s*[:：]\s*")
@@ -34,6 +37,44 @@ class SqlOutputCleaner:
             stop_markers=self.stop_markers,
             require_sql_keyword=self.require_sql_keyword,
         )
+
+
+class CleanSqlOutput(Step):
+    input_field: str = Field(default="generation")
+    output_field: str = Field(default="generation")
+    think_tags: Tuple[str, ...] = Field(
+        default=("think", "analysis", "reasoning", "thought")
+    )
+    stop_markers: Tuple[str, ...] = Field(
+        default=(
+            "explanation:",
+            "reasoning:",
+            "analysis:",
+            "answer:",
+            "final:",
+            "notes:",
+        )
+    )
+    require_sql_keyword: bool = Field(default=True)
+
+    @property
+    def inputs(self) -> list[str]:
+        return [self.input_field]
+
+    @property
+    def outputs(self) -> list[str]:
+        return [self.output_field]
+
+    @override
+    def process(self, inputs: StepInput):  # type: ignore[override]
+        cleaner = SqlOutputCleaner(
+            think_tags=self.think_tags,
+            stop_markers=self.stop_markers,
+            require_sql_keyword=self.require_sql_keyword,
+        )
+        for row in inputs:
+            row[self.output_field] = cleaner.clean(row[self.input_field])
+        yield inputs
 
 
 def _strip_tag_blocks(text: str, tags: Iterable[str]) -> str:

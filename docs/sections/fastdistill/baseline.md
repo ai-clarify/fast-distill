@@ -85,6 +85,37 @@ From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
 - Run failed at teacher eval gate: `total 2 < min_total 50`.
 - Override via `FASTDISTILL_TEACHER_EVAL_MIN_TOTAL=2` or disable with `FASTDISTILL_TEACHER_EVAL_GATE=0` to proceed.
 
+## Run (2026-01-26, Ollama quick distill)
+
+### Run configuration
+- Pipeline: `examples/fastdistill/fastdistill_pipeline.py`
+- Provider: Ollama (local)
+- Teacher model: `lfm2.5-thinking:latest`
+- Dataset size: 2 samples (Text2SQL mini set)
+- Artifacts root: `~/.cache/fastdistill/artifacts`
+
+### Distillation quality results
+From `~/.cache/fastdistill/artifacts/reports/teacher_eval/quality_report.json`:
+- total: 2
+- exec_pass_rate: 1.0
+- gold_match_rate: 1.0
+- judge_score: min 1.0, max 1.0, mean 1.0
+
+From `~/.cache/fastdistill/artifacts/reports/distilled/quality_report.json`:
+- total: 2
+- kept: 2
+- rejected: 0
+- p_keep: 1.0
+- exec_pass_rate: 1.0
+- gold_match_rate: 1.0
+- judge_score: min 1.0, max 1.0, mean 1.0
+
+### Distillation timing
+- pipeline_wall_time_s: 41.012
+
+### Notes
+- This is a 2-sample smoke test to validate local Ollama model wiring.
+
 ## Run (2026-01-25, OpenRouter quick distill)
 
 ### Run configuration

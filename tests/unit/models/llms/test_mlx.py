@@ -2,24 +2,38 @@
 #
 # Licensed under the MIT License.
 
+import importlib.util
+import os
 import platform
-from typing import Any, Dict, Generator
+from typing import TYPE_CHECKING, Any, Dict, Generator
 
 import pytest
 
-from fastdistill.models.llms.mlx import MlxLLM
-
 from .utils import DummyUserDetail
 
-pytest.importorskip("mlx_lm")
-
 RUNS_ON_APPLE_SILICON = platform.processor() == "arm" and platform.system() == "Darwin"
+ENABLE_MLX_TESTS = os.getenv("FASTDISTILL_ENABLE_MLX_TESTS") == "1"
+
+if not ENABLE_MLX_TESTS:
+    pytest.skip(
+        "Set FASTDISTILL_ENABLE_MLX_TESTS=1 to run MLX tests.",
+        allow_module_level=True,
+    )
+if not RUNS_ON_APPLE_SILICON:
+    pytest.skip("MLX only runs on Apple Silicon", allow_module_level=True)
+if importlib.util.find_spec("mlx_lm") is None:
+    pytest.skip("mlx_lm not installed", allow_module_level=True)
+
+if TYPE_CHECKING:
+    from fastdistill.models.llms.mlx import MlxLLM
 
 
 @pytest.fixture(scope="module")
-def llm() -> Generator[MlxLLM, None, None]:
+def llm() -> Generator["MlxLLM", None, None]:
     if not RUNS_ON_APPLE_SILICON:
         pytest.skip("MLX only runs on Apple Silicon")
+    from fastdistill.models.llms.mlx import MlxLLM
+
     llm = MlxLLM(path_or_hf_repo="mlx-community/Qwen2.5-0.5B-4bit")
     try:
         llm.load()
@@ -33,10 +47,10 @@ def llm() -> Generator[MlxLLM, None, None]:
     reason="MLX only runs on Apple Silicon",
 )
 class TestMlxLLM:
-    def test_model_name(self, llm: MlxLLM) -> None:
+    def test_model_name(self, llm: "MlxLLM") -> None:
         assert llm.path_or_hf_repo == "mlx-community/Qwen2.5-0.5B-4bit"
 
-    def test_generate(self, llm: MlxLLM) -> None:
+    def test_generate(self, llm: "MlxLLM") -> None:
         responses = llm.generate(
             inputs=[
                 [{"role": "user", "content": "Hello, how are you?"}],
@@ -110,6 +124,8 @@ class TestMlxLLM:
     def test_serialization(
         self, structured_output: Dict[str, Any], dump: Dict[str, Any]
     ) -> None:
+        from fastdistill.models.llms.mlx import MlxLLM
+
         llm = MlxLLM(
             path_or_hf_repo="mlx-community/Qwen2.5-0.5B-4bit",
             structured_output=structured_output,

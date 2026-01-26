@@ -52,6 +52,38 @@ Keep this concise and action-oriented. Prefer correctness and maintainability ov
 
 ---
 
+## 2 · Rigor requirements (must withstand challenge)
+
+### 2.1 Evidence & traceability
+* **No claim without evidence**: every result or metric must cite a concrete artifact path, log line, or command output.
+* **No silent assumptions**: if information is missing, label it explicitly as a hypothesis and state how to verify.
+* **Record exact commands** for experiments and tests, including all env vars that affect behavior.
+* **Capture provenance**: include dataset path, seed, model identifier/version, run_id, and commit SHA for every run.
+* **No opaque aggregation**: if a metric is derived, record the formula and the script or command used.
+
+### 2.2 Experimental discipline
+* **Pilot before scale**: run a small sample to validate prompt/format/gates before a 1k run.
+* **Determinism first**: set seed/temperature/decoding explicitly and document them.
+* **Gates are explicit**: any gate override must be recorded in baseline/performance notes with rationale.
+* **Result deltas**: when re-running, report before/after metrics side-by-side.
+
+### 2.3 Testing discipline
+* **Full validation required**: run lint + unit + integration after changes; if any are skipped/xfail, state why.
+* **Environment constraints** must be logged to error-experience entries with repro details.
+* **Automation is required**: test entrypoints must activate the repo venv and install required extras.
+
+### 2.4 Documentation discipline
+* **Baselines** go to `docs/sections/fastdistill/baseline.md` (and `_zh.md` when feasible).
+* **Performance** updates go to `docs/sections/fastdistill/performance.md` (and `_zh.md` when feasible).
+* **Error experience** entries must be added for any non-trivial failure or blocked run.
+
+### 2.5 Audit readiness
+* **Reproducibility**: log dataset version/hash, environment (OS/Python), and hardware where relevant.
+* **Isolation**: never mix metrics from different commits or datasets without explicit, labeled aggregation.
+* **Verifiability**: prefer referencing on-disk artifacts over memory when answering questions.
+
+---
+
 ## Error Experience Index
 
 - Index: `docs/error-experience.md`
