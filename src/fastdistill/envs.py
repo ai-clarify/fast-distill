@@ -8,12 +8,30 @@ import os
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from fastdistill import constants
+from fastdistill.errors import FastDistillUserError
 
 if TYPE_CHECKING:
     FASTDISTILL_LOG_LEVEL: str = "INFO"
     FASTDISTILL_PIPELINE_NAME: Optional[str] = None
     FASTDISTILL_PIPELINE_CACHE_ID: Optional[str] = None
     FASTDISTILL_CACHE_DIR: Optional[str] = None
+    FASTDISTILL_WRITE_BUFFER_BATCH_SIZE: int = 50
+
+
+def _get_positive_int_env(name: str, default: int) -> int:
+    raw_value = os.getenv(name)
+    if raw_value in (None, ""):
+        return default
+    try:
+        value = int(raw_value)
+    except ValueError as exc:
+        raise FastDistillUserError(
+            f"{name} must be a positive integer, got {raw_value!r}."
+        ) from exc
+    if value <= 0:
+        raise FastDistillUserError(f"{name} must be a positive integer, got {value}.")
+    return value
+
 
 ENVIRONMENT_VARIABLES: Dict[str, Callable[[], Any]] = {
     # `fastdistill` logging level.
@@ -28,6 +46,10 @@ ENVIRONMENT_VARIABLES: Dict[str, Callable[[], Any]] = {
     ),
     # The cache ID of the `fastdistill` pipeline currently running.
     "FASTDISTILL_CACHE_DIR": lambda: os.getenv("FASTDISTILL_CACHE_DIR", None),
+    # Batch size for flushing write buffers to parquet files.
+    "FASTDISTILL_WRITE_BUFFER_BATCH_SIZE": lambda: _get_positive_int_env(
+        "FASTDISTILL_WRITE_BUFFER_BATCH_SIZE", 50
+    ),
 }
 
 

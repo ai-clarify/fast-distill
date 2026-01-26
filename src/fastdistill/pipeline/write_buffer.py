@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Set
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from fastdistill import envs
 from fastdistill.pipeline.batch import _Batch
 from fastdistill.utils.dicts import flatten_dict
 from fastdistill.utils.files import list_files_in_dir
@@ -28,6 +29,7 @@ class _WriteBuffer:
         path: "PathLike",
         leaf_steps: Set[str],
         steps_cached: Optional[Dict[str, bool]] = None,
+        buffer_batch_size: Optional[int] = None,
     ) -> None:
         """
         Args:
@@ -54,8 +56,15 @@ class _WriteBuffer:
         self._buffers: Dict[str, List[Dict[str, Any]]] = {
             step: [] for step in leaf_steps
         }  # noqa: C420
-        # TODO: make this configurable
-        self._buffers_dump_batch_size: Dict[str, int] = dict.fromkeys(leaf_steps, 50)
+        default_batch_size = (
+            buffer_batch_size
+            if buffer_batch_size is not None
+            else envs.FASTDISTILL_WRITE_BUFFER_BATCH_SIZE
+        )
+        self._buffers_dump_batch_size: Dict[str, int] = dict.fromkeys(
+            leaf_steps,
+            default_batch_size,
+        )
         self._buffer_last_schema = {}
         self._buffers_last_file: Dict[str, int] = dict.fromkeys(leaf_steps, 1)
         self._steps_cached = steps_cached or {}

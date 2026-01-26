@@ -752,10 +752,7 @@ class _BatchManager(_Serializable):
             `True` if there's any missing sequence number, `False` otherwise.
         """
         received_batch_seq_nos = self._received_batch_seq_nos[last_batch.step_name]
-        for i in range(last_batch.seq_no + 1):
-            if i not in received_batch_seq_nos:
-                return True
-        return False
+        return len(set(received_batch_seq_nos)) != last_batch.seq_no + 1
 
     def can_generate(self) -> bool:
         """Checks if there are still batches to be processed by the steps.

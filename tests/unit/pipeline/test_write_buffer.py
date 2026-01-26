@@ -5,6 +5,8 @@
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from fastdistill.constants import STEPS_OUTPUTS_PATH
 from fastdistill.distiset import Distiset, create_distiset
 from fastdistill.pipeline.local import Pipeline
@@ -48,6 +50,25 @@ class TestWriteBuffer:
                 "dummy_step_2": 1,
                 "dummy_step_3": 1,
             }
+
+    def test_create_with_env_batch_size(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("FASTDISTILL_WRITE_BUFFER_BATCH_SIZE", "8")
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            folder = Path(tmpdirname) / "data" / STEPS_OUTPUTS_PATH
+            steps_outputs = folder / STEPS_OUTPUTS_PATH
+            with Pipeline(name="unit-test-pipeline") as pipeline:
+                dummy_generator_1 = DummyGeneratorStep(name="dummy_generator_step_1")
+                dummy_step_1 = DummyStep1(name="dummy_step_1")
+                dummy_step_2 = DummyStep2(name="dummy_step_2")
+
+                dummy_generator_1.connect(dummy_step_1)
+                dummy_step_1.connect(dummy_step_2)
+
+            write_buffer = _WriteBuffer(
+                path=steps_outputs, leaf_steps=pipeline.dag.leaf_steps
+            )
+
+            assert write_buffer._buffers_dump_batch_size == {"dummy_step_2": 8}
 
     def test_write_buffer_one_leaf_step_and_create_dataset(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
