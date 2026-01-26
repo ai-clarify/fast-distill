@@ -25,7 +25,7 @@
 - [x] Implement component registry foundation + update exports.
 - [x] Add unit tests for registry discovery/collisions.
 - [x] Run full lint + tests.
-- [ ] Commit changes.
+- [x] Commit changes.
 
 ## Validation
 - `make lint`
