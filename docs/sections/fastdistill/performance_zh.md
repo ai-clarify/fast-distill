@@ -16,6 +16,19 @@
 - Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。
 - Teacher empty_output 剔除：5/1000。
 
+## 运行（2026-01-26，OpenRouter WikiSQL 200，gold_match-only）
+
+### 关键指标（WikiSQL train_200 + eval_200）
+- 蒸馏耗时：跳过（复用 teacher 输出）。
+- 保留率：41.0%（82/200，gold_match 过滤后）。
+- Teacher exec_pass_rate：0.885；gold_match_rate：0.41；judge_score mean：0.6475。
+- Distilled exec_pass_rate：1.0；gold_match_rate：1.0；judge_score mean：1.0。
+- MLX 评测耗时（pre）：173.679s；MLX 训练耗时：304.425s；MLX 评测耗时（post）：92.768s。
+- 学生指标：exec_pass_rate 0.545 → 0.885；gold_match_rate 0.0 → 0.29；judge_score mean 0.2725 → 0.5875。
+
+### 备注
+- Teacher 输出先清洗并离线评测，再按 gold_match 过滤；本次未调用 OpenRouter。
+
 ## 运行（2026-01-25，OpenRouter WikiSQL 1k）
 
 ### 关键指标（WikiSQL 1k）

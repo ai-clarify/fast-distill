@@ -16,6 +16,19 @@
 - Fenced SQL exec errors: 0 (CleanSqlOutput stripped markdown fences).
 - Teacher empty_output rejects: 5/1000.
 
+## Run (2026-01-26, OpenRouter WikiSQL 200, gold_match-only)
+
+### Key metrics (WikiSQL train_200 + eval_200)
+- Distillation wall time: skipped (reused cached teacher outputs).
+- Keep rate: 41.0% (82/200 kept after gold_match filter).
+- Teacher exec_pass_rate: 0.885; gold_match_rate: 0.41; judge_score mean: 0.6475.
+- Distilled exec_pass_rate: 1.0; gold_match_rate: 1.0; judge_score mean: 1.0.
+- MLX eval pre wall time: 173.679s; MLX train wall time: 304.425s; MLX eval post wall time: 92.768s.
+- Student exec_pass_rate: 0.545 → 0.885; gold_match_rate: 0.0 → 0.29; judge_score mean: 0.2725 → 0.5875.
+
+### Notes
+- Teacher outputs were cleaned and re-evaluated offline before filtering; no OpenRouter calls were made in this run.
+
 ## Run (2026-01-25, OpenRouter WikiSQL 1k)
 
 ### Key metrics (WikiSQL 1k)

@@ -127,6 +127,59 @@
 - Teacher gate 通过，无需覆盖；其中 5 条样本因 `empty_output` 被剔除。
 - Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。
 
+## 运行（2026-01-26，OpenRouter WikiSQL 200，gold_match-only）
+
+### 运行配置
+- Pipeline：离线过滤 + `scripts/run_ollama_mlx_e2e.py`（跳过 distillation）
+- Teacher 输出来源：复用 OpenRouter 缓存生成结果（不重新生成）
+- Teacher 模型：`deepseek/deepseek-v3.2`
+- 学生训练模型：`Qwen/Qwen3-0.6B`（MLX LoRA）
+- 数据集规模：训练 200（WikiSQL train_200）
+- Artifacts 根目录：`~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26`
+- 数据路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train_200.jsonl`
+- DB 路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
+- 评测数据：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval_200.jsonl`
+- 评测 DB：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval.db`
+- 过滤条件：`gold_match=True`（CleanSqlOutput + SQLite exec eval 之后）
+- MLX 配置：`~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/mlx/mlx_train.yaml`
+- MLX adapters：`~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/mlx/adapters`
+
+### 蒸馏质量结果
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/teacher_eval/quality_report.json`：
+- total：200
+- exec_pass_rate：0.885
+- gold_match_rate：0.41
+- judge_score：min 0.0，max 1.0，mean 0.6475
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/distilled/quality_report.json`：
+- total：82
+- exec_pass_rate：1.0
+- gold_match_rate：1.0
+- judge_score：min 1.0，max 1.0，mean 1.0
+
+### 学生评测（MLX）
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/student_eval_pre/quality_report.json`：
+- total：200
+- exec_pass_rate：0.545
+- gold_match_rate：0.0
+- judge_score：min 0.0，max 0.5，mean 0.2725
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/student_eval_post/quality_report.json`：
+- total：200
+- exec_pass_rate：0.885
+- gold_match_rate：0.29
+- judge_score：min 0.0，max 1.0，mean 0.5875
+
+### 蒸馏耗时
+- distillation_wall_time_s：跳过（复用 teacher 输出）
+- mlx_eval_pre_wall_time_s：173.679
+- mlx_train_wall_time_s：304.425
+- mlx_eval_post_wall_time_s：92.768
+
+### 备注
+- Teacher 输出先做清洗与离线评测，再按 gold_match 过滤；本次未调用 OpenRouter。
+- gold_match 过滤后保留 82/200（41%）。
+
 ## 运行（2026-01-25，Ollama 标准流程）
 
 ### 运行配置

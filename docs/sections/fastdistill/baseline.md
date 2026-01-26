@@ -127,6 +127,59 @@ From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2
 - Teacher eval gate passed without overrides; 5 rows rejected as `empty_output`.
 - Fenced SQL exec errors: 0 (CleanSqlOutput removed markdown fences).
 
+## Run (2026-01-26, OpenRouter WikiSQL 200, gold_match-only)
+
+### Run configuration
+- Pipeline: offline filter + `scripts/run_ollama_mlx_e2e.py` (distillation skipped)
+- Teacher outputs source: cached OpenRouter generations (no regeneration)
+- Teacher model: `deepseek/deepseek-v3.2`
+- Student training model: `Qwen/Qwen3-0.6B` (MLX LoRA)
+- Dataset size: 200 train (WikiSQL train_200)
+- Artifacts root: `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26`
+- Data path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train_200.jsonl`
+- DB path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
+- Eval data: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval_200.jsonl`
+- Eval DB: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval.db`
+- Filter: `gold_match=True` (after CleanSqlOutput + SQLite exec eval)
+- MLX config: `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/mlx/mlx_train.yaml`
+- MLX adapters: `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/mlx/adapters`
+
+### Distillation quality results
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/teacher_eval/quality_report.json`:
+- total: 200
+- exec_pass_rate: 0.885
+- gold_match_rate: 0.41
+- judge_score: min 0.0, max 1.0, mean 0.6475
+
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/distilled/quality_report.json`:
+- total: 82
+- exec_pass_rate: 1.0
+- gold_match_rate: 1.0
+- judge_score: min 1.0, max 1.0, mean 1.0
+
+### Student eval (MLX)
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/student_eval_pre/quality_report.json`:
+- total: 200
+- exec_pass_rate: 0.545
+- gold_match_rate: 0.0
+- judge_score: min 0.0, max 0.5, mean 0.2725
+
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_200_goldmatch_2026-01-26/reports/student_eval_post/quality_report.json`:
+- total: 200
+- exec_pass_rate: 0.885
+- gold_match_rate: 0.29
+- judge_score: min 0.0, max 1.0, mean 0.5875
+
+### Distillation timing
+- distillation_wall_time_s: skipped (teacher outputs reused)
+- mlx_eval_pre_wall_time_s: 173.679
+- mlx_train_wall_time_s: 304.425
+- mlx_eval_post_wall_time_s: 92.768
+
+### Notes
+- Teacher outputs were cleaned and re-evaluated offline before filtering; no OpenRouter calls were made in this run.
+- Gold-match filtering yields 82/200 usable samples (41% keep rate).
+
 ## Run (2026-01-25, Ollama standard flow)
 
 ### Run configuration
