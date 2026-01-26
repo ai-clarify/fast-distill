@@ -30,10 +30,10 @@
 
 | 论文 | 方法解读 | FastDistill 优化路径 | 可行性 | 链接 |
 | :-- | :-- | :-- | :-- | :-- |
-| Distilling Step-by-Step! | 用推理链作为额外监督信号。 | 加入“推理链生成 + 质检”，训练时多任务使用。 | 高 | https://aclanthology.org/2023.findings-acl.507/ |
+| Distilling Step-by-Step! Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes | 用推理链作为额外监督信号。 | 加入“推理链生成 + 质检”，训练时多任务使用。 | 高 | https://aclanthology.org/2023.findings-acl.507/ |
 | MiniLLM | 生成式 LLM 的 Reverse-KL 蒸馏。 | 捕获教师 logprobs，训练时做 reverse-KL。 | 中 | https://arxiv.org/abs/2306.08543 |
-| DistiLLM | Skew-KL + 自适应 off-policy 采样。 | 加入学生 off-policy 输出并与教师样本混训。 | 中 | https://arxiv.org/abs/2402.03898 |
-| Direct Preference KD | 基于偏好信号的 KD（隐式奖励 + reverse-KL）。 | 复用 judge/reward 输出构造偏好对。 | 中 | https://arxiv.org/abs/2406.19774 |
+| DistiLLM: Towards Streamlined Distillation for Large Language Models | Skew-KL + 自适应 off-policy 采样。 | 加入学生 off-policy 输出并与教师样本混训。 | 中 | https://arxiv.org/abs/2402.03898 |
+| Direct Preference Knowledge Distillation for Large Language Models | 基于偏好信号的 KD（隐式奖励 + reverse-KL）。 | 复用 judge/reward 输出构造偏好对。 | 中 | https://arxiv.org/abs/2406.19774 |
 
 ## 数据集蒸馏 / 数据蒸馏
 
@@ -43,11 +43,11 @@
 | Dataset Distillation | 通过梯度匹配优化合成数据。 | 需要可微训练环；黑盒教师不适用。 | 低 | https://arxiv.org/abs/1811.10959 |
 | Matching Training Trajectories | 通过轨迹匹配蒸馏数据。 | 需存训练轨迹，训练改造重。 | 低 | https://arxiv.org/abs/2203.11932 |
 | Deep Generative Prior | 生成先验辅助蒸馏合成数据。 | 偏视觉任务，文本管线适配度低。 | 低 | https://arxiv.org/abs/2305.01649 |
-| DiLM: Dataset Distillation with Language Models | 训练 LM 生成蒸馏后的文本样本。 | 训练小生成器 + 数据合成步骤融合。 | 中 | https://aclanthology.org/2024.findings-naacl.199/ |
+| DiLM: Distilling Dataset into Language Model for Text-level Dataset Distillation | 训练 LM 生成蒸馏后的文本样本。 | 训练小生成器 + 数据合成步骤融合。 | 中 | https://aclanthology.org/2024.findings-naacl.199/ |
 
 ## 综述（用作评测清单）
 
 | 论文 | 可复用内容 | 可行性 | 链接 |
 | :-- | :-- | :-- | :-- |
-| A Survey on KD of LLMs | 评测维度与失败模式清单。 | 高 | https://arxiv.org/abs/2402.13116 |
-| Survey on KD for LLMs | 方法谱系与评测任务整理。 | 高 | https://arxiv.org/abs/2407.01885 |
+| A Survey on Knowledge Distillation of Large Language Models | 评测维度与失败模式清单。 | 高 | https://arxiv.org/abs/2402.13116 |
+| Survey on Knowledge Distillation for Large Language Models: Methods, Evaluation, and Application | 方法谱系与评测任务整理。 | 高 | https://arxiv.org/abs/2407.01885 |

@@ -30,10 +30,10 @@ A reading list tuned for FastDistill. Each paper includes a short method snapsho
 
 | Paper | Method snapshot | FastDistill optimization path | Feasibility | Link |
 | :-- | :-- | :-- | :-- | :-- |
-| Distilling Step-by-Step! | Use rationales as extra supervision for small models. | Add rationale generation + gating; store rationale fields for multi-task training. | High | https://aclanthology.org/2023.findings-acl.507/ |
+| Distilling Step-by-Step! Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes | Use rationales as extra supervision for small models. | Add rationale generation + gating; store rationale fields for multi-task training. | High | https://aclanthology.org/2023.findings-acl.507/ |
 | MiniLLM | Reverse-KL KD for generative LMs. | Capture teacher logprobs and use reverse-KL; combine with SFT on curated outputs. | Medium | https://arxiv.org/abs/2306.08543 |
-| DistiLLM | Skew-KL KD + adaptive off-policy sampling. | Add off-policy student generations and mix with teacher data for training. | Medium | https://arxiv.org/abs/2402.03898 |
-| Direct Preference KD | Preference-based KD using implicit reward + reverse KL. | Reuse judge/reward model outputs to build preference pairs for student training. | Medium | https://arxiv.org/abs/2406.19774 |
+| DistiLLM: Towards Streamlined Distillation for Large Language Models | Skew-KL KD + adaptive off-policy sampling. | Add off-policy student generations and mix with teacher data for training. | Medium | https://arxiv.org/abs/2402.03898 |
+| Direct Preference Knowledge Distillation for Large Language Models | Preference-based KD using implicit reward + reverse KL. | Reuse judge/reward model outputs to build preference pairs for student training. | Medium | https://arxiv.org/abs/2406.19774 |
 
 ## Dataset distillation & data distillation
 
@@ -43,11 +43,11 @@ A reading list tuned for FastDistill. Each paper includes a short method snapsho
 | Dataset Distillation | Optimize synthetic data via gradient matching. | Not suitable for black-box teachers; needs differentiable training loop. | Low | https://arxiv.org/abs/1811.10959 |
 | Matching Training Trajectories | Distill by matching parameter trajectories. | Requires storing training trajectories; heavy training integration. | Low | https://arxiv.org/abs/2203.11932 |
 | Deep Generative Prior | Use generative priors to synthesize distilled data. | Better fit for vision tasks; less direct for text-only pipelines. | Low | https://arxiv.org/abs/2305.01649 |
-| DiLM: Dataset Distillation with Language Models | Train an LM to generate distilled text samples. | Train a small generator on curated data; plug into data synthesis step. | Medium | https://aclanthology.org/2024.findings-naacl.199/ |
+| DiLM: Distilling Dataset into Language Model for Text-level Dataset Distillation | Train an LM to generate distilled text samples. | Train a small generator on curated data; plug into data synthesis step. | Medium | https://aclanthology.org/2024.findings-naacl.199/ |
 
 ## Surveys (for evaluation checklists)
 
 | Paper | What to reuse | Feasibility | Link |
 | :-- | :-- | :-- | :-- |
-| A Survey on KD of LLMs | Taxonomy + evaluation checklist for FastDistill runs. | High | https://arxiv.org/abs/2402.13116 |
-| Survey on KD for LLMs | Method categories + evaluation tasks for benchmark planning. | High | https://arxiv.org/abs/2407.01885 |
+| A Survey on Knowledge Distillation of Large Language Models | Taxonomy + evaluation checklist for FastDistill runs. | High | https://arxiv.org/abs/2402.13116 |
+| Survey on Knowledge Distillation for Large Language Models: Methods, Evaluation, and Application | Method categories + evaluation tasks for benchmark planning. | High | https://arxiv.org/abs/2407.01885 |
