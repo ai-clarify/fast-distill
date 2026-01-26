@@ -40,6 +40,14 @@ def run(
     config: Optional[str] = typer.Option(
         None, help="Path or URL to the fastdistill pipeline configuration file."
     ),
+    config_env: Optional[str] = typer.Option(
+        None,
+        help="Optional YAML config overlay applied after --config (environment-level).",
+    ),
+    config_run: Optional[str] = typer.Option(
+        None,
+        help="Optional YAML config overlay applied last (run-level).",
+    ),
     script: Optional[str] = typer.Option(
         None,
         help="URL pointing to a python script containing a fastdistill pipeline.",
@@ -87,7 +95,19 @@ def run(
         raise typer.Exit(code=1)
 
     try:
-        pipeline = get_pipeline(config or script, pipeline_name=pipeline_variable_name)
+        if script and (config_env or config_run):
+            typer.secho(
+                "`--config-env` and `--config-run` require `--config`.",
+                fg=typer.colors.RED,
+                bold=True,
+            )
+            raise typer.Exit(code=1)
+        pipeline = get_pipeline(
+            config or script,
+            pipeline_name=pipeline_variable_name,
+            config_env=config_env,
+            config_run=config_run,
+        )
     except Exception as e:
         typer.secho(str(e), fg=typer.colors.RED, bold=True)
         raise typer.Exit(code=1) from e
@@ -105,9 +125,19 @@ def run(
 
 
 @app.command(name="info", help="Get information about a FastDistill pipeline.")
-def info(config: ConfigOption) -> None:
+def info(
+    config: ConfigOption,
+    config_env: Optional[str] = typer.Option(
+        None,
+        help="Optional YAML config overlay applied after --config (environment-level).",
+    ),
+    config_run: Optional[str] = typer.Option(
+        None,
+        help="Optional YAML config overlay applied last (run-level).",
+    ),
+) -> None:
     try:
-        pipeline = get_pipeline(config)
+        pipeline = get_pipeline(config, config_env=config_env, config_run=config_run)
         display_pipeline_information(pipeline)
     except Exception as e:
         typer.secho(str(e), fg=typer.colors.RED, bold=True)

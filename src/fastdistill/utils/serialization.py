@@ -9,6 +9,7 @@ from enum import Enum
 
 import orjson
 
+from fastdistill.errors import FastDistillUserError
 from fastdistill.mixins.runtime_parameters import RuntimeParametersMixin
 
 if sys.version_info < (3, 11):
@@ -72,6 +73,25 @@ def _get_module_attr(module: str, name: str) -> Type:
     return getattr(mod, name)
 
 
+def _resolve_type_info(type_info: Dict[str, Any]) -> Type:
+    if "registry" in type_info:
+        registry_kind = type_info.get("registry")
+        registry_name = type_info.get("name")
+        if not registry_kind or not registry_name:
+            raise FastDistillUserError(
+                "Registry-based type_info must include both 'registry' and 'name'."
+            )
+        from fastdistill.registry import get_registry
+
+        cls = get_registry(registry_kind).get(registry_name)
+        if not isinstance(cls, type):
+            raise FastDistillUserError(
+                f"Registry component '{registry_kind}:{registry_name}' is not a class."
+            )
+        return cls
+    return _get_module_attr(type_info["module"], type_info["name"])
+
+
 def load_with_type_info(class_: Any) -> Any:
     """Creates an instance of a class from a dictionary containing the type info and the
     serialized data of the class.
@@ -99,7 +119,7 @@ def load_with_type_info(class_: Any) -> Any:
 
     type_info = class_.pop(TYPE_INFO_KEY)
 
-    cls = _get_module_attr(type_info["module"], type_info["name"])
+    cls = _resolve_type_info(type_info)
 
     if issubclass(cls, BaseModel):
         # `pop` keys from the dictionary that are not in the model fields

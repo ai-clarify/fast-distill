@@ -4,6 +4,7 @@
 
 from pydantic import BaseModel
 
+from fastdistill.steps.columns.keep import KeepColumns
 from fastdistill.utils.serialization import _extra_serializable_fields, _Serializable
 
 
@@ -26,3 +27,14 @@ def test_extra_serializable_fields() -> None:
             }
         }
     ]
+
+
+def test_load_with_registry_type_info() -> None:
+    payload = {
+        "type_info": {"registry": "step", "name": "KeepColumns"},
+        "columns": ["instruction"],
+    }
+
+    instance = _Serializable.from_dict(payload)
+
+    assert isinstance(instance, KeepColumns)

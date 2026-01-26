@@ -6,13 +6,14 @@ import importlib
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import requests
 import yaml
 from pydantic import HttpUrl, ValidationError
 from pydantic.type_adapter import TypeAdapter
 
+from fastdistill.config import load_layered_config
 from fastdistill.constants import ROUTING_BATCH_FUNCTION_ATTR_NAME, STEP_ATTR_NAME
 from fastdistill.errors import FastDistillUserError
 from fastdistill.pipeline.local import Pipeline
@@ -149,7 +150,11 @@ def get_pipeline_from_url(url: str, pipeline_name: str = "pipeline") -> "BasePip
 
 
 def get_pipeline(
-    config_or_script: str, pipeline_name: str = "pipeline"
+    config_or_script: str,
+    pipeline_name: str = "pipeline",
+    *,
+    config_env: Optional[str] = None,
+    config_run: Optional[str] = None,
 ) -> "BasePipeline":
     """Get a pipeline from a configuration file or a remote python script.
 
@@ -179,6 +184,11 @@ def get_pipeline(
 
     if valid_http_url(config_or_script):
         if config:
+            if config_env or config_run:
+                data = load_layered_config(
+                    config, env_path=config_env, run_path=config_run
+                )
+                return Pipeline.from_dict(data)
             data = get_config_from_url(config)
             return Pipeline.from_dict(data)
         return get_pipeline_from_url(script, pipeline_name=pipeline_name)
@@ -189,6 +199,9 @@ def get_pipeline(
         )
 
     if Path(config).is_file():
+        if config_env or config_run:
+            data = load_layered_config(config, env_path=config_env, run_path=config_run)
+            return Pipeline.from_dict(data)
         return Pipeline.from_file(config)
 
     raise FileNotFoundError(f"File '{config_or_script}' does not exist.")
