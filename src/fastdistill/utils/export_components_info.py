@@ -3,15 +3,20 @@
 # Licensed under the MIT License.
 
 import inspect
-from typing import Generator, List, Type, TypedDict, TypeVar
+from typing import Iterable, List, Type, TypedDict
 
 from fastdistill.models.embeddings.base import Embeddings
 from fastdistill.models.image_generation.base import ImageGenerationModel
 from fastdistill.models.llms.base import LLM
+from fastdistill.registry import (
+    embeddings_registry,
+    image_generation_registry,
+    llm_registry,
+    step_registry,
+    task_registry,
+)
 from fastdistill.steps.base import _Step
 from fastdistill.steps.tasks.base import _Task
-from fastdistill.steps.tasks.generate_embeddings import GenerateEmbeddings
-from fastdistill.steps.tasks.pair_rm import PairRM
 from fastdistill.utils.docstring import parse_google_docstring
 
 
@@ -61,7 +66,14 @@ def export_components_info() -> ComponentsInfo:
     }
 
 
-T = TypeVar("T", covariant=True)
+def _iter_registry(registry) -> Iterable[type]:
+    for name in registry.names():
+        component = registry.get(name)
+        if not inspect.isclass(component):
+            continue
+        if inspect.isabstract(component):
+            continue
+        yield component
 
 
 def _get_steps() -> List[Type["_Step"]]:
@@ -72,10 +84,8 @@ def _get_steps() -> List[Type["_Step"]]:
     """
     return [
         step_type
-        for step_type in _recursive_subclasses(_Step)
-        if not inspect.isabstract(step_type)
-        and not issubclass(step_type, _Task)
-        and step_type not in [PairRM, GenerateEmbeddings]
+        for step_type in _iter_registry(step_registry)
+        if issubclass(step_type, _Step) and not issubclass(step_type, _Task)
     ]
 
 
@@ -85,15 +95,11 @@ def _get_tasks() -> List[Type["_Task"]]:
     Returns:
         A list of `Task` subclasses
     """
-    tasks = [
+    return [
         task_type
-        for task_type in _recursive_subclasses(_Task)
-        if not inspect.isabstract(task_type)
+        for task_type in _iter_registry(task_registry)
+        if issubclass(task_type, _Task)
     ]
-
-    tasks.extend([PairRM, GenerateEmbeddings])  # type: ignore
-
-    return tasks
 
 
 def _get_llms() -> List[Type["LLM"]]:
@@ -104,8 +110,8 @@ def _get_llms() -> List[Type["LLM"]]:
     """
     return [
         llm_type
-        for llm_type in _recursive_subclasses(LLM)
-        if not inspect.isabstract(llm_type)
+        for llm_type in _iter_registry(llm_registry)
+        if issubclass(llm_type, LLM)
     ]
 
 
@@ -120,8 +126,8 @@ def _get_image_generation_models() -> List[Type["ImageGenerationModel"]]:
     """
     return [
         igm_type
-        for igm_type in _recursive_subclasses(ImageGenerationModel)
-        if not inspect.isabstract(igm_type)
+        for igm_type in _iter_registry(image_generation_registry)
+        if issubclass(igm_type, ImageGenerationModel)
     ]
 
 
@@ -133,21 +139,6 @@ def _get_embeddings() -> List[Type["Embeddings"]]:
     """
     return [
         embeddings_type
-        for embeddings_type in _recursive_subclasses(Embeddings)
-        if not inspect.isabstract(embeddings_type)
+        for embeddings_type in _iter_registry(embeddings_registry)
+        if issubclass(embeddings_type, Embeddings)
     ]
-
-
-# Reference: https://adamj.eu/tech/2024/05/10/python-all-subclasses/
-def _recursive_subclasses(klass: Type[T]) -> Generator[Type[T], None, None]:
-    """Recursively get all subclasses of a class.
-
-    Args:
-        klass: A class to get subclasses from.
-
-    Yield:
-        A generator of subclasses of the given class.
-    """
-    for subclass in klass.__subclasses__():
-        yield subclass
-        yield from _recursive_subclasses(subclass)
