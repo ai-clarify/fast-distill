@@ -9,6 +9,8 @@
 - Distilled exec_pass_rate: 1.0; gold_match_rate: 0.4854; judge_score mean: 0.7427.
 - MLX eval pre wall time: 948.057s; MLX train wall time: 345.760s; MLX eval post wall time: 448.192s.
 - Student exec_pass_rate: 0.529 → 0.986; gold_match_rate: 0.002 → 0.449; judge_score mean: 0.2655 → 0.7175.
+- Eval split student exec_pass_rate: 0.53 → 0.982; gold_match_rate: 0.0 → 0.394; judge_score mean: 0.265 → 0.688.
+- Eval split MLX wall time: pre 944.916s; post 465.839s.
 
 ### Notes
 - Fenced SQL exec errors: 0 (CleanSqlOutput stripped markdown fences).

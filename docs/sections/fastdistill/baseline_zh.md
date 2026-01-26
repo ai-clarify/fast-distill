@@ -98,12 +98,30 @@
 - gold_match_rate：0.449
 - judge_score：min 0.0，max 1.0，mean 0.7175
 
+### 学生评测（MLX，WikiSQL eval split）
+评测数据：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval.jsonl`  
+评测 DB：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/eval.db`
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_pre_eval/quality_report.json`：
+- total：1000
+- exec_pass_rate：0.53
+- gold_match_rate：0.0
+- judge_score：min 0.0，max 0.5，mean 0.265
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_post_eval/quality_report.json`：
+- total：1000
+- exec_pass_rate：0.982
+- gold_match_rate：0.394
+- judge_score：min 0.0，max 1.0，mean 0.688
+
 ### 蒸馏耗时
 - pipeline_wall_time_s：2688.739
 - distilled_model_score_mean：0.7427184466019418
 - mlx_eval_pre_wall_time_s：948.057
 - mlx_train_wall_time_s：345.760
 - mlx_eval_post_wall_time_s：448.192
+- mlx_eval_pre_eval_wall_time_s：944.916
+- mlx_eval_post_eval_wall_time_s：465.839
 
 ### 备注
 - Teacher gate 通过，无需覆盖；其中 5 条样本因 `empty_output` 被剔除。

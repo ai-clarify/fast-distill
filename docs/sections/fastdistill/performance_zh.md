@@ -9,6 +9,8 @@
 - Distilled exec_pass_rate：1.0；gold_match_rate：0.4854；judge_score mean：0.7427。
 - MLX 评测耗时（pre）：948.057s；MLX 训练耗时：345.760s；MLX 评测耗时（post）：448.192s。
 - Student exec_pass_rate：0.529 → 0.986；gold_match_rate：0.002 → 0.449；judge_score mean：0.2655 → 0.7175。
+- Eval split 学生 exec_pass_rate：0.53 → 0.982；gold_match_rate：0.0 → 0.394；judge_score mean：0.265 → 0.688。
+- Eval split MLX 耗时：pre 944.916s；post 465.839s。
 
 ### 备注
 - Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。
