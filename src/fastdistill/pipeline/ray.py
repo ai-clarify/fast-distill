@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 from fastdistill.constants import INPUT_QUEUE_ATTR_NAME, STEP_ATTR_NAME
 from fastdistill.distiset import create_distiset
 from fastdistill.errors import FastDistillUserError
-from fastdistill.models.llms.vllm import vLLM
 from fastdistill.pipeline.base import BasePipeline, set_pipeline_running_env_variables
 from fastdistill.pipeline.step_wrapper import _StepWrapper
 from fastdistill.utils.logging import setup_logging, stop_logging
@@ -24,6 +23,14 @@ if TYPE_CHECKING:
     from fastdistill.distiset import Distiset
     from fastdistill.steps.base import _Step
     from fastdistill.typing import InputDataset, LoadGroups
+
+
+def _get_vllm_type() -> Any:
+    try:
+        from fastdistill.models.llms.vllm import vLLM
+    except Exception:
+        return None
+    return vLLM
 
 
 class RayPipeline(BasePipeline):
@@ -281,7 +288,8 @@ class RayPipeline(BasePipeline):
             "name": f"fastdistill-{self.name}-{step.name}-{replica}"
         }
 
-        if hasattr(step, "llm") and isinstance(step.llm, vLLM):  # type: ignore
+        vllm_type = _get_vllm_type()
+        if vllm_type and hasattr(step, "llm") and isinstance(step.llm, vllm_type):  # type: ignore
             resources["scheduling_strategy"] = self._create_vllm_placement_group(step)
         else:
             if step.resources.cpus is not None:

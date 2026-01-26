@@ -24,7 +24,6 @@ from fastdistill.constants import SIGINT_HANDLER_CALLED_ENV_NAME
 from fastdistill.distiset import create_distiset
 from fastdistill.exceptions import FastDistillOfflineBatchGenerationNotFinishedException
 from fastdistill.pipeline.base import BasePipeline, set_pipeline_running_env_variables
-from fastdistill.pipeline.ray import RayPipeline
 from fastdistill.pipeline.step_wrapper import _StepWrapper, _StepWrapperException
 from fastdistill.utils.logging import setup_logging, stop_logging
 from fastdistill.utils.ray import script_executed_in_ray_cluster
@@ -34,6 +33,7 @@ if TYPE_CHECKING:
     from queue import Queue
 
     from fastdistill.distiset import Distiset
+    from fastdistill.pipeline.ray import RayPipeline
     from fastdistill.steps.base import _Step
     from fastdistill.typing import InputDataset, LoadGroups
 
@@ -105,7 +105,7 @@ class Pipeline(BasePipeline):
         self,
         ray_head_node_url: Optional[str] = None,
         ray_init_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> RayPipeline:
+    ) -> "RayPipeline":
         """Creates a `RayPipeline` using the init parameters of this pipeline. This is a
         convenient method that can be used to "transform" one common `Pipeline` to a `RayPipeline`
         and it's mainly used by the CLI.
@@ -122,6 +122,8 @@ class Pipeline(BasePipeline):
         Returns:
             A `RayPipeline` instance.
         """
+        from fastdistill.pipeline.ray import RayPipeline
+
         pipeline = RayPipeline(
             name=self.name,
             description=self.description,

@@ -134,6 +134,20 @@ flowchart LR
 - `pipeline_kept_samples_per_hour` = kept / (total_duration_seconds / 3600)
 - `student_tokens_per_sec` = sum(output_tokens) / student_gen_duration_seconds
 
+## 代码实现结构图
+- `fastdistill/pipeline`: DAG、batch 管理、执行引擎（local/ray）、缓存、step 包装器。
+- `fastdistill/steps`: 核心 step 原语 + step 库（columns/formatting/filtering/tasks）。
+- `fastdistill/models`: LLM/embeddings/image provider + base clients + mixins。
+- `fastdistill/distiset.py`: 数据集打包、Hub 推送、产物归档。
+- `fastdistill/mixins`、`fastdistill/typing`、`fastdistill/utils`: 运行时参数、类型、序列化、日志等。
+
+## 重构优先级（顶级开源）
+1. 可选依赖隔离：provider/step 延迟导入，避免缺少 extras 时硬失败。
+2. Public API 面：`fastdistill` + 子包稳定导入；deprecated 兼容层保持轻薄。
+3. 引擎与库分离：pipeline runtime 与 step/task library、模板解耦。
+4. 配置与错误边界：YAML-first config + 清晰的用户/系统错误层级。
+5. 测试策略：核心引擎单测 + 每个 provider extra 的集成测。
+
 ## 可性能优化的点
 **Teacher 生成**
 - 提升 `input_batch_size` 与 provider 端批处理能力。

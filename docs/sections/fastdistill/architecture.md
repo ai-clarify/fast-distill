@@ -192,6 +192,20 @@ These are the first-class analysis tools in the fastdistill steps:
 - `pipeline_kept_samples_per_hour` = kept / (total_duration_seconds / 3600)
 - `student_tokens_per_sec` = sum(output_tokens) / student_gen_duration_seconds
 
+## Codebase implementation map
+- `fastdistill/pipeline`: DAG, batch manager, execution engines (local/ray), cache, step wrappers.
+- `fastdistill/steps`: core step primitives + step library (columns/formatting/filtering/tasks).
+- `fastdistill/models`: LLM/embeddings/image providers + base clients and mixins.
+- `fastdistill/distiset.py`: dataset packaging, hub push, artifact bundling.
+- `fastdistill/mixins`, `fastdistill/typing`, `fastdistill/utils`: runtime parameters, typing, serialization, logging.
+
+## Refactor priorities (OSS-grade)
+1. Optional dependency isolation: keep provider/step imports lazy to avoid hard failures on missing extras.
+2. Public API surface: stable imports at `fastdistill` + focused subpackages; deprecated shims stay thin.
+3. Engine vs library separation: isolate pipeline runtime from step/task libraries and templates.
+4. Config and error boundaries: YAML-first configs + clear error hierarchy for user vs system issues.
+5. Test strategy: unit tests for core engine + explicit integration tests per provider extra.
+
 ## Performance optimization points
 **Teacher generation**
 - Increase `input_batch_size` and provider-side batch support.

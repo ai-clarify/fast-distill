@@ -359,3 +359,36 @@ def sample_n_steps(n: int) -> RoutingBatchFunction:
         return random.sample(steps, n)
 
     return sample_n
+
+
+def _expose_lazy_exports() -> None:
+    """Ensure package-level re-exports stay callable after submodule import."""
+    import sys
+
+    parent = sys.modules.get("fastdistill.pipeline")
+    if parent is None:
+        return
+
+    parent.routing_batch_function = routing_batch_function
+    parent.sample_n_steps = sample_n_steps
+
+
+_expose_lazy_exports()
+
+
+def _make_module_callable() -> None:
+    """Allow calling the module when imported as an attribute."""
+    import sys
+    import types
+
+    module = sys.modules[__name__]
+
+    class _CallableModule(types.ModuleType):
+        def __call__(self, *args, **kwargs):  # type: ignore[override]
+            return routing_batch_function(*args, **kwargs)
+
+    if not isinstance(module, _CallableModule):
+        module.__class__ = _CallableModule
+
+
+_make_module_callable()

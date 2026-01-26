@@ -5,7 +5,7 @@
 from typing import Optional
 
 from fastdistill.distiset import Distiset
-from fastdistill.llms import LLM, InferenceEndpointsLLM
+from fastdistill.models.llms import LLM, InferenceEndpointsLLM
 from fastdistill.pipeline import Pipeline
 from fastdistill.steps.tasks import MagpieGenerator
 
