@@ -1,0 +1,1 @@
+- 2026-01-26: OpenRouter 1k teacher run hit `JSONDecodeError` in `text_generation_0`, producing an empty batch. Re-run with smaller `FASTDISTILL_LLM_BATCH_SIZE`.

@@ -11,5 +11,6 @@
 - entries/2026-01-25-tests-missing-extras.md
 - entries/2026-01-25-llamacpp-embed-decode-failure.md
 - entries/2026-01-26-llamacpp-rewardmodel-test-flake.md
+- entries/2026-01-26-openrouter-jsondecode-batch.md
 - entries/2026-01-26-unit-tests-mlx-lm-abort.md
 - entries/2026-01-26-integration-tests-syncmanager-permission.md
