@@ -50,6 +50,46 @@ From `~/.cache/fastdistill/artifacts/reports/student_eval_post/quality_report.js
 - Teacher eval gate failed at default thresholds (exec_pass_rate 0.119, gold_match_rate 0.062, judge_score mean 0.0905).
 - Distillation continued with the gate disabled; the keep rate was 11.9% (119/1000).
 
+## Run (2026-01-26, OpenRouter WikiSQL 1k, CleanSqlOutput)
+
+### Run configuration
+- Pipeline: `examples/fastdistill/fastdistill_pipeline.py`
+- Provider: OpenRouter (remote)
+- Teacher model: `deepseek/deepseek-v3.2`
+- Dataset size: 1k train (WikiSQL 1k)
+- Artifacts root: `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2`
+- Data path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.jsonl`
+- DB path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
+- Generation: `temperature=0.2`, `max_new_tokens=128`, `timeout=240`, `input_batch_size=10`
+- Output cleaning: `CleanSqlOutput` enabled (strips fenced SQL)
+
+### Distillation quality results
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/teacher_eval/quality_report.json`:
+- total: 1000
+- kept: 995
+- rejected: 5
+- p_keep: 0.995
+- exec_pass_rate: 0.932
+- gold_match_rate: 0.45
+- judge_score: min 0.0, max 1.0, mean 0.691
+
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/distilled/quality_report.json`:
+- total: 927
+- kept: 927
+- rejected: 0
+- p_keep: 1.0
+- exec_pass_rate: 1.0
+- gold_match_rate: 0.4854
+- judge_score: min 0.5, max 1.0, mean 0.7427
+
+### Distillation timing
+- pipeline_wall_time_s: 2688.739
+- distilled_model_score_mean: 0.7427184466019418
+
+### Notes
+- Teacher eval gate passed without overrides; 5 rows rejected as `empty_output`.
+- Fenced SQL exec errors: 0 (CleanSqlOutput removed markdown fences).
+
 ## Run (2026-01-25, Ollama standard flow)
 
 ### Run configuration

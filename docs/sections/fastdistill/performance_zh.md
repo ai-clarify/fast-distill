@@ -1,5 +1,17 @@
 # FastDistill 性能分析
 
+## 运行（2026-01-26，OpenRouter WikiSQL 1k，CleanSqlOutput）
+
+### 关键指标（WikiSQL 1k）
+- 蒸馏耗时：2688.739s（1000 条样本，约 1338.92 样本/小时）。
+- 保留率：92.7%（927/1000，score + exec 过滤后）。
+- Teacher exec_pass_rate：0.932；gold_match_rate：0.45；judge_score mean：0.691。
+- Distilled exec_pass_rate：1.0；gold_match_rate：0.4854；judge_score mean：0.7427。
+
+### 备注
+- Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。
+- Teacher empty_output 剔除：5/1000。
+
 ## 运行（2026-01-25，OpenRouter WikiSQL 1k）
 
 ### 关键指标（WikiSQL 1k）

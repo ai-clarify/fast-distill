@@ -1,5 +1,17 @@
 # FastDistill Performance Analysis
 
+## Run (2026-01-26, OpenRouter WikiSQL 1k, CleanSqlOutput)
+
+### Key metrics (WikiSQL 1k)
+- Distillation wall time: 2688.739s for 1000 samples (~1338.92 samples/hour).
+- Keep rate: 92.7% (927/1000 kept after score + exec filters).
+- Teacher exec_pass_rate: 0.932; gold_match_rate: 0.45; judge_score mean: 0.691.
+- Distilled exec_pass_rate: 1.0; gold_match_rate: 0.4854; judge_score mean: 0.7427.
+
+### Notes
+- Fenced SQL exec errors: 0 (CleanSqlOutput stripped markdown fences).
+- Teacher empty_output rejects: 5/1000.
+
 ## Run (2026-01-25, OpenRouter WikiSQL 1k)
 
 ### Key metrics (WikiSQL 1k)

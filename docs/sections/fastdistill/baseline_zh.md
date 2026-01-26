@@ -50,6 +50,46 @@
 - Teacher gate 失败（exec_pass_rate 0.119、gold_match_rate 0.062、judge_score mean 0.0905）。
 - 关闭 gate 继续蒸馏，保留率 11.9%（119/1000）。
 
+## 运行（2026-01-26，OpenRouter WikiSQL 1k，CleanSqlOutput）
+
+### 运行配置
+- Pipeline：`examples/fastdistill/fastdistill_pipeline.py`
+- Provider：OpenRouter（远程）
+- Teacher 模型：`deepseek/deepseek-v3.2`
+- 数据集规模：训练 1k（WikiSQL 1k）
+- Artifacts 根目录：`~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2`
+- 数据路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.jsonl`
+- DB 路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
+- 生成参数：`temperature=0.2`、`max_new_tokens=128`、`timeout=240`、`input_batch_size=10`
+- 输出清洗：启用 `CleanSqlOutput`（移除 fenced SQL）
+
+### 蒸馏质量结果
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/teacher_eval/quality_report.json`：
+- total：1000
+- kept：995
+- rejected：5
+- p_keep：0.995
+- exec_pass_rate：0.932
+- gold_match_rate：0.45
+- judge_score：min 0.0，max 1.0，mean 0.691
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/distilled/quality_report.json`：
+- total：927
+- kept：927
+- rejected：0
+- p_keep：1.0
+- exec_pass_rate：1.0
+- gold_match_rate：0.4854
+- judge_score：min 0.5，max 1.0，mean 0.7427
+
+### 蒸馏耗时
+- pipeline_wall_time_s：2688.739
+- distilled_model_score_mean：0.7427184466019418
+
+### 备注
+- Teacher gate 通过，无需覆盖；其中 5 条样本因 `empty_output` 被剔除。
+- Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。
+
 ## 运行（2026-01-25，Ollama 标准流程）
 
 ### 运行配置
