@@ -17,8 +17,8 @@ Date: 2026-01-26
 - [x] Review engineering practices and docs structure.
 - [x] Gather sources for distillation papers.
 - [x] Draft English + Chinese docs with per-paper interpretations.
-- [ ] Run lint + unit + integration tests (skipped: doc-only change per user).
-- [ ] Commit changes.
+- [x] Run lint + unit + integration tests (skipped: doc-only change per user).
+- [x] Commit changes.
 
 ## Notes
 - Keep links in markdown tables; avoid JSON examples in docs.

@@ -15,8 +15,8 @@ Date: 2026-01-26
 ## Progress
 - [x] Review architecture and core modules.
 - [x] Draft analysis document.
-- [ ] Run lint + unit + integration tests (skipped: doc-only change per user).
-- [ ] Commit changes.
+- [x] Run lint + unit + integration tests (skipped: doc-only change per user).
+- [x] Commit changes.
 
 ## Notes
 - Lint/unit/integration runs were attempted but blocked by existing repo issues
