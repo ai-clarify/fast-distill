@@ -182,6 +182,7 @@ def build_pipeline():
             exec_error_field="exec_error",
             gold_match_field="gold_match",
         )
+        filter_gold = FilterByBool(field="gold_match", value=True)
         keep_by_score = KeepByScore(
             score_field="teacher_score",
             keep_field="keep",
@@ -224,6 +225,7 @@ def build_pipeline():
             >> sql_eval
             >> teacher_score
             >> teacher_report
+            >> filter_gold
             >> keep_by_score
             >> filter_keep
             >> filter_exec
