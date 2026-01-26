@@ -179,6 +179,8 @@ nav:
       - 工程实践: "ENGINEERING_PRACTICES_zh.md"
       - FastDistill Roadmap: "sections/fastdistill/roadmap.md"
       - FastDistill 路线图: "sections/fastdistill/roadmap_zh.md"
+      - Distillation Papers: "sections/fastdistill/papers/distillation_papers.md"
+      - 蒸馏论文清单: "sections/fastdistill/papers/distillation_papers_zh.md"
   - How-to guides:
       - "sections/how_to_guides/index.md"
       - Basic:
