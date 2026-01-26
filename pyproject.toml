@@ -71,6 +71,7 @@ tests = [
     "nest-asyncio",
     "pytest-timeout",
     "pytest-benchmark",
+    "pytest-xdist",
 ]
 
 # Optional LLMs, integrations, etc

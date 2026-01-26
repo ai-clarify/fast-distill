@@ -14,7 +14,7 @@ lint:
 
 .PHONY: unit-tests
 unit-tests:
-	pytest tests/unit
+	./scripts/run_unit_tests.sh
 
 .PHONY: integration-tests
 integration-tests:
