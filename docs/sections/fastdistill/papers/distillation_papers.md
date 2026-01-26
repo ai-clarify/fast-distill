@@ -7,6 +7,8 @@ A reading list tuned for FastDistill. Each paper includes a short method snapsho
 - **Medium**: needs extra artifacts (logprobs, preferences) or self-hosted teachers.
 - **Low**: requires hidden states/gradients or heavy training-loop changes.
 
+Quick start experiments: `docs/sections/fastdistill/papers/paper_experiments.md`.
+
 ## Foundational KD
 
 | Paper | Method snapshot | FastDistill optimization path | Feasibility | Link |

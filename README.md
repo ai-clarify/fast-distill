@@ -41,8 +41,10 @@ Source: `docs/sections/fastdistill/baseline.md`
 
 ## 📚 Docs
 
-- Distillation papers (curated): `docs/sections/fastdistill/distillation_papers.md`
-- 蒸馏论文清单（精选）：`docs/sections/fastdistill/distillation_papers_zh.md`
+- Distillation papers (curated): `docs/sections/fastdistill/papers/distillation_papers.md`
+- 蒸馏论文清单（精选）：`docs/sections/fastdistill/papers/distillation_papers_zh.md`
+- Paper-driven experiments (local Ollama teacher): `docs/sections/fastdistill/papers/paper_experiments.md`
+- 论文驱动实验（本地 Ollama 教师）：`docs/sections/fastdistill/papers/paper_experiments_zh.md`
 
 ## 📖 Introduction
 

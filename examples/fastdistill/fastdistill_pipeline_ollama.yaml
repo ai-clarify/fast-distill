@@ -1,0 +1,119 @@
+fastdistill:
+  version: 1.0.0.b0
+pipeline:
+  name: fastdistill-text2sql-ollama
+  description: FastDistill Text2SQL reference pipeline (local Ollama teacher).
+  steps:
+    - step:
+        name: load_data
+        input_mappings: {}
+        output_mappings: {}
+        batch_size: 50
+        data:
+          - task_id: text2sql-001
+            schema: "users(id, name)"
+            instruction: "List all user names ordered by id."
+            gold_sql: "SELECT name FROM users ORDER BY id;"
+            decode_profile:
+              temperature: 0.2
+              max_tokens: 128
+              n: 1
+            system_prompt: Return SQL only.
+        type_info:
+          module: fastdistill.steps.generators.data
+          name: LoadDataFromDicts
+      name: load_data
+    - step:
+        name: canonicalize_fields
+        input_mappings: {}
+        output_mappings: {}
+        fields: [schema, instruction]
+        output_field: canonical_input
+        type_info:
+          module: fastdistill.steps.fastdistill.canonicalize
+          name: CanonicalizeFields
+      name: canonicalize_fields
+    - step:
+        name: schema_hash
+        input_mappings: {}
+        output_mappings: {}
+        fields: [schema]
+        output_field: schema_hash
+        type_info:
+          module: fastdistill.steps.fastdistill.hashing
+          name: ComputeHash
+      name: schema_hash
+    - step:
+        name: sample_id
+        input_mappings: {}
+        output_mappings: {}
+        fields: [task_id, schema_hash, canonical_input, decode_profile]
+        output_field: sample_id
+        type_info:
+          module: fastdistill.steps.fastdistill.hashing
+          name: ComputeHash
+      name: sample_id
+    - step:
+        name: teacher_gen
+        input_mappings: {}
+        output_mappings: {}
+        input_batch_size: 8
+        llm:
+          model: ollama-strong-model
+          host: http://localhost:11434
+          timeout: 120
+          generation_kwargs:
+            options:
+              temperature: 0.2
+              num_predict: 128
+              top_p: 1.0
+          type_info:
+            module: fastdistill.models.llms.ollama
+            name: OllamaLLM
+        system_prompt: Return SQL only.
+        template: "Schema: {{ schema }}\nQuestion: {{ instruction }}\nSQL:"
+        columns: [schema, instruction]
+        group_generations: false
+        num_generations: 1
+        type_info:
+          module: fastdistill.steps.tasks.text_generation
+          name: TextGeneration
+      name: teacher_gen
+    - step:
+        name: write_manifest
+        input_mappings: {}
+        output_mappings: {}
+        stage: teacher_candidates
+        output_dir: artifacts/manifests
+        type_info:
+          module: fastdistill.steps.fastdistill.manifest
+          name: WriteManifest
+      name: write_manifest
+    - step:
+        name: write_quality_report
+        input_mappings: {}
+        output_mappings: {}
+        stage: teacher_candidates
+        output_dir: artifacts/reports
+        type_info:
+          module: fastdistill.steps.fastdistill.quality_report
+          name: WriteQualityReport
+      name: write_quality_report
+  connections:
+    - from: load_data
+      to: [canonicalize_fields]
+    - from: canonicalize_fields
+      to: [schema_hash]
+    - from: schema_hash
+      to: [sample_id]
+    - from: sample_id
+      to: [teacher_gen]
+    - from: teacher_gen
+      to: [write_manifest]
+    - from: write_manifest
+      to: [write_quality_report]
+    - from: write_quality_report
+      to: []
+  type_info:
+    module: fastdistill.pipeline.local
+    name: Pipeline

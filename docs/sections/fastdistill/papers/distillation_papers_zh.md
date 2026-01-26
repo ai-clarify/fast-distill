@@ -7,6 +7,8 @@
 - **中**：需要额外产物（logprobs、偏好对等）或自托管教师。
 - **低**：依赖隐藏层/梯度或重训练循环改造。
 
+快速实验入口：`docs/sections/fastdistill/papers/paper_experiments_zh.md`。
+
 ## 基础 KD
 
 | 论文 | 方法解读 | FastDistill 优化路径 | 可行性 | 链接 |
