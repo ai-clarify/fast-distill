@@ -177,6 +177,8 @@ nav:
   - Engineering:
       - Engineering Practices: "ENGINEERING_PRACTICES.md"
       - 工程实践: "ENGINEERING_PRACTICES_zh.md"
+      - FastDistill Roadmap: "sections/fastdistill/roadmap.md"
+      - FastDistill 路线图: "sections/fastdistill/roadmap_zh.md"
   - How-to guides:
       - "sections/how_to_guides/index.md"
       - Basic:

@@ -138,6 +138,7 @@ flowchart LR
 - `fastdistill/pipeline`: DAG、batch 管理、执行引擎（local/ray）、缓存、step 包装器。
 - `fastdistill/steps`: 核心 step 原语 + step 库（columns/formatting/filtering/tasks）。
 - `fastdistill/models`: LLM/embeddings/image provider + base clients + mixins。
+- `fastdistill/registry`: 组件注册表 + 插件 Entry-point 发现。
 - `fastdistill/distiset.py`: 数据集打包、Hub 推送、产物归档。
 - `fastdistill/mixins`、`fastdistill/typing`、`fastdistill/utils`: 运行时参数、类型、序列化、日志等。
 
