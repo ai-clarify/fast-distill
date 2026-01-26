@@ -9,8 +9,7 @@ the checklist below when making changes.
   in `docs/error-experience/summary/entries/` (index files stay index-only).
 - Prefer YAML for configuration; avoid JSON config examples.
 - Favor simple, direct access over defensive guards when invariants are known.
-- Run relevant tests (unit + affected integration paths) before delivery.
-- For fast iteration, prefer `make test-changed`, but still run the full suite before final delivery.
+- Run tests proportional to the change. Prefer `make test-changed` for iteration; run the full suite only when explicitly requested or before a release.
 
 ## FastDistill-specific expectations
 - Keep the pipeline reproducible by writing manifests and quality reports.
