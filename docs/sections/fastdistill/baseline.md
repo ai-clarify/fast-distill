@@ -56,12 +56,15 @@ From `~/.cache/fastdistill/artifacts/reports/student_eval_post/quality_report.js
 - Pipeline: `examples/fastdistill/fastdistill_pipeline.py`
 - Provider: OpenRouter (remote)
 - Teacher model: `deepseek/deepseek-v3.2`
+- Student training model: `Qwen/Qwen3-0.6B` (MLX LoRA)
 - Dataset size: 1k train (WikiSQL 1k)
 - Artifacts root: `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2`
 - Data path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.jsonl`
 - DB path: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
 - Generation: `temperature=0.2`, `max_new_tokens=128`, `timeout=240`, `input_batch_size=10`
 - Output cleaning: `CleanSqlOutput` enabled (strips fenced SQL)
+- MLX config: `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/mlx/mlx_train.yaml`
+- MLX adapters: `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/mlx/adapters`
 
 ### Distillation quality results
 From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/teacher_eval/quality_report.json`:
@@ -82,9 +85,25 @@ From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2
 - gold_match_rate: 0.4854
 - judge_score: min 0.5, max 1.0, mean 0.7427
 
+### Student eval (MLX)
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_pre/quality_report.json`:
+- total: 1000
+- exec_pass_rate: 0.529
+- gold_match_rate: 0.002
+- judge_score: min 0.0, max 1.0, mean 0.2655
+
+From `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_post/quality_report.json`:
+- total: 1000
+- exec_pass_rate: 0.986
+- gold_match_rate: 0.449
+- judge_score: min 0.0, max 1.0, mean 0.7175
+
 ### Distillation timing
 - pipeline_wall_time_s: 2688.739
 - distilled_model_score_mean: 0.7427184466019418
+- mlx_eval_pre_wall_time_s: 948.057
+- mlx_train_wall_time_s: 345.760
+- mlx_eval_post_wall_time_s: 448.192
 
 ### Notes
 - Teacher eval gate passed without overrides; 5 rows rejected as `empty_output`.

@@ -7,6 +7,8 @@
 - 保留率：92.7%（927/1000，score + exec 过滤后）。
 - Teacher exec_pass_rate：0.932；gold_match_rate：0.45；judge_score mean：0.691。
 - Distilled exec_pass_rate：1.0；gold_match_rate：0.4854；judge_score mean：0.7427。
+- MLX 评测耗时（pre）：948.057s；MLX 训练耗时：345.760s；MLX 评测耗时（post）：448.192s。
+- Student exec_pass_rate：0.529 → 0.986；gold_match_rate：0.002 → 0.449；judge_score mean：0.2655 → 0.7175。
 
 ### 备注
 - Fenced SQL 执行错误为 0（CleanSqlOutput 已移除代码块）。

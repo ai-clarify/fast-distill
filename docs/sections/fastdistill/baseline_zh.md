@@ -56,12 +56,15 @@
 - Pipeline：`examples/fastdistill/fastdistill_pipeline.py`
 - Provider：OpenRouter（远程）
 - Teacher 模型：`deepseek/deepseek-v3.2`
+- 学生训练模型：`Qwen/Qwen3-0.6B`（MLX LoRA）
 - 数据集规模：训练 1k（WikiSQL 1k）
 - Artifacts 根目录：`~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2`
 - 数据路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.jsonl`
 - DB 路径：`~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train.db`
 - 生成参数：`temperature=0.2`、`max_new_tokens=128`、`timeout=240`、`input_batch_size=10`
 - 输出清洗：启用 `CleanSqlOutput`（移除 fenced SQL）
+- MLX 配置：`~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/mlx/mlx_train.yaml`
+- MLX adapters：`~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/mlx/adapters`
 
 ### 蒸馏质量结果
 来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/teacher_eval/quality_report.json`：
@@ -82,9 +85,25 @@
 - gold_match_rate：0.4854
 - judge_score：min 0.5，max 1.0，mean 0.7427
 
+### 学生评测（MLX）
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_pre/quality_report.json`：
+- total：1000
+- exec_pass_rate：0.529
+- gold_match_rate：0.002
+- judge_score：min 0.0，max 1.0，mean 0.2655
+
+来自 `~/.cache/fastdistill/artifacts/openrouter_wikisql_1k_teacher_2026-01-26_v2/reports/student_eval_post/quality_report.json`：
+- total：1000
+- exec_pass_rate：0.986
+- gold_match_rate：0.449
+- judge_score：min 0.0，max 1.0，mean 0.7175
+
 ### 蒸馏耗时
 - pipeline_wall_time_s：2688.739
 - distilled_model_score_mean：0.7427184466019418
+- mlx_eval_pre_wall_time_s：948.057
+- mlx_train_wall_time_s：345.760
+- mlx_eval_post_wall_time_s：448.192
 
 ### 备注
 - Teacher gate 通过，无需覆盖；其中 5 条样本因 `empty_output` 被剔除。
