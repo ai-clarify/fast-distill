@@ -9,3 +9,5 @@
 - entries/2026-01-25-fastdistill-wikisql-1k-teacher-gate.md
 - entries/2026-01-25-codspeed-unauthorized.md
 - entries/2026-01-25-tests-missing-extras.md
+- entries/2026-01-25-llamacpp-embed-decode-failure.md
+- entries/2026-01-26-llamacpp-rewardmodel-test-flake.md
