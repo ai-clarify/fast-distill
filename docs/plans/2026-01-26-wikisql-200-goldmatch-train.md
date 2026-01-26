@@ -20,7 +20,7 @@ Date: 2026-01-26
 - [x] Updated baseline/performance docs with small-sample metrics.
 - [x] Ran full lint + tests.
 - [x] Logged incidents (if any).
-- [ ] Committed changes.
+- [x] Committed changes.
 
 ## Notes
 - Train data: `~/.cache/fastdistill/datasets/wikisql/wikisql_1k/train_200.jsonl`
@@ -32,3 +32,4 @@ Date: 2026-01-26
 - Student eval pre/post: exec_pass_rate 0.545 → 0.885; gold_match_rate 0.0 → 0.29.
 - MLX wall time: pre 173.679s, train 304.425s, post 92.768s.
 - Incidents: none.
+- Commits: `3e685ab`, `3b68979`.
