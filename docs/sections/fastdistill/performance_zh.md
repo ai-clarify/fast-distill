@@ -72,3 +72,16 @@ Top 阶段占比：
   - 对重复的 gold SQL 结果做 LRU 缓存（`max_cached_gold`）。
   - 适用于大量重复 gold SQL 的任务（模板化题目）。
   - 默认开启（`cache_gold_results=True`）。
+
+## 架构与性能复盘（2026-01-26）
+
+### 发现的问题
+- **Write buffer 固定 50 行落盘**，大规模运行会产生大量小 parquet 文件并放大 IO 开销。
+- **WriteBuffer.close 会重写全部 parquet 文件**以统一 schema，结束阶段耗时随文件数线性增长。
+- **BatchManager 缺失 seq 检查为 O(n²)**，在大序列时成本偏高。
+- **批次哈希使用 `sha1(str(data))` 频繁计算**，大批次时开销明显。
+
+### 处理结果
+- **新增可配置 write-buffer 批大小**：`FASTDISTILL_WRITE_BUFFER_BATCH_SIZE`（默认 50），可提升大规模运行的写入效率。
+- **缺失 seq 检查降为 O(n)**：由集合基数判断替代逐项列表查询。
+- 其余问题保持为待办，优先配合 profiling 数据再调整核心逻辑与顺序保证机制。

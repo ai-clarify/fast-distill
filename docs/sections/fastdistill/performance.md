@@ -72,3 +72,16 @@ From the timing report, the top contributors are:
   - Adds in-memory caching of gold SQL results with an LRU cap (`max_cached_gold`).
   - Useful when many rows share the same gold SQL (e.g., templated tasks).
   - Default: enabled (`cache_gold_results=True`).
+
+## Architecture & performance review (2026-01-26)
+
+### Findings
+- **Write buffer flush size is fixed at 50 rows**, which can create many small parquet files and amplify IO overhead in large runs.
+- **WriteBuffer.close rewrites every parquet file** to enforce a final schema, making end-of-run time scale with total files.
+- **BatchManager missing-seq check is O(n²)** due to list membership inside a loop over sequence numbers.
+- **Batch hashing uses `sha1(str(data))` on every mutation**, which is expensive for large batches.
+
+### Actions
+- **Added configurable write-buffer batch size** via `FASTDISTILL_WRITE_BUFFER_BATCH_SIZE` (default 50) to reduce small-file overhead when increased.
+- **Reduced missing-seq check to O(n)** by using set cardinality instead of repeated list membership.
+- Other items remain open; revisit with profiling data before changing core ordering/caching logic.
