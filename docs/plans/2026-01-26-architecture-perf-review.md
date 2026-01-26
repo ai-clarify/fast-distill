@@ -18,5 +18,5 @@ Date: 2026-01-26
 - [x] Surveyed code paths and drafted findings.
 - [x] Updated documentation (EN + ZH) with review and actions.
 - [x] Implemented improvements with tests.
-- [ ] Ran full lint and tests.
-- [ ] Committed changes.
+- [x] Ran full lint and tests.
+- [x] Committed changes.
