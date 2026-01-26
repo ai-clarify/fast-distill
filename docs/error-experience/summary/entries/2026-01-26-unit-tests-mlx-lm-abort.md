@@ -1,0 +1,1 @@
+- 2026-01-26: `make unit-tests` aborted during `pytest.importorskip("mlx_lm")`; `mlx_lm` import crashed (Fatal Python error). Reinstall a compatible MLX build or remove `mlx_lm` to allow the tests to skip.

@@ -1,0 +1,1 @@
+- 2026-01-26: `make integration-tests` failed because `multiprocessing.Manager()` could not bind a listener (`PermissionError: [Errno 1] Operation not permitted`), causing widespread EOFErrors. Run tests in an environment that allows loopback socket binding or disable multiprocessing.
