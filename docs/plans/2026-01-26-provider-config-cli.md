@@ -28,7 +28,7 @@
 - [x] Add tests.
 - [x] Update docs.
 - [x] Run full lint + tests.
-- [ ] Commit changes.
+- [x] Commit changes.
 
 ## Validation
 - `make lint`
