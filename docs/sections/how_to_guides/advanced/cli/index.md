@@ -113,3 +113,16 @@ fastdistill pipeline run --script "https://huggingface.co/datasets/fastdistill-i
 You can also pass runtime parameters to the python script as we saw with `--config` option.
 
 Again, this helps with the reproducibility of the results, and simplifies sharing not only the final dataset but also the process to generate it.
+
+#### Layered YAML configs
+
+You can apply environment/run overrides to a base pipeline YAML (deep-merged, lists replaced):
+
+```bash
+fastdistill pipeline run \
+  --config configs/pipeline.yaml \
+  --config-env configs/env/dev.yaml \
+  --config-run configs/run/override.yaml
+```
+
+The same overlay flags are supported on `fastdistill pipeline info`.

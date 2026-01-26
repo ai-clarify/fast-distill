@@ -26,7 +26,7 @@
 
 ## 📊 WikiSQL 1k Distillation Results (2026-01-25)
 
-**Teacher pass rate** and **student performance** from the 1k-sample Text2SQL distillation run (OpenRouter, WikiSQL 1k).  
+**Teacher pass rate** and **student performance** from the 1k-sample Text2SQL distillation run (OpenRouter, WikiSQL 1k).
 Source: `docs/sections/fastdistill/baseline.md`
 
 | Stage | Model | Exec pass rate | Gold match rate | Judge score mean |
@@ -38,6 +38,11 @@ Source: `docs/sections/fastdistill/baseline.md`
 > Note: Teacher eval gate was overridden for the full 1k run; keep rate after filtering was 11.9% (119/1000).
 
 ---
+
+## 📚 Docs
+
+- Distillation papers (curated): `docs/sections/fastdistill/distillation_papers.md`
+- 蒸馏论文清单（精选）：`docs/sections/fastdistill/distillation_papers_zh.md`
 
 ## 📖 Introduction
 
@@ -114,6 +119,16 @@ Your distillation run will generate artifacts in `~/.cache/fastdistill/artifacts
 - 📂 `manifests/<stage>/manifest.json` – Precise data lineage.
 - 📊 `reports/<stage>/quality_report.json` – Pass rates and rejection stats.
 - ⏱️ `reports/timing_report.json` – Latency breakdown per stage.
+
+### CLI (layered YAML configs)
+Run a serialized pipeline with environment/run overrides:
+
+```bash
+fastdistill pipeline run \
+  --config configs/pipeline.yaml \
+  --config-env configs/env/dev.yaml \
+  --config-run configs/run/override.yaml
+```
 
 ---
 

@@ -197,6 +197,7 @@ These are the first-class analysis tools in the fastdistill steps:
 - `fastdistill/steps`: core step primitives + step library (columns/formatting/filtering/tasks).
 - `fastdistill/models`: LLM/embeddings/image providers + base clients and mixins.
 - `fastdistill/registry`: component registry + entry-point discovery for plugins.
+- `fastdistill/providers`: provider adapter envelopes + protocol interfaces (LLM/embeddings/image).
 - `fastdistill/distiset.py`: dataset packaging, hub push, artifact bundling.
 - `fastdistill/mixins`, `fastdistill/typing`, `fastdistill/utils`: runtime parameters, typing, serialization, logging.
 
