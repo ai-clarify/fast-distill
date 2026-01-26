@@ -19,3 +19,7 @@ unit-tests:
 .PHONY: integration-tests
 integration-tests:
 	pytest tests/integration
+
+.PHONY: test-changed
+test-changed:
+	./scripts/run_changed_tests.sh
