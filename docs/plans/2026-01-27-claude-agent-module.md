@@ -26,7 +26,7 @@
 - [x] Add CLI integration + sample YAML config + docs.
 - [x] Add tests.
 - [x] Run full lint + unit + integration tests.
-- [ ] Commit changes.
+- [x] Commit changes.
 
 ## Validation
 - `make lint`
