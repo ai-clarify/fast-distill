@@ -132,6 +132,22 @@ fastdistill pipeline run \
   --config-run configs/run/override.yaml
 ```
 
+### Agent distill (Claude Agent SDK)
+
+Turn a task requirement into a distilled agent bundle (spec, dataset, pipeline dump):
+
+```bash
+pip install -e ".[claude-agent]"
+
+# Minimal: use env vars required by Claude Agent SDK, then run
+fastdistill agent distill --task "Build a SQL query helper for analytics questions"
+
+# Config-driven
+fastdistill agent distill \
+  --config configs/fastdistill/agent_distill.sample.yaml \
+  --task "Build a SQL query helper for analytics questions"
+```
+
 ---
 
 ## 📐 Architecture & Design

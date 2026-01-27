@@ -4,14 +4,17 @@
 
 ## Available commands
 
-The only available command as of the current version of `fastdistill` is `fastdistill pipeline`.
+FastDistill ships CLI commands for pipelines, registry inspection, and agent distillation.
 
 ```bash
-$ fastdistill pipeline --help
+$ fastdistill --help
 
- Usage: fastdistill pipeline [OPTIONS] COMMAND [ARGS]...
+ Usage: fastdistill [OPTIONS] COMMAND [ARGS]...
 
- Commands to run and inspect FastDistill pipelines.
+ Commands:
+   agent     Distill task-specific agents using Claude Agent SDK.
+   pipeline  Commands to run and inspect FastDistill pipelines.
+   registry  Inspect FastDistill component registry.
 
 ╭─ Options ───────────────────────────────────────────────────────────────────────────────╮
 │ --help          Show this message and exit.                                             │
@@ -150,4 +153,20 @@ Inspect a single component:
 
 ```bash
 fastdistill registry show --kind llm --name OpenAILLM
+```
+
+#### Agent distill
+
+Generate and distill an agent bundle (spec, dataset, pipeline dump) from a task requirement:
+
+```bash
+fastdistill agent distill --help
+```
+
+Example with YAML config and task override:
+
+```bash
+fastdistill agent distill \
+  --config configs/fastdistill/agent_distill.sample.yaml \
+  --task "Build a SQL query helper for analytics questions"
 ```
