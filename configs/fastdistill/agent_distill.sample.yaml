@@ -1,0 +1,38 @@
+agent:
+  task: "Replace with your agent task requirement."
+  name: "FastDistill Agent"
+  output_dir: "~/.cache/fastdistill/agents"
+  num_instructions: 48
+  run_id: null
+
+claude:
+  max_turns: 1
+
+distill:
+  system_prompt: "You are a precise assistant."
+  prompt_template: |
+    Task: {{ instruction }}
+    {% if context %}
+    Context: {{ context }}
+    {% endif %}
+    Answer:
+  min_output_chars: 24
+  max_output_chars: 2048
+  train_ratio: 0.9
+
+teacher:
+  provider: openrouter
+  model: deepseek/deepseek-v3.2
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+  generation_kwargs:
+    temperature: 0.2
+    max_new_tokens: 256
+
+training:
+  enabled: false
+  mlx_config: configs/fastdistill/mlx_train.sample.yaml
+  model: Qwen/Qwen3-0.6B
+  iters: 1000
+  batch_size: 4
+  max_seq_length: 2048
