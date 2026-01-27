@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import List, Sequence
 
@@ -45,7 +46,8 @@ def _canonical_fields(spec: DistillAgentSpec) -> Sequence[str]:
 
 def _template_columns(spec: DistillAgentSpec) -> Sequence[str]:
     columns: List[str] = ["instruction"]
-    if any(item.context not in (None, "") for item in spec.instructions):
+    pattern = r"(?:{%.*?\\bcontext\\b.*?%}|{{\\s*context\\s*}})"
+    if re.search(pattern, spec.prompt_template):
         columns.append("context")
     return columns
 
