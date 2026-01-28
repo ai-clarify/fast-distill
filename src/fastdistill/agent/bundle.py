@@ -22,11 +22,17 @@ class AgentBundle:
     reports_dir: Path
     manifests_dir: Path
     mlx_dir: Path
+    model_dir: Path
+    gguf_path: Path
     train_config_path: Path
 
 
 def build_agent_bundle(
-    output_dir: str, *, name: Optional[str], run_id: Optional[str]
+    output_dir: str,
+    *,
+    name: Optional[str],
+    run_id: Optional[str],
+    gguf_output: Optional[str] = None,
 ) -> AgentBundle:
     bundle_run_id = run_id or make_run_id(name)
     root = Path(output_dir).expanduser().resolve() / bundle_run_id
@@ -34,6 +40,12 @@ def build_agent_bundle(
     reports_dir = artifacts_root / "reports"
     manifests_dir = artifacts_root / "manifests"
     mlx_dir = artifacts_root / "mlx"
+    model_dir = artifacts_root / "model"
+    gguf_path = (
+        Path(gguf_output).expanduser().resolve()
+        if gguf_output
+        else model_dir / "agent.gguf"
+    )
     return AgentBundle(
         root=root,
         run_id=bundle_run_id,
@@ -44,5 +56,7 @@ def build_agent_bundle(
         reports_dir=reports_dir,
         manifests_dir=manifests_dir,
         mlx_dir=mlx_dir,
+        model_dir=model_dir,
+        gguf_path=gguf_path,
         train_config_path=mlx_dir / "mlx_train.yaml",
     )

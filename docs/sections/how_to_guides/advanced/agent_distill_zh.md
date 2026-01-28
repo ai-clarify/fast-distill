@@ -4,14 +4,16 @@
 - `spec.yaml`（agent 规格）
 - `pipeline.yaml`（FastDistill 流水线快照）
 - `agent_card.md`（摘要）
-- `artifacts/`（报告、清单、MLX 数据集）
+- `artifacts/`（报告、清单、MLX 数据集、GGUF 模型）
 
 ## 前置条件
 
-安装 Claude Agent SDK，并设置所需的环境变量。
+安装 Claude Agent SDK，并设置所需的环境变量。GGUF 导出还需要 MLX 与 transformers。
 
 ```bash
 pip install -e ".[claude-agent]"
+pip install -e ".[mlx,hf-transformers]"
+# 训练需要 mlx-lm-lora
 ```
 
 ## 快速开始
@@ -50,6 +52,8 @@ fastdistill agent distill \
     reports/
     manifests/
     mlx/
+    model/
 ```
 
 如果 `training.enabled` 为 true，将自动写入 `artifacts/mlx/mlx_train.yaml` 并执行训练。
+如果 `training.export_gguf` 为 true，将导出 GGUF 到 `artifacts/model/agent.gguf`。

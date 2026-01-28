@@ -5,14 +5,17 @@ The bundle includes:
 - `spec.yaml` (agent spec)
 - `pipeline.yaml` (FastDistill pipeline dump)
 - `agent_card.md` (quick summary)
-- `artifacts/` (reports, manifests, MLX dataset)
+- `artifacts/` (reports, manifests, MLX dataset, GGUF model)
 
 ## Prerequisites
 
 Install the Claude Agent SDK extra and set the required environment variables for your Claude provider.
+For GGUF export you also need the MLX stack and transformers.
 
 ```bash
 pip install -e ".[claude-agent]"
+pip install -e ".[mlx,hf-transformers]"
+# plus mlx-lm-lora for training
 ```
 
 ## Quick start
@@ -53,6 +56,8 @@ The bundle structure:
     reports/
     manifests/
     mlx/
+    model/
 ```
 
 If `training.enabled` is true, the MLX training config is written to `artifacts/mlx/mlx_train.yaml` and training is executed automatically.
+If `training.export_gguf` is true, the GGUF model is exported to `artifacts/model/agent.gguf` (requires training + MLX).

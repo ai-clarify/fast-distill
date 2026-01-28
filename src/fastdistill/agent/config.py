@@ -47,6 +47,8 @@ class TrainingSettings(BaseModel):
     iters: Optional[int] = None
     batch_size: Optional[int] = None
     max_seq_length: Optional[int] = None
+    export_gguf: bool = True
+    gguf_output: Optional[str] = None
 
 
 class AgentConfig(BaseModel):

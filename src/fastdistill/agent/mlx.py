@@ -95,3 +95,41 @@ def run_mlx_pipeline(
     )
     run_mlx_training(train_config_path)
     return train_config_path
+
+
+def export_gguf(
+    *,
+    base_model: str,
+    adapter_path: Path,
+    output_path: Path,
+) -> Path:
+    try:
+        from mlx.utils import tree_flatten
+        from mlx_lm import gguf as mlx_gguf
+        from mlx_lm import utils as mlx_utils
+    except ImportError as exc:
+        raise FastDistillUserError(
+            "GGUF export requires `mlx_lm` and MLX. Install with `pip install 'fastdistill[mlx]'`."
+        ) from exc
+
+    try:
+        import transformers  # noqa: F401
+    except ImportError as exc:
+        raise FastDistillUserError(
+            "GGUF export requires transformers. Install with `pip install 'fastdistill[hf-transformers]'`."
+        ) from exc
+
+    if not adapter_path.exists():
+        raise FastDistillUserError(
+            f"Adapter path not found: {adapter_path}. Run training before GGUF export."
+        )
+
+    model, _, config = mlx_utils.load(
+        base_model,
+        adapter_path=str(adapter_path),
+        return_config=True,
+    )
+    weights = dict(tree_flatten(model.parameters()))
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    mlx_gguf.convert_to_gguf(base_model, weights, config, str(output_path))
+    return output_path

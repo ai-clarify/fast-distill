@@ -10,7 +10,7 @@ from typing import Optional
 from fastdistill.agent.bundle import AgentBundle, build_agent_bundle
 from fastdistill.agent.claude import generate_spec
 from fastdistill.agent.config import AgentConfig
-from fastdistill.agent.mlx import run_mlx_pipeline
+from fastdistill.agent.mlx import export_gguf, run_mlx_pipeline
 from fastdistill.agent.pipeline import build_agent_pipeline
 from fastdistill.agent.specs import DistillAgentSpec, normalize_spec
 from fastdistill.agent.teacher import build_teacher_llm
@@ -44,7 +44,10 @@ def _apply_overrides(
     return DistillAgentSpec.model_validate(payload)
 
 
-def _write_agent_card(bundle: AgentBundle, spec: DistillAgentSpec) -> None:
+def _write_agent_card(
+    bundle: AgentBundle, spec: DistillAgentSpec, *, gguf_path: Optional[Path]
+) -> None:
+    gguf_value = str(gguf_path) if gguf_path else ""
     content = "\n".join(
         [
             f"# Agent: {spec.name}",
@@ -70,6 +73,7 @@ def _write_agent_card(bundle: AgentBundle, spec: DistillAgentSpec) -> None:
             f"- Reports: {bundle.reports_dir}",
             f"- Manifests: {bundle.manifests_dir}",
             f"- MLX dataset: {bundle.mlx_dir}",
+            f"- GGUF model: {gguf_value}",
         ]
     )
     bundle.card_path.write_text(content, encoding="utf-8")
@@ -106,12 +110,12 @@ def distill_agent(
         config.agent.output_dir,
         name=spec.name,
         run_id=config.agent.run_id,
+        gguf_output=config.training.gguf_output,
     )
     bundle.root.mkdir(parents=True, exist_ok=True)
     bundle.artifacts_root.mkdir(parents=True, exist_ok=True)
 
     write_yaml(bundle.spec_path, spec.model_dump())
-    _write_agent_card(bundle, spec)
 
     teacher_llm = build_teacher_llm(
         provider=config.teacher.provider,
@@ -133,6 +137,7 @@ def distill_agent(
 
     pipeline.run(use_cache=False)
 
+    gguf_path: Optional[Path] = None
     if config.training.enabled:
         repo_root = Path(__file__).resolve().parents[3]
         base_config = (
@@ -151,5 +156,18 @@ def distill_agent(
         bundle.train_config_path.write_text(
             train_config_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
+        if config.training.export_gguf:
+            base_model = config.training.model or spec.student_model
+            if not base_model:
+                raise FastDistillUserError(
+                    "GGUF export requires a base model (set training.model or student_model)."
+                )
+            gguf_path = export_gguf(
+                base_model=base_model,
+                adapter_path=bundle.mlx_dir / "adapters",
+                output_path=bundle.gguf_path,
+            )
+
+    _write_agent_card(bundle, spec, gguf_path=gguf_path)
 
     return bundle

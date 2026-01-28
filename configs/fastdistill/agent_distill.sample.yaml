@@ -36,3 +36,5 @@ training:
   iters: 1000
   batch_size: 4
   max_seq_length: 2048
+  export_gguf: true
+  gguf_output: null

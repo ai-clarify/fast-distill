@@ -52,6 +52,12 @@ def distill(
         "--train/--no-train",
         help="Enable or disable MLX training step.",
     ),
+    export_gguf: Optional[bool] = typer.Option(
+        None,
+        "--export-gguf/--no-export-gguf",
+        help="Enable or disable GGUF export after training.",
+    ),
+    gguf_output: Optional[str] = typer.Option(None, help="Override GGUF output path."),
 ) -> None:
     overrides: Dict[str, Any] = {}
     _set_override(overrides, "agent", "task", value=task)
@@ -60,6 +66,9 @@ def distill(
     _set_override(overrides, "agent", "run_id", value=run_id)
     if train is not None:
         _set_override(overrides, "training", "enabled", value=train)
+    if export_gguf is not None:
+        _set_override(overrides, "training", "export_gguf", value=export_gguf)
+    _set_override(overrides, "training", "gguf_output", value=gguf_output)
 
     config_obj = load_agent_config(
         config,
@@ -68,6 +77,7 @@ def distill(
         overrides=overrides or None,
     )
     bundle = distill_agent(task=task, config=config_obj)
+    gguf_path = str(bundle.gguf_path) if bundle.gguf_path.exists() else None
 
     typer.echo(
         yaml.safe_dump(
@@ -80,6 +90,7 @@ def distill(
                 "reports_dir": str(bundle.reports_dir),
                 "manifests_dir": str(bundle.manifests_dir),
                 "mlx_dir": str(bundle.mlx_dir),
+                "gguf_path": gguf_path,
             },
             sort_keys=False,
         )
