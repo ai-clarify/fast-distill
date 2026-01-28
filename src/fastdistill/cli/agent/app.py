@@ -8,9 +8,13 @@ from typing import Any, Dict, Optional
 
 import typer
 import yaml
+from dotenv import load_dotenv
 
 from fastdistill.agent.config import load_agent_config
 from fastdistill.agent.runner import distill_agent
+
+# Load .env file if present
+load_dotenv()
 
 app = typer.Typer(help="Distill task-specific agents using Claude Agent SDK.")
 
