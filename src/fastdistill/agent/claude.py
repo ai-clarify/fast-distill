@@ -50,6 +50,7 @@ def _build_prompt(
         "- Each instruction item must include task_id, instruction, and optional context.\n"
         f"- Set min_output_chars={min_output_chars} and max_output_chars={max_output_chars}.\n"
         "- Include suggested teacher_model and student_model when possible.\n"
+        f"- The spec MUST include a 'task' field set to: '{task}'\n"
         "- Call the submit_distill_spec tool with the full JSON spec."
         f"{hint_block}"
     )
