@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T")
 _RUNTIME_PARAMETER_ANNOTATION = "fastdistill_step_runtime_parameter"
 RuntimeParameter = Annotated[
-    Union[_T, None], Field(default=None), _RUNTIME_PARAMETER_ANNOTATION
+    Union[_T, None], _RUNTIME_PARAMETER_ANNOTATION
 ]
 """Used to mark the attributes of a `Step` as a runtime parameter."""
 
