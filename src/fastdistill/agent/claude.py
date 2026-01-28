@@ -5,7 +5,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, Optional
+import json
+from typing import Any, Dict, Optional, Union
 
 from fastdistill.agent.specs import DistillAgentSpec
 from fastdistill.errors import FastDistillUserError
@@ -80,7 +81,10 @@ async def _generate_spec_async(
         {"spec": dict},
     )
     async def submit_distill_spec(args: Dict[str, Any]) -> Dict[str, Any]:
-        spec_holder["spec"] = args.get("spec", args)
+        spec_value: Union[str, dict] = args.get("spec", args)
+        if isinstance(spec_value, str):
+            spec_value = json.loads(spec_value)
+        spec_holder["spec"] = spec_value
         return {"content": [{"type": "text", "text": "Spec received."}]}
 
     server = create_sdk_mcp_server(name="distill_spec", tools=[submit_distill_spec])
