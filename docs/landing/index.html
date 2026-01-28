@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastDistill - 算法工程师智能体</title>
+    <meta name="description" content="算法工程师智能体，帮你一键训练所有模型。FastDistill 是生产级的数据蒸馏框架。">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #f5f0e8;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6560;
+            --text-muted: #9a9590;
+            --accent: #d97706;
+            --accent-light: #f59e0b;
+            --accent-dark: #b45309;
+            --border: #e8e2d9;
+            --border-light: #f0ebe3;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* Typography */
+        h1, h2, h3, .display {
+            font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(250, 248, 245, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-muted);
+        }
+
+        .btn-small {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 5rem;
+            background: var(--bg-primary);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(217, 119, 6, 0.06), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(217, 119, 6, 0.08);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent-dark);
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.75rem, 6vw, 4.5rem);
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .hero h1 .highlight {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 7rem 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            line-height: 1.7;
+        }
+
+        .section-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Skills Section */
+        .skills {
+            background: var(--bg-secondary);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-light);
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        .skill-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .skill-desc {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--bg-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        /* Workflow Section */
+        .workflow {
+            background: var(--bg-secondary);
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--border), var(--accent-light), var(--border));
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .step-number {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-steps {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .workflow-steps::before {
+                display: none;
+            }
+        }
+
+        /* Code Section */
+        .code-section {
+            background: var(--bg-primary);
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .code-header {
+            background: #2a2a2a;
+            padding: 1rem 1.25rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ff5f56; }
+        .code-dot.yellow { background: #ffbd2e; }
+        .code-dot.green { background: #27c93f; }
+
+        .code-content {
+            padding: 1.5rem 2rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.8;
+        }
+
+        .code-content code {
+            color: #e4e4e4;
+        }
+
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .comment { color: #8b949e; }
+        .function { color: #d2a8ff; }
+
+        /* Results Section */
+        .results {
+            background: var(--bg-secondary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--bg-card), rgba(217, 119, 6, 0.03));
+        }
+
+        .result-metric {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .result-card.featured .result-metric {
+            font-size: 4rem;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+
+        .result-sublabel {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CTA Section */
+        .cta {
+            background: var(--bg-primary);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9375rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-mark">F</div>
+                <span>FastDistill</span>
+            </a>
+            <div class="nav-links">
+                <a href="#skills">Skills</a>
+                <a href="#features">Features</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#results">Results</a>
+                <a href="/docs/">Docs</a>
+                <a href="https://github.com/argilla-io/fastdistill" target="_blank" class="btn btn-secondary btn-small">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Now open source
+            </div>
+            <h1>
+                <span class="highlight">算法工程师智能体</span><br>
+                帮你一键训练所有模型
+            </h1>
+            <p class="hero-subtitle">FastDistill — 生产级数据蒸馏框架</p>
+            <p class="hero-description">
+                桥接原始数据与高质量学生模型训练之间的差距。通过统一提供商网关、确定性数据契约和严格的质量门控，生成可信赖的数据集。
+            </p>
+            <div class="hero-actions">
+                <a href="#quickstart" class="btn btn-primary">快速开始</a>
+                <a href="/docs/" class="btn btn-secondary">查看文档</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills" id="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Capabilities</span>
+                <h2>核心技能库</h2>
+                <p>丰富的步骤和任务组件，覆盖数据生成、评估、过滤全流程</p>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">💬</div>
+                        <div class="skill-title">ChatGeneration</div>
+                    </div>
+                    <div class="skill-desc">对话生成任务，支持多轮对话和角色设定，用于构建指令跟随数据集。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">生成</span>
+                        <span class="skill-tag">对话</span>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">🔄</div>
+                        <div class="skill-title">SelfInstruct</div>
+                    </div>
+                    <div class="skill-desc">自指导数据生成，通过种子任务自动扩展多样化指令数据。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">数据增强</span>
+                        <span class="skill-tag">自举</span>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">📈</div>
+                        <div class="skill-title">EvolComplexity</div>
+                    </div>
+                    <div class="skill-desc">进化式复杂度增强，通过多轮进化提升指令复杂度，增强模型能力边界。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">进化</span>
+                        <span class="skill-tag">复杂度</span>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">⭐</div>
+                        <div class="skill-title">UltraFeedback</div>
+                    </div>
+                    <div class="skill-desc">UltraFeedback 质量评估，多维度评分体系，精准识别高质量样本。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">评估</span>
+                        <span class="skill-tag">质量</span>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">🔍</div>
+                        <div class="skill-title">DEITA Filtering</div>
+                    </div>
+                    <div class="skill-desc">基于复杂度和质量的数据过滤，保留最有价值的训练样本。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">过滤</span>
+                        <span class="skill-tag">选择</span>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon">🎯</div>
+                        <div class="skill-title">SQLiteExecEval</div>
+                    </div>
+                    <div class="skill-desc">SQL执行评估，在沙箱中验证生成SQL的正确性，Text2SQL必备。</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">执行</span>
+                        <span class="skill-tag">验证</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Features</span>
+                <h2>核心特性</h2>
+                <p>为算法工程师打造的全栈数据蒸馏解决方案</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>统一提供商网关</h3>
+                    <p>无缝集成 OpenAI 兼容端点（vLLM、SGLang、Ollama、OpenRouter），一键切换教师模型。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>确定性数据契约</h3>
+                    <p>规范输入 + 样本 ID + 清单确保完全可重放性和可审计性。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚦</div>
+                    <h3>严格质量门控</h3>
+                    <p>多阶段过滤：规则 → 执行 → LLM 评判，层层把关数据质量。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>详细可观测性</h3>
+                    <p>自动生成每阶段计时和质量报告，快速识别瓶颈。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>解耦训练流程</h3>
+                    <p>数据生成与模型训练完全分离，支持 MLX LoRA、vLLM 等后端。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎛️</div>
+                    <h3>配置驱动</h3>
+                    <p>YAML 配置支持，环境/运行时分层覆盖，便于复现和分享。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow" id="workflow">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">How it works</span>
+                <h2>工作流程</h2>
+                <p>从原始数据到蒸馏数据集的端到端信息流转</p>
+            </div>
+            <div class="workflow-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>摄取与规范化</h3>
+                    <p>将原始输入规范化为稳定的数据模式</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>去重处理</h3>
+                    <p>使用 MinHash 和嵌入去重算法</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>教师生成</h3>
+                    <p>使用高质量教师 LLM 生成候选数据</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>质量门控</h3>
+                    <p>规则过滤 → 执行评估 → LLM 评判</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="code-section" id="quickstart">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Quick start</span>
+                <h2>快速开始</h2>
+                <p>只需几行命令，启动你的数据蒸馏流水线</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="comment"># 安装 FastDistill</span>
+pip install fastdistill
+
+<span class="comment"># 或使用 Ollama 支持进行本地蒸馏</span>
+pip install <span class="string">"fastdistill[ollama]"</span>
+
+<span class="comment"># 运行端到端蒸馏示例</span>
+OLLAMA_MODEL=qwen3:0.6b python examples/fastdistill/ollama_distill_e2e.py
+
+<span class="comment"># 智能体蒸馏 - 一键训练</span>
+fastdistill agent distill --task <span class="string">"Build a SQL query helper"</span></code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results" id="results">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Results</span>
+                <h2>实证效果</h2>
+                <p>WikiSQL 1k Text2SQL 蒸馏实验结果</p>
+            </div>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-metric">11.9%</div>
+                    <div class="result-label">教师模型基线</div>
+                    <div class="result-sublabel">DeepSeek V3.2</div>
+                </div>
+                <div class="result-card featured">
+                    <div class="result-metric">92.9%</div>
+                    <div class="result-label">学生模型执行通过率</div>
+                    <div class="result-sublabel">Qwen3-0.6B + MLX LoRA</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-metric">30.9%</div>
+                    <div class="result-label">Gold Match 准确率</div>
+                    <div class="result-sublabel">严格匹配指标</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <span class="section-label">Get started</span>
+                <h2>开始构建你的数据流水线</h2>
+                <p>加入 FastDistill 社区，探索合成数据与 AI 反馈的无限可能。</p>
+                <div class="hero-actions">
+                    <a href="https://github.com/argilla-io/fastdistill" target="_blank" class="btn btn-primary">访问 GitHub</a>
+                    <a href="/docs/" class="btn btn-secondary">阅读文档</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo-mark" style="width: 32px; height: 32px; font-size: 0.875rem;">F</div>
+                <span>FastDistill</span>
+            </div>
+            <div class="footer-links">
+                <a href="/docs/">Docs</a>
+                <a href="https://github.com/argilla-io/fastdistill" target="_blank">GitHub</a>
+                <a href="https://twitter.com/argilla_io" target="_blank">Twitter</a>
+                <a href="http://hf.co/join/discord" target="_blank">Discord</a>
+            </div>
+            <div class="footer-copy">MIT License © 2026</div>
+        </div>
+    </footer>
+</body>
+</html>
