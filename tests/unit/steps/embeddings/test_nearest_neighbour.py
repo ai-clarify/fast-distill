@@ -2,9 +2,17 @@
 #
 # Licensed under the MIT License.
 
+import sys
+
 import pytest
 
 from fastdistill.steps.embeddings.nearest_neighbour import FaissNearestNeighbour
+
+if sys.platform == "darwin":
+    pytest.skip(
+        "Faiss nearest-neighbour tests are unstable on macOS (segfault in faiss).",
+        allow_module_level=True,
+    )
 
 pytest.importorskip("faiss")
 

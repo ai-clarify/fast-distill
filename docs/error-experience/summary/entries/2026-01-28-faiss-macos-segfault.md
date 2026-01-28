@@ -1,0 +1,1 @@
+- 2026-01-28: macOS unit tests segfaulted in Faiss nearest-neighbour; skip module on macOS to keep tests stable.

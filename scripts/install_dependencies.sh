@@ -12,6 +12,11 @@ if [ "${python_version}" != "(3, 12)" ]; then
     uv pip install --system -e .[ray]
 fi
 
-./scripts/install_cpu_vllm.sh
+os_name="$(uname -s)"
+if [ "$os_name" = "Linux" ]; then
+    ./scripts/install_cpu_vllm.sh
+else
+    echo "Skipping vLLM CPU install on ${os_name} (Linux-only script)."
+fi
 
 uv pip install --system -e ".[dev,tests]"
