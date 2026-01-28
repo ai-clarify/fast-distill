@@ -26,7 +26,7 @@
 - [x] Update docs + sample config for GGUF output.
 - [x] Add/extend unit tests for bundle paths/config.
 - [x] Run full lint + unit + integration tests.
-- [ ] Commit changes.
+- [x] Commit changes.
 
 ## Validation
 - `source .venv/bin/activate && make lint`
