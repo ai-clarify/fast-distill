@@ -79,6 +79,14 @@ def _write_agent_card(
     bundle.card_path.write_text(content, encoding="utf-8")
 
 
+def _print_stage(message: str) -> None:
+    print(f"\n▶ {message}")
+
+
+def _print_detail(label: str, value: str) -> None:
+    print(f"  {label:.<24} {value}")
+
+
 def distill_agent(
     *,
     task: Optional[str],
@@ -90,6 +98,7 @@ def distill_agent(
             "Task is required. Provide --task or set agent.task."
         )
 
+    _print_stage("Phase 1: Planning")
     spec = generate_spec(
         task=resolved_task,
         num_instructions=config.agent.num_instructions,
@@ -98,6 +107,7 @@ def distill_agent(
         min_output_chars=config.distill.min_output_chars,
         max_output_chars=config.distill.max_output_chars,
         max_turns=config.claude.max_turns,
+        verbose=config.claude.verbose,
     )
     spec = normalize_spec(
         spec,
@@ -116,6 +126,11 @@ def distill_agent(
     bundle.artifacts_root.mkdir(parents=True, exist_ok=True)
 
     write_yaml(bundle.spec_path, spec.model_dump())
+    _print_detail("Spec saved", str(bundle.spec_path))
+
+    _print_stage("Phase 2: Generating training data")
+    _print_detail("Teacher model", config.teacher.model or spec.teacher_model or "default")
+    _print_detail("Instructions", str(len(spec.instructions)))
 
     teacher_llm = build_teacher_llm(
         provider=config.teacher.provider,
@@ -136,9 +151,13 @@ def distill_agent(
     write_yaml(bundle.pipeline_path, pipeline.dump())
 
     pipeline.run(use_cache=False)
+    _print_detail("Reports", str(bundle.reports_dir))
+    _print_detail("MLX dataset", str(bundle.mlx_dir))
 
     gguf_path: Optional[Path] = None
     if config.training.enabled:
+        _print_stage("Phase 3: Training model")
+        _print_detail("Student model", config.training.model or spec.student_model or "default")
         repo_root = Path(__file__).resolve().parents[3]
         base_config = (
             Path(config.training.mlx_config)
@@ -156,6 +175,8 @@ def distill_agent(
         bundle.train_config_path.write_text(
             train_config_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
+        _print_detail("Config saved", str(bundle.train_config_path))
+
         if config.training.export_gguf:
             base_model = config.training.model or spec.student_model
             if not base_model:
@@ -167,7 +188,12 @@ def distill_agent(
                 adapter_path=bundle.mlx_dir / "adapters",
                 output_path=bundle.gguf_path,
             )
+            _print_detail("GGUF exported", str(gguf_path))
 
     _write_agent_card(bundle, spec, gguf_path=gguf_path)
+
+    _print_stage("Done")
+    _print_detail("Agent card", str(bundle.card_path))
+    _print_detail("Bundle root", str(bundle.root))
 
     return bundle

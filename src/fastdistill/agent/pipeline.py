@@ -24,16 +24,20 @@ from fastdistill.steps.fastdistill import (
 from fastdistill.steps.tasks import TextGeneration
 
 
-def _instruction_rows(spec: DistillAgentSpec) -> List[dict]:
+def _instruction_rows(spec: DistillAgentSpec, columns: Sequence[str]) -> List[dict]:
+    """Build rows with all columns needed by the template."""
     rows = []
     for item in spec.instructions:
-        rows.append(
-            {
-                "task_id": item.task_id,
-                "instruction": item.instruction,
-                "context": item.context,
-            }
-        )
+        row: dict = {
+            "task_id": item.task_id,
+            "instruction": item.instruction,
+            "context": item.context,
+        }
+        # Add template variables with None/empty default
+        for col in columns:
+            if col not in row:
+                row[col] = None
+        rows.append(row)
     return rows
 
 
@@ -45,10 +49,28 @@ def _canonical_fields(spec: DistillAgentSpec) -> Sequence[str]:
 
 
 def _template_columns(spec: DistillAgentSpec) -> Sequence[str]:
-    columns: List[str] = ["instruction"]
-    pattern = r"(?:{%.*?\\bcontext\\b.*?%}|{{\\s*context\\s*}})"
-    if re.search(pattern, spec.prompt_template):
-        columns.append("context")
+    """Extract all variable names from Jinja2 template.
+
+    Matches:
+        - {{ variable }}
+        - {{variable}}
+        - {% if variable %}...{% endif %}
+        - {% for item in variable %}...{% endfor %}
+    """
+    template = spec.prompt_template
+    columns: List[str] = []
+
+    # Pattern for {{ variable }} or {{variable}}
+    var_pattern = r"{{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*}}"
+    # Pattern for {% if/for variable %}
+    tag_pattern = r"{%\s*(?:if|for)\s+(?:\w+\s+in\s+)?([a-zA-Z_][a-zA-Z0-9_]*)\s*%}"
+
+    for pattern in [var_pattern, tag_pattern]:
+        for match in re.finditer(pattern, template):
+            var_name = match.group(1)
+            if var_name not in columns:
+                columns.append(var_name)
+
     return columns
 
 
@@ -59,9 +81,9 @@ def build_agent_pipeline(
     artifacts_root: Path,
     run_id: str,
 ) -> Pipeline:
-    rows = _instruction_rows(spec)
-    fields = _canonical_fields(spec)
     columns = _template_columns(spec)
+    rows = _instruction_rows(spec, columns)
+    fields = _canonical_fields(spec)
 
     with Pipeline(name=spec.name, description=spec.description) as pipeline:
         data = LoadDataFromDicts(data=rows)

@@ -21,6 +21,7 @@ class AgentSettings(BaseModel):
 
 class ClaudeSettings(BaseModel):
     max_turns: int = Field(default=1, ge=1)
+    verbose: bool = False
 
 
 class DistillSettings(BaseModel):
