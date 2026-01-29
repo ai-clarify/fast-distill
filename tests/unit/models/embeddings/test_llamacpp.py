@@ -12,7 +12,7 @@ pytest.importorskip("llama_cpp")
 
 
 @pytest.fixture(scope="session")
-def llamacpp_embeddings_ready(local_llamacpp_model_path) -> bool:
+def llamacpp_embeddings_ready(local_llamacpp_model_path):
     embeddings = LlamaCppEmbeddings(
         model="all-MiniLM-L6-v2-Q4_0.gguf",
         model_path=local_llamacpp_model_path,
@@ -26,7 +26,7 @@ def llamacpp_embeddings_ready(local_llamacpp_model_path) -> bool:
         embeddings.encode(inputs=["fastdistill embeddings smoke test"])
     except RuntimeError as exc:
         if "llama_decode returned -1" in str(exc):
-            pytest.skip(f"llamacpp embedding decode failed: {exc}")
+            return RuntimeError(f"llamacpp embedding decode failed: {exc}")
         raise
     finally:
         if loaded:
@@ -41,7 +41,8 @@ class TestLlamaCppEmbeddings:
         """
         Fixture to set up embeddings for each test, considering CPU usage.
         """
-        assert llamacpp_embeddings_ready
+        if isinstance(llamacpp_embeddings_ready, RuntimeError):
+            pytest.skip(str(llamacpp_embeddings_ready))
         self.model_name = "all-MiniLM-L6-v2-Q4_0.gguf"
         self.repo_id = "second-state/All-MiniLM-L6-v2-Embedding-GGUF"
         self.disable_cuda_device_placement = True
