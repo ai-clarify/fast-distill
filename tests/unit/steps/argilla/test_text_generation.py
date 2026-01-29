@@ -126,7 +126,7 @@ class TestTextGenerationToArgilla:
                 {
                     "description": "The name of the dataset in Argilla.",
                     "name": "dataset_name",
-                    "optional": False,
+                    "optional": True,
                 },
                 {
                     "description": "The workspace where the dataset will be created in Argilla. "
