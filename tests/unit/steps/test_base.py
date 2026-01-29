@@ -112,7 +112,7 @@ class TestStep:
 
     def test_runtime_parameters_names(self) -> None:
         class StepWithRuntimeParameters(Step):
-            runtime_param1: RuntimeParameter[int]
+            runtime_param1: RuntimeParameter[int] = None  # type: ignore
             runtime_param2: RuntimeParameter[str] = "hello"
             runtime_param3: Optional[RuntimeParameter[str]] = None
 
@@ -132,7 +132,7 @@ class TestStep:
                 "memory": True,
                 "resources": True,
             },
-            "runtime_param1": False,
+            "runtime_param1": True,
             "runtime_param2": True,
             "runtime_param3": True,
         }

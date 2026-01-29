@@ -7,7 +7,7 @@ import inspect
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, TypeVar, Union
 
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, PrivateAttr
 from typing_extensions import Annotated, get_args, get_origin
 
 from fastdistill.utils.docstring import parse_google_docstring
@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
 _T = TypeVar("_T")
 _RUNTIME_PARAMETER_ANNOTATION = "fastdistill_step_runtime_parameter"
-RuntimeParameter = Annotated[
-    Union[_T, None], _RUNTIME_PARAMETER_ANNOTATION
-]
+RuntimeParameter = Annotated[Union[_T, None], _RUNTIME_PARAMETER_ANNOTATION]
 """Used to mark the attributes of a `Step` as a runtime parameter."""
 
 RuntimeParametersNames = Dict[str, Union[bool, "RuntimeParametersNames"]]
@@ -197,7 +195,7 @@ def _is_runtime_parameter(field: "FieldInfo") -> Tuple[bool, bool]:
     # Case 1: `runtime_param: RuntimeParameter[int]`
     # Mandatory runtime parameter that needs to be provided when running the pipeline
     if _RUNTIME_PARAMETER_ANNOTATION in field.metadata:
-        return True, field.default is not None
+        return True, not field.is_required()
 
     # Case 2: `runtime_param: Union[RuntimeParameter[int], None] = None`
     # Optional runtime parameter that doesn't need to be provided when running the pipeline

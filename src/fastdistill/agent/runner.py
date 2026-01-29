@@ -129,7 +129,9 @@ def distill_agent(
     _print_detail("Spec saved", str(bundle.spec_path))
 
     _print_stage("Phase 2: Generating training data")
-    _print_detail("Teacher model", config.teacher.model or spec.teacher_model or "default")
+    _print_detail(
+        "Teacher model", config.teacher.model or spec.teacher_model or "default"
+    )
     _print_detail("Instructions", str(len(spec.instructions)))
 
     teacher_llm = build_teacher_llm(
@@ -157,7 +159,9 @@ def distill_agent(
     gguf_path: Optional[Path] = None
     if config.training.enabled:
         _print_stage("Phase 3: Training model")
-        _print_detail("Student model", config.training.model or spec.student_model or "default")
+        _print_detail(
+            "Student model", config.training.model or spec.student_model or "default"
+        )
         repo_root = Path(__file__).resolve().parents[3]
         base_config = (
             Path(config.training.mlx_config)

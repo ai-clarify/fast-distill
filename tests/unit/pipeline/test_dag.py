@@ -478,17 +478,12 @@ class TestDAG:
             def process(self, offset: int = 0) -> "GeneratorStepOutput":
                 yield [{"response": "response1"}], False
 
-        step = DummyGeneratorStep(name="dummy_generator_step", pipeline=pipeline)  # type: ignore
-        step.set_runtime_parameters({})
-
-        dag = DAG()
-        dag.add_step(step)
-
+        # Pydantic requires runtime_param1 at instantiation time
         with pytest.raises(
             ValueError,
-            match="Step 'dummy_generator_step' is missing required runtime parameter 'runtime_param1'",
+            match="Field required",
         ):
-            dag.validate()
+            DummyGeneratorStep(name="dummy_generator_step", pipeline=pipeline)
 
     def test_validate_step_process_runtime_parameters(
         self, pipeline: "Pipeline"

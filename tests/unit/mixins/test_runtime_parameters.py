@@ -4,7 +4,7 @@
 
 from typing import List, Optional
 
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 
 from fastdistill.mixins.runtime_parameters import (
     RuntimeParameter,
@@ -13,24 +13,16 @@ from fastdistill.mixins.runtime_parameters import (
 
 
 class DummyNestedClass(RuntimeParametersMixin):
-    runtime_param1: RuntimeParameter[str] = Field(
-        default=None, description="Runtime param 1"
-    )
-    runtime_param2: Optional[RuntimeParameter[str]] = Field(
-        default=None, description="Runtime param 2"
-    )
+    runtime_param1: RuntimeParameter[str] = None  # type: ignore
+    runtime_param2: Optional[RuntimeParameter[str]] = None
 
 
 class DummyClass(RuntimeParametersMixin):
     nested_class: DummyNestedClass
     mixins_list: List[DummyNestedClass]
 
-    runtime_param1: RuntimeParameter[SecretStr] = Field(
-        default=None, description="Runtime param 1"
-    )
-    runtime_param2: Optional[RuntimeParameter[SecretStr]] = Field(
-        default=None, description="Runtime param 2"
-    )
+    runtime_param1: RuntimeParameter[SecretStr] = None  # type: ignore
+    runtime_param2: Optional[RuntimeParameter[SecretStr]] = None
 
 
 class TestRuntimeParametersMixin:
@@ -41,23 +33,23 @@ class TestRuntimeParametersMixin:
         )
 
         assert dummy.runtime_parameters_names == {
-            "runtime_param1": False,
+            "runtime_param1": True,
             "runtime_param2": True,
             "nested_class": {
-                "runtime_param1": False,
+                "runtime_param1": True,
                 "runtime_param2": True,
             },
             "mixins_list": {
                 "0": {
-                    "runtime_param1": False,
+                    "runtime_param1": True,
                     "runtime_param2": True,
                 },
                 "1": {
-                    "runtime_param1": False,
+                    "runtime_param1": True,
                     "runtime_param2": True,
                 },
                 "2": {
-                    "runtime_param1": False,
+                    "runtime_param1": True,
                     "runtime_param2": True,
                 },
             },
@@ -75,12 +67,10 @@ class TestRuntimeParametersMixin:
                 "runtime_parameters_info": [
                     {
                         "name": "runtime_param1",
-                        "description": "Runtime param 1",
-                        "optional": False,
+                        "optional": True,
                     },
                     {
                         "name": "runtime_param2",
-                        "description": "Runtime param 2",
                         "optional": True,
                     },
                 ],
@@ -91,36 +81,30 @@ class TestRuntimeParametersMixin:
                     "0": [
                         {
                             "name": "runtime_param1",
-                            "description": "Runtime param 1",
-                            "optional": False,
+                            "optional": True,
                         },
                         {
                             "name": "runtime_param2",
-                            "description": "Runtime param 2",
                             "optional": True,
                         },
                     ],
                     "1": [
                         {
                             "name": "runtime_param1",
-                            "description": "Runtime param 1",
-                            "optional": False,
+                            "optional": True,
                         },
                         {
                             "name": "runtime_param2",
-                            "description": "Runtime param 2",
                             "optional": True,
                         },
                     ],
                     "2": [
                         {
                             "name": "runtime_param1",
-                            "description": "Runtime param 1",
-                            "optional": False,
+                            "optional": True,
                         },
                         {
                             "name": "runtime_param2",
-                            "description": "Runtime param 2",
                             "optional": True,
                         },
                     ],
@@ -128,12 +112,10 @@ class TestRuntimeParametersMixin:
             },
             {
                 "name": "runtime_param1",
-                "description": "Runtime param 1",
-                "optional": False,
+                "optional": True,
             },
             {
                 "name": "runtime_param2",
-                "description": "Runtime param 2",
                 "optional": True,
             },
         ]

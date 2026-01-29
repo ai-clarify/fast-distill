@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class DummyRuntimeLLM(DummyAsyncLLM):
-    runtime_parameter: RuntimeParameter[int]
+    runtime_parameter: RuntimeParameter[int] = None  # type: ignore
     runtime_parameter_optional: Optional[RuntimeParameter[int]] = field(default=None)
 
 
@@ -475,7 +475,7 @@ class TestTask:
         assert task.load() is None
         assert task.llm.runtime_parameter == 1  # type: ignore
         assert task.llm.runtime_parameters_names == {
-            "runtime_parameter": False,
+            "runtime_parameter": True,
             "runtime_parameter_optional": True,
             "generation_kwargs": {},
             "offline_batch_generation_block_until_done": True,
@@ -492,7 +492,7 @@ class TestTask:
         assert task.load() is None
         assert task.llm.runtime_parameter == 1  # type: ignore
         assert task.llm.runtime_parameters_names == {
-            "runtime_parameter": False,
+            "runtime_parameter": True,
             "runtime_parameter_optional": True,
             "generation_kwargs": {},
             "offline_batch_generation_block_until_done": True,
@@ -510,7 +510,7 @@ class TestTask:
         assert task.load() is None
         assert task.llm.runtime_parameter == 2  # type: ignore
         assert task.llm.runtime_parameters_names == {
-            "runtime_parameter": False,
+            "runtime_parameter": True,
             "runtime_parameter_optional": True,
             "generation_kwargs": {},
             "offline_batch_generation_block_until_done": True,

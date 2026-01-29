@@ -188,7 +188,7 @@ class TestMagpieGenerator:
                 },
                 {
                     "name": "num_rows",
-                    "optional": False,
+                    "optional": True,
                     "description": "The number of rows to generate.",
                 },
             ],

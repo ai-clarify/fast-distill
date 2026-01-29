@@ -1050,7 +1050,7 @@ class TestBasePipeline:
                 {
                     "name": "runtime_param1",
                     "description": "runtime_param1 description",
-                    "optional": False,
+                    "optional": True,
                 },
                 {
                     "name": "runtime_param2",
@@ -1098,7 +1098,7 @@ class TestBasePipeline:
                 {
                     "name": "runtime_param3",
                     "description": "runtime_param3 description",
-                    "optional": False,
+                    "optional": True,
                 },
                 {
                     "name": "runtime_param4",

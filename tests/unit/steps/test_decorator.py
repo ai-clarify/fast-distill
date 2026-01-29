@@ -48,7 +48,7 @@ class TestStepDecorator:
                 "memory": True,
                 "resources": True,
             },
-            "runtime_param1": False,
+            "runtime_param1": True,
             "runtime_param2": True,
         }
 
