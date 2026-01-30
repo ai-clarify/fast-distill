@@ -124,16 +124,17 @@ class _WriteBuffer:
             )
             step_parquet_dir.mkdir()
 
-        try:
-            table = pa.Table.from_pylist(self._buffers[step_name])
-        except pa.lib.ArrowInvalid as pae:
-            if (
-                repr(pae)
-                != "ArrowInvalid('cannot mix struct and non-struct, non-null values')"
-            ):
-                raise pae
-            flattened_buffers = [flatten_dict(buf) for buf in self._buffers[step_name]]
-            table = pa.Table.from_pylist(flattened_buffers)
+        buffers = self._buffers[step_name]
+
+        # Proactively detect nested dicts by sampling the first row to avoid
+        # exception-driven control flow with pa.Table.from_pylist
+        needs_flatten = buffers and any(
+            isinstance(v, dict) for v in buffers[0].values()
+        )
+        if needs_flatten:
+            buffers = [flatten_dict(buf) for buf in buffers]
+
+        table = pa.Table.from_pylist(buffers)
 
         last_schema = self._buffer_last_schema.get(step_name)
         if last_schema is None:
