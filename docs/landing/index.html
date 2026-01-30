@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastDistill - 算法工程师智能体</title>
-    <meta name="description" content="算法工程师智能体，帮你一键训练所有模型。FastDistill 是生产级的数据蒸馏框架。">
+    <title>FastDistill - AI Agent for ML Engineers</title>
+    <meta name="description" content="AI Agent for ML Engineers, train any model with one click. FastDistill is a production-grade data distillation framework.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,6 +151,41 @@
         .btn-small {
             padding: 0.625rem 1.25rem;
             font-size: 0.875rem;
+        }
+
+        /* Language Toggle */
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .lang-toggle button {
+            padding: 0.375rem 0.625rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .lang-toggle button.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .lang-toggle button:hover:not(.active) {
+            background: var(--border-light);
         }
 
         /* Hero Section */
@@ -697,12 +732,16 @@
                 <span>FastDistill</span>
             </a>
             <div class="nav-links">
-                <a href="#skills">Skills</a>
-                <a href="#features">Features</a>
-                <a href="#workflow">Workflow</a>
-                <a href="#results">Results</a>
-                <a href="/docs/">Docs</a>
+                <a href="#skills" data-i18n="nav.skills">Skills</a>
+                <a href="#features" data-i18n="nav.features">Features</a>
+                <a href="#workflow" data-i18n="nav.workflow">Workflow</a>
+                <a href="#results" data-i18n="nav.results">Results</a>
+                <a href="/docs/" data-i18n="nav.docs">Docs</a>
                 <a href="https://github.com/argilla-io/fastdistill" target="_blank" class="btn btn-secondary btn-small">GitHub</a>
+                <div class="lang-toggle">
+                    <button id="lang-en" class="active" onclick="switchLang('en')">EN</button>
+                    <button id="lang-zh" onclick="switchLang('zh')">中</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -712,19 +751,19 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                Now open source
+                <span data-i18n="hero.badge">Now open source</span>
             </div>
-            <h1>
-                <span class="highlight">算法工程师智能体</span><br>
-                帮你一键训练所有模型
+            <h1 data-i18n-html="hero.title">
+                <span class="highlight">AI Agent for ML Engineers</span><br>
+                Train Any Model with One Click
             </h1>
-            <p class="hero-subtitle">FastDistill — 生产级数据蒸馏框架</p>
-            <p class="hero-description">
-                桥接原始数据与高质量学生模型训练之间的差距。通过统一提供商网关、确定性数据契约和严格的质量门控，生成可信赖的数据集。
+            <p class="hero-subtitle" data-i18n="hero.subtitle">FastDistill — Production-grade Data Distillation Framework</p>
+            <p class="hero-description" data-i18n="hero.description">
+                Bridge the gap between raw data and high-quality student model training. Generate trustworthy datasets through a unified provider gateway, deterministic data contracts, and rigorous quality gates.
             </p>
             <div class="hero-actions">
-                <a href="#quickstart" class="btn btn-primary">快速开始</a>
-                <a href="/docs/" class="btn btn-secondary">查看文档</a>
+                <a href="#quickstart" class="btn btn-primary" data-i18n="hero.cta.start">Quick Start</a>
+                <a href="/docs/" class="btn btn-secondary" data-i18n="hero.cta.docs">View Docs</a>
             </div>
         </div>
     </section>
@@ -734,8 +773,8 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-label">Capabilities</span>
-                <h2>核心技能库</h2>
-                <p>丰富的步骤和任务组件，覆盖数据生成、评估、过滤全流程</p>
+                <h2 data-i18n="skills.title">Core Capabilities</h2>
+                <p data-i18n="skills.desc">Rich step and task components covering the full pipeline of data generation, evaluation, and filtering</p>
             </div>
             <div class="skills-grid">
                 <div class="skill-card">
@@ -743,10 +782,10 @@
                         <div class="skill-icon">💬</div>
                         <div class="skill-title">ChatGeneration</div>
                     </div>
-                    <div class="skill-desc">对话生成任务，支持多轮对话和角色设定，用于构建指令跟随数据集。</div>
+                    <div class="skill-desc" data-i18n="skill.chat.desc">Chat generation tasks with multi-turn dialogue and role-playing support for building instruction-following datasets.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">生成</span>
-                        <span class="skill-tag">对话</span>
+                        <span class="skill-tag" data-i18n="skill.chat.tag1">Generation</span>
+                        <span class="skill-tag" data-i18n="skill.chat.tag2">Dialogue</span>
                     </div>
                 </div>
 
@@ -755,10 +794,10 @@
                         <div class="skill-icon">🔄</div>
                         <div class="skill-title">SelfInstruct</div>
                     </div>
-                    <div class="skill-desc">自指导数据生成，通过种子任务自动扩展多样化指令数据。</div>
+                    <div class="skill-desc" data-i18n="skill.self.desc">Self-guided data generation that automatically expands diverse instruction data from seed tasks.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">数据增强</span>
-                        <span class="skill-tag">自举</span>
+                        <span class="skill-tag" data-i18n="skill.self.tag1">Augmentation</span>
+                        <span class="skill-tag" data-i18n="skill.self.tag2">Bootstrap</span>
                     </div>
                 </div>
 
@@ -767,10 +806,10 @@
                         <div class="skill-icon">📈</div>
                         <div class="skill-title">EvolComplexity</div>
                     </div>
-                    <div class="skill-desc">进化式复杂度增强，通过多轮进化提升指令复杂度，增强模型能力边界。</div>
+                    <div class="skill-desc" data-i18n="skill.evol.desc">Evolutionary complexity enhancement that increases instruction complexity through multi-round evolution, pushing model capability boundaries.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">进化</span>
-                        <span class="skill-tag">复杂度</span>
+                        <span class="skill-tag" data-i18n="skill.evol.tag1">Evolution</span>
+                        <span class="skill-tag" data-i18n="skill.evol.tag2">Complexity</span>
                     </div>
                 </div>
 
@@ -779,10 +818,10 @@
                         <div class="skill-icon">⭐</div>
                         <div class="skill-title">UltraFeedback</div>
                     </div>
-                    <div class="skill-desc">UltraFeedback 质量评估，多维度评分体系，精准识别高质量样本。</div>
+                    <div class="skill-desc" data-i18n="skill.ultra.desc">UltraFeedback quality assessment with multi-dimensional scoring to precisely identify high-quality samples.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">评估</span>
-                        <span class="skill-tag">质量</span>
+                        <span class="skill-tag" data-i18n="skill.ultra.tag1">Evaluation</span>
+                        <span class="skill-tag" data-i18n="skill.ultra.tag2">Quality</span>
                     </div>
                 </div>
 
@@ -791,10 +830,10 @@
                         <div class="skill-icon">🔍</div>
                         <div class="skill-title">DEITA Filtering</div>
                     </div>
-                    <div class="skill-desc">基于复杂度和质量的数据过滤，保留最有价值的训练样本。</div>
+                    <div class="skill-desc" data-i18n="skill.deita.desc">Complexity and quality-based data filtering that retains the most valuable training samples.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">过滤</span>
-                        <span class="skill-tag">选择</span>
+                        <span class="skill-tag" data-i18n="skill.deita.tag1">Filtering</span>
+                        <span class="skill-tag" data-i18n="skill.deita.tag2">Selection</span>
                     </div>
                 </div>
 
@@ -803,10 +842,10 @@
                         <div class="skill-icon">🎯</div>
                         <div class="skill-title">SQLiteExecEval</div>
                     </div>
-                    <div class="skill-desc">SQL执行评估，在沙箱中验证生成SQL的正确性，Text2SQL必备。</div>
+                    <div class="skill-desc" data-i18n="skill.sql.desc">SQL execution evaluation that verifies generated SQL correctness in a sandbox — essential for Text2SQL.</div>
                     <div class="skill-tags">
-                        <span class="skill-tag">执行</span>
-                        <span class="skill-tag">验证</span>
+                        <span class="skill-tag" data-i18n="skill.sql.tag1">Execution</span>
+                        <span class="skill-tag" data-i18n="skill.sql.tag2">Verification</span>
                     </div>
                 </div>
             </div>
@@ -818,39 +857,39 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-label">Features</span>
-                <h2>核心特性</h2>
-                <p>为算法工程师打造的全栈数据蒸馏解决方案</p>
+                <h2 data-i18n="features.title">Core Features</h2>
+                <p data-i18n="features.desc">A full-stack data distillation solution built for ML engineers</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🛡️</div>
-                    <h3>统一提供商网关</h3>
-                    <p>无缝集成 OpenAI 兼容端点（vLLM、SGLang、Ollama、OpenRouter），一键切换教师模型。</p>
+                    <h3 data-i18n="feat.gateway.title">Unified Provider Gateway</h3>
+                    <p data-i18n="feat.gateway.desc">Seamlessly integrate OpenAI-compatible endpoints (vLLM, SGLang, Ollama, OpenRouter) and switch teacher models with one click.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
-                    <h3>确定性数据契约</h3>
-                    <p>规范输入 + 样本 ID + 清单确保完全可重放性和可审计性。</p>
+                    <h3 data-i18n="feat.contract.title">Deterministic Data Contracts</h3>
+                    <p data-i18n="feat.contract.desc">Canonical inputs + sample IDs + manifests ensure full reproducibility and auditability.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🚦</div>
-                    <h3>严格质量门控</h3>
-                    <p>多阶段过滤：规则 → 执行 → LLM 评判，层层把关数据质量。</p>
+                    <h3 data-i18n="feat.quality.title">Rigorous Quality Gates</h3>
+                    <p data-i18n="feat.quality.desc">Multi-stage filtering: rules → execution → LLM judge, ensuring data quality at every step.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>详细可观测性</h3>
-                    <p>自动生成每阶段计时和质量报告，快速识别瓶颈。</p>
+                    <h3 data-i18n="feat.observ.title">Detailed Observability</h3>
+                    <p data-i18n="feat.observ.desc">Auto-generated per-stage timing and quality reports for quick bottleneck identification.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3>解耦训练流程</h3>
-                    <p>数据生成与模型训练完全分离，支持 MLX LoRA、vLLM 等后端。</p>
+                    <h3 data-i18n="feat.decouple.title">Decoupled Training Pipeline</h3>
+                    <p data-i18n="feat.decouple.desc">Data generation and model training are fully separated, supporting MLX LoRA, vLLM, and other backends.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎛️</div>
-                    <h3>配置驱动</h3>
-                    <p>YAML 配置支持，环境/运行时分层覆盖，便于复现和分享。</p>
+                    <h3 data-i18n="feat.config.title">Config-Driven</h3>
+                    <p data-i18n="feat.config.desc">YAML configuration with environment/runtime layered overrides for easy reproduction and sharing.</p>
                 </div>
             </div>
         </div>
@@ -861,29 +900,29 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-label">How it works</span>
-                <h2>工作流程</h2>
-                <p>从原始数据到蒸馏数据集的端到端信息流转</p>
+                <h2 data-i18n="workflow.title">Workflow</h2>
+                <p data-i18n="workflow.desc">End-to-end data flow from raw data to distilled datasets</p>
             </div>
             <div class="workflow-steps">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3>摄取与规范化</h3>
-                    <p>将原始输入规范化为稳定的数据模式</p>
+                    <h3 data-i18n="step.1.title">Ingest & Normalize</h3>
+                    <p data-i18n="step.1.desc">Normalize raw inputs into a stable data schema</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>去重处理</h3>
-                    <p>使用 MinHash 和嵌入去重算法</p>
+                    <h3 data-i18n="step.2.title">Deduplication</h3>
+                    <p data-i18n="step.2.desc">Deduplicate using MinHash and embedding algorithms</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>教师生成</h3>
-                    <p>使用高质量教师 LLM 生成候选数据</p>
+                    <h3 data-i18n="step.3.title">Teacher Generation</h3>
+                    <p data-i18n="step.3.desc">Generate candidate data using high-quality teacher LLMs</p>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <h3>质量门控</h3>
-                    <p>规则过滤 → 执行评估 → LLM 评判</p>
+                    <h3 data-i18n="step.4.title">Quality Gate</h3>
+                    <p data-i18n="step.4.desc">Rule filtering → execution eval → LLM judge</p>
                 </div>
             </div>
         </div>
@@ -894,8 +933,8 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-label">Quick start</span>
-                <h2>快速开始</h2>
-                <p>只需几行命令，启动你的数据蒸馏流水线</p>
+                <h2 data-i18n="quickstart.title">Quick Start</h2>
+                <p data-i18n="quickstart.desc">Just a few commands to launch your data distillation pipeline</p>
             </div>
             <div class="code-block">
                 <div class="code-header">
@@ -904,16 +943,16 @@
                     <span class="code-dot green"></span>
                 </div>
                 <div class="code-content">
-                    <pre><code><span class="comment"># 安装 FastDistill</span>
+                    <pre><code><span class="comment" data-i18n="code.comment1"># Install FastDistill</span>
 pip install fastdistill
 
-<span class="comment"># 或使用 Ollama 支持进行本地蒸馏</span>
+<span class="comment" data-i18n="code.comment2"># Or install with Ollama support for local distillation</span>
 pip install <span class="string">"fastdistill[ollama]"</span>
 
-<span class="comment"># 运行端到端蒸馏示例</span>
+<span class="comment" data-i18n="code.comment3"># Run end-to-end distillation example</span>
 OLLAMA_MODEL=qwen3:0.6b python examples/fastdistill/ollama_distill_e2e.py
 
-<span class="comment"># 智能体蒸馏 - 一键训练</span>
+<span class="comment" data-i18n="code.comment4"># Agent distillation - one-click training</span>
 fastdistill agent distill --task <span class="string">"Build a SQL query helper"</span></code></pre>
                 </div>
             </div>
@@ -925,24 +964,24 @@ fastdistill agent distill --task <span class="string">"Build a SQL query helper"
         <div class="container">
             <div class="section-header">
                 <span class="section-label">Results</span>
-                <h2>实证效果</h2>
-                <p>WikiSQL 1k Text2SQL 蒸馏实验结果</p>
+                <h2 data-i18n="results.title">Proven Results</h2>
+                <p data-i18n="results.desc">WikiSQL 1k Text2SQL distillation experiment results</p>
             </div>
             <div class="results-grid">
                 <div class="result-card">
                     <div class="result-metric">11.9%</div>
-                    <div class="result-label">教师模型基线</div>
+                    <div class="result-label" data-i18n="result.teacher.label">Teacher Model Baseline</div>
                     <div class="result-sublabel">DeepSeek V3.2</div>
                 </div>
                 <div class="result-card featured">
                     <div class="result-metric">92.9%</div>
-                    <div class="result-label">学生模型执行通过率</div>
+                    <div class="result-label" data-i18n="result.student.label">Student Execution Pass Rate</div>
                     <div class="result-sublabel">Qwen3-0.6B + MLX LoRA</div>
                 </div>
                 <div class="result-card">
                     <div class="result-metric">30.9%</div>
-                    <div class="result-label">Gold Match 准确率</div>
-                    <div class="result-sublabel">严格匹配指标</div>
+                    <div class="result-label" data-i18n="result.gold.label">Gold Match Accuracy</div>
+                    <div class="result-sublabel" data-i18n="result.gold.sublabel">Strict Match Metric</div>
                 </div>
             </div>
         </div>
@@ -953,11 +992,11 @@ fastdistill agent distill --task <span class="string">"Build a SQL query helper"
         <div class="container">
             <div class="cta-content">
                 <span class="section-label">Get started</span>
-                <h2>开始构建你的数据流水线</h2>
-                <p>加入 FastDistill 社区，探索合成数据与 AI 反馈的无限可能。</p>
+                <h2 data-i18n="cta.title">Start Building Your Data Pipeline</h2>
+                <p data-i18n="cta.desc">Join the FastDistill community and explore the limitless possibilities of synthetic data and AI feedback.</p>
                 <div class="hero-actions">
-                    <a href="https://github.com/argilla-io/fastdistill" target="_blank" class="btn btn-primary">访问 GitHub</a>
-                    <a href="/docs/" class="btn btn-secondary">阅读文档</a>
+                    <a href="https://github.com/argilla-io/fastdistill" target="_blank" class="btn btn-primary" data-i18n="cta.github">Visit GitHub</a>
+                    <a href="/docs/" class="btn btn-secondary" data-i18n="cta.docs">Read Docs</a>
                 </div>
             </div>
         </div>
@@ -979,5 +1018,215 @@ fastdistill agent distill --task <span class="string">"Build a SQL query helper"
             <div class="footer-copy">MIT License © 2026</div>
         </div>
     </footer>
+
+    <script>
+    const i18n = {
+        en: {
+            // Nav
+            'nav.skills': 'Skills',
+            'nav.features': 'Features',
+            'nav.workflow': 'Workflow',
+            'nav.results': 'Results',
+            'nav.docs': 'Docs',
+            // Hero
+            'hero.badge': 'Now open source',
+            'hero.title': '<span class="highlight">AI Agent for ML Engineers</span><br>Train Any Model with One Click',
+            'hero.subtitle': 'FastDistill — Production-grade Data Distillation Framework',
+            'hero.description': 'Bridge the gap between raw data and high-quality student model training. Generate trustworthy datasets through a unified provider gateway, deterministic data contracts, and rigorous quality gates.',
+            'hero.cta.start': 'Quick Start',
+            'hero.cta.docs': 'View Docs',
+            // Skills
+            'skills.title': 'Core Capabilities',
+            'skills.desc': 'Rich step and task components covering the full pipeline of data generation, evaluation, and filtering',
+            'skill.chat.desc': 'Chat generation tasks with multi-turn dialogue and role-playing support for building instruction-following datasets.',
+            'skill.chat.tag1': 'Generation',
+            'skill.chat.tag2': 'Dialogue',
+            'skill.self.desc': 'Self-guided data generation that automatically expands diverse instruction data from seed tasks.',
+            'skill.self.tag1': 'Augmentation',
+            'skill.self.tag2': 'Bootstrap',
+            'skill.evol.desc': 'Evolutionary complexity enhancement that increases instruction complexity through multi-round evolution, pushing model capability boundaries.',
+            'skill.evol.tag1': 'Evolution',
+            'skill.evol.tag2': 'Complexity',
+            'skill.ultra.desc': 'UltraFeedback quality assessment with multi-dimensional scoring to precisely identify high-quality samples.',
+            'skill.ultra.tag1': 'Evaluation',
+            'skill.ultra.tag2': 'Quality',
+            'skill.deita.desc': 'Complexity and quality-based data filtering that retains the most valuable training samples.',
+            'skill.deita.tag1': 'Filtering',
+            'skill.deita.tag2': 'Selection',
+            'skill.sql.desc': 'SQL execution evaluation that verifies generated SQL correctness in a sandbox — essential for Text2SQL.',
+            'skill.sql.tag1': 'Execution',
+            'skill.sql.tag2': 'Verification',
+            // Features
+            'features.title': 'Core Features',
+            'features.desc': 'A full-stack data distillation solution built for ML engineers',
+            'feat.gateway.title': 'Unified Provider Gateway',
+            'feat.gateway.desc': 'Seamlessly integrate OpenAI-compatible endpoints (vLLM, SGLang, Ollama, OpenRouter) and switch teacher models with one click.',
+            'feat.contract.title': 'Deterministic Data Contracts',
+            'feat.contract.desc': 'Canonical inputs + sample IDs + manifests ensure full reproducibility and auditability.',
+            'feat.quality.title': 'Rigorous Quality Gates',
+            'feat.quality.desc': 'Multi-stage filtering: rules → execution → LLM judge, ensuring data quality at every step.',
+            'feat.observ.title': 'Detailed Observability',
+            'feat.observ.desc': 'Auto-generated per-stage timing and quality reports for quick bottleneck identification.',
+            'feat.decouple.title': 'Decoupled Training Pipeline',
+            'feat.decouple.desc': 'Data generation and model training are fully separated, supporting MLX LoRA, vLLM, and other backends.',
+            'feat.config.title': 'Config-Driven',
+            'feat.config.desc': 'YAML configuration with environment/runtime layered overrides for easy reproduction and sharing.',
+            // Workflow
+            'workflow.title': 'Workflow',
+            'workflow.desc': 'End-to-end data flow from raw data to distilled datasets',
+            'step.1.title': 'Ingest & Normalize',
+            'step.1.desc': 'Normalize raw inputs into a stable data schema',
+            'step.2.title': 'Deduplication',
+            'step.2.desc': 'Deduplicate using MinHash and embedding algorithms',
+            'step.3.title': 'Teacher Generation',
+            'step.3.desc': 'Generate candidate data using high-quality teacher LLMs',
+            'step.4.title': 'Quality Gate',
+            'step.4.desc': 'Rule filtering → execution eval → LLM judge',
+            // Quick Start
+            'quickstart.title': 'Quick Start',
+            'quickstart.desc': 'Just a few commands to launch your data distillation pipeline',
+            'code.comment1': '# Install FastDistill',
+            'code.comment2': '# Or install with Ollama support for local distillation',
+            'code.comment3': '# Run end-to-end distillation example',
+            'code.comment4': '# Agent distillation - one-click training',
+            // Results
+            'results.title': 'Proven Results',
+            'results.desc': 'WikiSQL 1k Text2SQL distillation experiment results',
+            'result.teacher.label': 'Teacher Model Baseline',
+            'result.student.label': 'Student Execution Pass Rate',
+            'result.gold.label': 'Gold Match Accuracy',
+            'result.gold.sublabel': 'Strict Match Metric',
+            // CTA
+            'cta.title': 'Start Building Your Data Pipeline',
+            'cta.desc': 'Join the FastDistill community and explore the limitless possibilities of synthetic data and AI feedback.',
+            'cta.github': 'Visit GitHub',
+            'cta.docs': 'Read Docs',
+            // Meta
+            '_meta.title': 'FastDistill - AI Agent for ML Engineers',
+            '_meta.description': 'AI Agent for ML Engineers, train any model with one click. FastDistill is a production-grade data distillation framework.',
+        },
+        zh: {
+            // Nav
+            'nav.skills': '技能',
+            'nav.features': '特性',
+            'nav.workflow': '流程',
+            'nav.results': '效果',
+            'nav.docs': '文档',
+            // Hero
+            'hero.badge': '现已开源',
+            'hero.title': '<span class="highlight">算法工程师智能体</span><br>帮你一键训练所有模型',
+            'hero.subtitle': 'FastDistill — 生产级数据蒸馏框架',
+            'hero.description': '桥接原始数据与高质量学生模型训练之间的差距。通过统一提供商网关、确定性数据契约和严格的质量门控，生成可信赖的数据集。',
+            'hero.cta.start': '快速开始',
+            'hero.cta.docs': '查看文档',
+            // Skills
+            'skills.title': '核心技能库',
+            'skills.desc': '丰富的步骤和任务组件，覆盖数据生成、评估、过滤全流程',
+            'skill.chat.desc': '对话生成任务，支持多轮对话和角色设定，用于构建指令跟随数据集。',
+            'skill.chat.tag1': '生成',
+            'skill.chat.tag2': '对话',
+            'skill.self.desc': '自指导数据生成，通过种子任务自动扩展多样化指令数据。',
+            'skill.self.tag1': '数据增强',
+            'skill.self.tag2': '自举',
+            'skill.evol.desc': '进化式复杂度增强，通过多轮进化提升指令复杂度，增强模型能力边界。',
+            'skill.evol.tag1': '进化',
+            'skill.evol.tag2': '复杂度',
+            'skill.ultra.desc': 'UltraFeedback 质量评估，多维度评分体系，精准识别高质量样本。',
+            'skill.ultra.tag1': '评估',
+            'skill.ultra.tag2': '质量',
+            'skill.deita.desc': '基于复杂度和质量的数据过滤，保留最有价值的训练样本。',
+            'skill.deita.tag1': '过滤',
+            'skill.deita.tag2': '选择',
+            'skill.sql.desc': 'SQL执行评估，在沙箱中验证生成SQL的正确性，Text2SQL必备。',
+            'skill.sql.tag1': '执行',
+            'skill.sql.tag2': '验证',
+            // Features
+            'features.title': '核心特性',
+            'features.desc': '为算法工程师打造的全栈数据蒸馏解决方案',
+            'feat.gateway.title': '统一提供商网关',
+            'feat.gateway.desc': '无缝集成 OpenAI 兼容端点（vLLM、SGLang、Ollama、OpenRouter），一键切换教师模型。',
+            'feat.contract.title': '确定性数据契约',
+            'feat.contract.desc': '规范输入 + 样本 ID + 清单确保完全可重放性和可审计性。',
+            'feat.quality.title': '严格质量门控',
+            'feat.quality.desc': '多阶段过滤：规则 → 执行 → LLM 评判，层层把关数据质量。',
+            'feat.observ.title': '详细可观测性',
+            'feat.observ.desc': '自动生成每阶段计时和质量报告，快速识别瓶颈。',
+            'feat.decouple.title': '解耦训练流程',
+            'feat.decouple.desc': '数据生成与模型训练完全分离，支持 MLX LoRA、vLLM 等后端。',
+            'feat.config.title': '配置驱动',
+            'feat.config.desc': 'YAML 配置支持，环境/运行时分层覆盖，便于复现和分享。',
+            // Workflow
+            'workflow.title': '工作流程',
+            'workflow.desc': '从原始数据到蒸馏数据集的端到端信息流转',
+            'step.1.title': '摄取与规范化',
+            'step.1.desc': '将原始输入规范化为稳定的数据模式',
+            'step.2.title': '去重处理',
+            'step.2.desc': '使用 MinHash 和嵌入去重算法',
+            'step.3.title': '教师生成',
+            'step.3.desc': '使用高质量教师 LLM 生成候选数据',
+            'step.4.title': '质量门控',
+            'step.4.desc': '规则过滤 → 执行评估 → LLM 评判',
+            // Quick Start
+            'quickstart.title': '快速开始',
+            'quickstart.desc': '只需几行命令，启动你的数据蒸馏流水线',
+            'code.comment1': '# 安装 FastDistill',
+            'code.comment2': '# 或使用 Ollama 支持进行本地蒸馏',
+            'code.comment3': '# 运行端到端蒸馏示例',
+            'code.comment4': '# 智能体蒸馏 - 一键训练',
+            // Results
+            'results.title': '实证效果',
+            'results.desc': 'WikiSQL 1k Text2SQL 蒸馏实验结果',
+            'result.teacher.label': '教师模型基线',
+            'result.student.label': '学生模型执行通过率',
+            'result.gold.label': 'Gold Match 准确率',
+            'result.gold.sublabel': '严格匹配指标',
+            // CTA
+            'cta.title': '开始构建你的数据流水线',
+            'cta.desc': '加入 FastDistill 社区，探索合成数据与 AI 反馈的无限可能。',
+            'cta.github': '访问 GitHub',
+            'cta.docs': '阅读文档',
+            // Meta
+            '_meta.title': 'FastDistill - 算法工程师智能体',
+            '_meta.description': '算法工程师智能体，帮你一键训练所有模型。FastDistill 是生产级的数据蒸馏框架。',
+        }
+    };
+
+    function switchLang(lang) {
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        localStorage.setItem('fd-lang', lang);
+
+        // Update toggle buttons
+        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+
+        // Update text content
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            if (i18n[lang][key] !== undefined) {
+                el.textContent = i18n[lang][key];
+            }
+        });
+
+        // Update HTML content (for elements with markup)
+        document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-html');
+            if (i18n[lang][key] !== undefined) {
+                el.innerHTML = i18n[lang][key];
+            }
+        });
+
+        // Update page meta
+        document.title = i18n[lang]['_meta.title'];
+        var metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', i18n[lang]['_meta.description']);
+    }
+
+    // Initialize language from localStorage or default to English
+    (function() {
+        var saved = localStorage.getItem('fd-lang');
+        var lang = saved || 'en';
+        switchLang(lang);
+    })();
+    </script>
 </body>
 </html>
