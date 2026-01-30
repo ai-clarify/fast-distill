@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import fsspec
+import orjson
 import pyarrow as pa
 import pyarrow.parquet as pq
 from upath import UPath
@@ -100,8 +101,10 @@ class _Batch(_Serializable):
         return data
 
     def _update_data_hash(self) -> None:
-        """Updates the hash of the data of the batch."""
-        self.data_hash = hashlib.sha1(str(self.data).encode()).hexdigest()
+        """Updates the hash of the data of the batch using orjson for fast serialization."""
+        self.data_hash = hashlib.sha1(
+            orjson.dumps(self.data, option=orjson.OPT_SORT_KEYS)
+        ).hexdigest()
 
     @classmethod
     def accumulate(cls, step_name: str, batches: List[List["_Batch"]]) -> "_Batch":
