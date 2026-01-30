@@ -2,7 +2,6 @@
 #
 # Licensed under the MIT License.
 
-import copy
 import hashlib
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -158,12 +157,27 @@ class _Batch(_Serializable):
         return dump
 
     def copy(self) -> "_Batch":
-        """Creates a copy of the `_Batch` instance.
+        """Creates a shallow copy of the `_Batch` instance.
+
+        The data list structure is copied so each copy can independently
+        consume rows via get_data(), but individual row dicts are shared
+        references (they are not mutated by downstream consumers).
 
         Returns:
             A copy of the `_Batch` instance.
         """
-        return copy.deepcopy(self)
+        return _Batch(
+            seq_no=self.seq_no,
+            step_name=self.step_name,
+            last_batch=self.last_batch,
+            data=[rows[:] for rows in self.data],
+            data_hash=self.data_hash,
+            data_path=self.data_path,
+            accumulated=self.accumulated,
+            created_from=self.created_from,
+            batch_routed_to=self.batch_routed_to[:],
+            size=self.size,
+        )
 
     def write_batch_data_to_fs(
         self,
