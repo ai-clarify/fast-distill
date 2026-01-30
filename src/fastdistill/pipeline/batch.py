@@ -101,9 +101,12 @@ class _Batch(_Serializable):
 
     def _update_data_hash(self) -> None:
         """Updates the hash of the data of the batch using orjson for fast serialization."""
-        self.data_hash = hashlib.sha1(
-            orjson.dumps(self.data, option=orjson.OPT_SORT_KEYS)
-        ).hexdigest()
+        try:
+            payload = orjson.dumps(self.data, option=orjson.OPT_SORT_KEYS)
+        except TypeError:
+            # Fallback for non-JSON-serializable types (e.g. numpy arrays).
+            payload = repr(self.data).encode()
+        self.data_hash = hashlib.sha1(payload).hexdigest()
 
     @classmethod
     def accumulate(cls, step_name: str, batches: List[List["_Batch"]]) -> "_Batch":

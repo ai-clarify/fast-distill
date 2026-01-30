@@ -129,3 +129,4 @@ extend-select = ["RUF022"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+timeout = 120

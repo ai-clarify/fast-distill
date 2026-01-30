@@ -1345,17 +1345,19 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
         stage = self._current_stage
         steps = self._steps_to_be_loaded_in_stage(stage)
         self._logger.info(f"⏳ Waiting for stage {stage} to finish...")
-        with self._stop_called_lock:
-            while not self._stop_called:
-                with self._steps_load_status_changed:
-                    filtered_steps_load_status = self._get_steps_load_status(steps)
-                    if all(
-                        replicas == _STEP_UNLOADED_CODE
-                        for replicas in filtered_steps_load_status.values()
-                    ):
-                        self._logger.info(f"✅ Stage {stage} has finished!")
-                        break
-                    self._steps_load_status_changed.wait(timeout=2.5)
+        while True:
+            with self._stop_called_lock:
+                if self._stop_called:
+                    return
+            with self._steps_load_status_changed:
+                filtered_steps_load_status = self._get_steps_load_status(steps)
+                if all(
+                    replicas == _STEP_UNLOADED_CODE
+                    for replicas in filtered_steps_load_status.values()
+                ):
+                    self._logger.info(f"✅ Stage {stage} has finished!")
+                    return
+                self._steps_load_status_changed.wait(timeout=2.5)
 
     def _run_stage_steps_and_wait(self, stage: int) -> bool:
         """Runs the steps of the specified stage and waits for them to be ready.
@@ -1377,53 +1379,53 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
         # Wait for them to be ready
         self._logger.info(f"⏳ Waiting for all the steps of stage {stage} to load...")
         previous_message = None
-        with self._stop_called_lock:
-            while not self._stop_called:
-                with self._steps_load_status_changed:
-                    filtered_steps_load_status = self._get_steps_load_status(steps)
-                    self._logger.debug(
-                        f"Steps from stage {stage} loaded: {filtered_steps_load_status}"
+        while True:
+            with self._stop_called_lock:
+                if self._stop_called:
+                    return False
+            with self._steps_load_status_changed:
+                filtered_steps_load_status = self._get_steps_load_status(steps)
+                self._logger.debug(
+                    f"Steps from stage {stage} loaded: {filtered_steps_load_status}"
+                )
+
+                if any(
+                    replicas_loaded == _STEP_LOAD_FAILED_CODE
+                    for replicas_loaded in filtered_steps_load_status.values()
+                ):
+                    self._logger.error(
+                        f"❌ Failed to load all the steps of stage {stage}"
                     )
+                    return False
 
-                    if any(
-                        replicas_loaded == _STEP_LOAD_FAILED_CODE
-                        for replicas_loaded in filtered_steps_load_status.values()
+                num_steps_loaded = 0
+                replicas_message = ""
+                for step_name, replicas in filtered_steps_load_status.items():
+                    step_replica_count = self.dag.get_step_replica_count(step_name)
+                    # It can happen that the step is very fast and it has done all the
+                    # work and have finished its execution before checking if it has
+                    # been loaded, that's why we also considered the step to be loaded
+                    # if `_STEP_UNLOADED_CODE`.
+                    if (
+                        replicas == step_replica_count
+                        or replicas == _STEP_UNLOADED_CODE
                     ):
-                        self._logger.error(
-                            f"❌ Failed to load all the steps of stage {stage}"
-                        )
-                        return False
+                        num_steps_loaded += 1
+                    replicas_message += f"\n * '{step_name}' replicas: {max(0, replicas)}/{step_replica_count}"
 
-                    num_steps_loaded = 0
-                    replicas_message = ""
-                    for step_name, replicas in filtered_steps_load_status.items():
-                        step_replica_count = self.dag.get_step_replica_count(step_name)
-                        # It can happen that the step is very fast and it has done all the
-                        # work and have finished its execution before checking if it has
-                        # been loaded, that's why we also considered the step to be loaded
-                        # if `_STEP_UNLOADED_CODE`.
-                        if (
-                            replicas == step_replica_count
-                            or replicas == _STEP_UNLOADED_CODE
-                        ):
-                            num_steps_loaded += 1
-                        replicas_message += f"\n * '{step_name}' replicas: {max(0, replicas)}/{step_replica_count}"
+                message = f"⏳ Steps from stage {stage} loaded: {num_steps_loaded}/{len(filtered_steps_load_status)}{replicas_message}"
+                if num_steps_loaded > 0 and message != previous_message:
+                    self._logger.info(message)
+                    previous_message = message
 
-                    message = f"⏳ Steps from stage {stage} loaded: {num_steps_loaded}/{len(filtered_steps_load_status)}{replicas_message}"
-                    if num_steps_loaded > 0 and message != previous_message:
-                        self._logger.info(message)
-                        previous_message = message
+                if num_steps_loaded == len(filtered_steps_load_status):
+                    self._logger.info(
+                        f"✅ All the steps from stage {stage} have been loaded!"
+                    )
+                    return True
 
-                    if num_steps_loaded == len(filtered_steps_load_status):
-                        self._logger.info(
-                            f"✅ All the steps from stage {stage} have been loaded!"
-                        )
-                        return True
-
-                    # Wait for load status change instead of polling
-                    self._steps_load_status_changed.wait(timeout=2.5)
-
-        return not self._stop_called
+                # Wait for load status change instead of polling
+                self._steps_load_status_changed.wait(timeout=2.5)
 
     def _handle_stop(self) -> None:
         """Handles the stop of the pipeline execution, which will stop the steps from
@@ -1448,6 +1450,8 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
             self._wait_step_input_queue_empty(step_name)
         self._logger.debug("Steps input queues are empty!")
 
+    _INPUT_QUEUE_DRAIN_TIMEOUT = 30
+
     def _wait_step_input_queue_empty(self, step_name: str) -> Union["Queue[Any]", None]:
         """Waits for the input queue of a step to be empty.
 
@@ -1463,8 +1467,15 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
         if input_queue := self.dag.get_step(step_name).get(
             constants.INPUT_QUEUE_ATTR_NAME
         ):
+            deadline = time.monotonic() + self._INPUT_QUEUE_DRAIN_TIMEOUT
             while input_queue.qsize() != 0:
-                pass
+                if time.monotonic() > deadline:
+                    self._logger.warning(
+                        f"Timed out waiting for input queue of step"
+                        f" '{step_name}' to drain."
+                    )
+                    break
+                time.sleep(0.05)
             return input_queue
 
     def _check_step_not_loaded_or_finished(self, step_name: str) -> bool:

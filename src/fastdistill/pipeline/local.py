@@ -350,6 +350,8 @@ class Pipeline(BasePipeline):
 
         self._stop()
 
+    _TEARDOWN_TIMEOUT = 30
+
     def _teardown(self) -> None:
         """Clean/release/stop resources reserved to run the pipeline."""
         if self._write_buffer:
@@ -359,7 +361,12 @@ class Pipeline(BasePipeline):
             self._batch_manager = None
 
         self._stop_load_queue_loop()
-        self._load_steps_thread.join()
+        self._load_steps_thread.join(timeout=self._TEARDOWN_TIMEOUT)
+        if self._load_steps_thread.is_alive():
+            self._logger.warning(
+                "Load-steps thread did not terminate within"
+                f" {self._TEARDOWN_TIMEOUT}s timeout."
+            )
 
         if self._pool:
             self._pool.terminate()
@@ -367,7 +374,6 @@ class Pipeline(BasePipeline):
 
         if self._manager:
             self._manager.shutdown()
-            self._manager.join()
 
     def _set_steps_not_loaded_exception(self) -> None:
         """Raises a `RuntimeError` notifying that the steps load has failed.
@@ -407,7 +413,6 @@ class Pipeline(BasePipeline):
 
                 if self._manager:
                     self._manager.shutdown()
-                    self._manager.join()
                     self._manager = None
 
                 stop_logging()

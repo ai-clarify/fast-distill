@@ -403,6 +403,8 @@ class RayPipeline(BasePipeline):
             placement_group=pg,
         )
 
+    _TEARDOWN_TIMEOUT = 30
+
     def _teardown(self) -> None:
         """Clean/release/stop resources reserved to run the pipeline."""
         if self._write_buffer:
@@ -412,7 +414,13 @@ class RayPipeline(BasePipeline):
             self._batch_manager = None
 
         self._stop_load_queue_loop()
-        self._load_steps_thread.join()
+        self._load_steps_thread.join(timeout=self._TEARDOWN_TIMEOUT)
+        if self._load_steps_thread.is_alive():
+            self._logger.warning(
+                "Load-steps thread did not terminate within"
+                f" {self._TEARDOWN_TIMEOUT}s timeout."
+            )
+
 
     def _set_steps_not_loaded_exception(self) -> None:
         pass
