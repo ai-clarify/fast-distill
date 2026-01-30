@@ -200,6 +200,9 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
 
         self._steps_load_status: Dict[str, int] = {}
         self._steps_load_status_lock = threading.Lock()
+        self._steps_load_status_changed = threading.Condition(
+            self._steps_load_status_lock
+        )
 
         self._stop_called = False
         self._stop_called_lock = threading.Lock()
@@ -1270,7 +1273,7 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
                 self._logger.debug("Received `None` from load queue. Breaking loop.")
                 break
 
-            with self._steps_load_status_lock:
+            with self._steps_load_status_changed:
                 step_name, status = load_info["name"], load_info["status"]
                 if status == "loaded":
                     if self._steps_load_status[step_name] == _STEP_NOT_LOADED_CODE:
@@ -1288,6 +1291,7 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
                 self._logger.debug(
                     f"Step '{step_name}' loaded replicas: {self._steps_load_status[step_name]}"
                 )
+                self._steps_load_status_changed.notify_all()
 
     def _is_step_running(self, step_name: str) -> bool:
         """Checks if the step is running (at least one replica is running).
@@ -1343,13 +1347,15 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
         self._logger.info(f"⏳ Waiting for stage {stage} to finish...")
         with self._stop_called_lock:
             while not self._stop_called:
-                filtered_steps_load_status = self._get_steps_load_status(steps)
-                if all(
-                    replicas == _STEP_UNLOADED_CODE
-                    for replicas in filtered_steps_load_status.values()
-                ):
-                    self._logger.info(f"✅ Stage {stage} has finished!")
-                    break
+                with self._steps_load_status_changed:
+                    filtered_steps_load_status = self._get_steps_load_status(steps)
+                    if all(
+                        replicas == _STEP_UNLOADED_CODE
+                        for replicas in filtered_steps_load_status.values()
+                    ):
+                        self._logger.info(f"✅ Stage {stage} has finished!")
+                        break
+                    self._steps_load_status_changed.wait(timeout=2.5)
 
     def _run_stage_steps_and_wait(self, stage: int) -> bool:
         """Runs the steps of the specified stage and waits for them to be ready.
@@ -1373,7 +1379,7 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
         previous_message = None
         with self._stop_called_lock:
             while not self._stop_called:
-                with self._steps_load_status_lock:
+                with self._steps_load_status_changed:
                     filtered_steps_load_status = self._get_steps_load_status(steps)
                     self._logger.debug(
                         f"Steps from stage {stage} loaded: {filtered_steps_load_status}"
@@ -1414,7 +1420,8 @@ class BasePipeline(ABC, RequirementsMixin, _Serializable):
                         )
                         return True
 
-                time.sleep(2.5)
+                    # Wait for load status change instead of polling
+                    self._steps_load_status_changed.wait(timeout=2.5)
 
         return not self._stop_called
 
