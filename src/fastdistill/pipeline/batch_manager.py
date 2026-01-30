@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import bisect
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -104,8 +105,7 @@ class _BatchManagerStep(_Serializable):
         if prepend:
             self.built_batches.append(batch)
         else:
-            self.data[from_step].append(batch)
-            self.data[from_step].sort(key=lambda batch: batch.seq_no)
+            bisect.insort(self.data[from_step], batch)
 
         if batch.last_batch:
             self.last_batch_received.append(from_step)

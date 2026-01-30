@@ -47,6 +47,9 @@ class _Batch(_Serializable):
     size: int = 0
     _fs: Optional[fsspec.AbstractFileSystem] = None
 
+    def __lt__(self, other: "_Batch") -> bool:
+        return self.seq_no < other.seq_no
+
     def next_batch(self) -> "_Batch":
         """Create a new `_Batch` instance with the next batch of data.
 
