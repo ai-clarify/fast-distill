@@ -3,11 +3,21 @@
 # Licensed under the MIT License.
 
 import bisect
-from collections import defaultdict
+from collections import defaultdict, deque
 from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Deque,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from fastdistill.constants import (
     RECEIVES_ROUTED_BATCHES_ATTR_NAME,
@@ -76,7 +86,7 @@ class _BatchManagerStep(_Serializable):
     accumulate: bool
     input_batch_size: Union[int, None] = None
     data: Dict[str, List[_Batch]] = field(default_factory=dict)
-    built_batches: List[_Batch] = field(default_factory=list)
+    built_batches: Deque[_Batch] = field(default_factory=deque)
     seq_no: int = 0
     last_batch_received: List[str] = field(default_factory=list)
     convergence_step: bool = False
@@ -88,6 +98,11 @@ class _BatchManagerStep(_Serializable):
     step_signature: Optional[str] = None
     use_cache: bool = False
     step_offset: Dict[str, Tuple[int, int]] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        # Ensure built_batches is a deque (handles deserialization from list)
+        if not isinstance(self.built_batches, deque):
+            self.built_batches = deque(self.built_batches)
 
     def add_batch(self, batch: _Batch, prepend: bool = False) -> None:
         """Add a batch of data from `batch.step_name` to the step. It will accumulate the
@@ -121,7 +136,7 @@ class _BatchManagerStep(_Serializable):
         # If there are batches in the `built_batches` list, then return the first one
         # and remove it from the list.
         if self.built_batches:
-            return self.built_batches.pop(0)
+            return self.built_batches.popleft()
 
         if not self._ready_to_create_batch():
             return None

@@ -3,6 +3,7 @@
 # Licensed under the MIT License.
 
 import tempfile
+from collections import deque
 from pathlib import Path
 from typing import Dict, List
 from unittest import mock
@@ -58,7 +59,7 @@ class TestBatchManagerStep:
         )
         batch_manager_step.add_batch(batch_0, prepend=True)
 
-        assert batch_manager_step.built_batches == [batch_0]
+        assert batch_manager_step.built_batches == deque([batch_0])
         assert batch_manager_step.data["step1"] == [batch_1]
         assert batch_manager_step.last_batch_received == []
 
@@ -1534,7 +1535,7 @@ class TestBatchManager:
             data=[[{"a": 1}, {"a": 2}, {"a": 3}, {"a": 4}, {"a": 5}]],
         )
         batch_manager.add_batch(to_step="step3", batch=batch_0, prepend=True)
-        assert batch_manager._steps["step3"].built_batches == [batch_0]
+        assert batch_manager._steps["step3"].built_batches == deque([batch_0])
         assert batch_manager._steps["step3"].data == {
             "step1": [batch_1],
             "step2": [],
@@ -1563,14 +1564,16 @@ class TestBatchManager:
             data=[[{"a": 1}, {"a": 2}, {"a": 3}, {"a": 4}, {"a": 5}]],
         )
 
-        assert batch_manager._steps["step1"].built_batches == [
-            _Batch(
-                seq_no=0,
-                step_name="step1",
-                last_batch=True,
-                data=[[{"a": 1}, {"a": 2}, {"a": 3}, {"a": 4}, {"a": 5}]],
-            )
-        ]
+        assert batch_manager._steps["step1"].built_batches == deque(
+            [
+                _Batch(
+                    seq_no=0,
+                    step_name="step1",
+                    last_batch=True,
+                    data=[[{"a": 1}, {"a": 2}, {"a": 3}, {"a": 4}, {"a": 5}]],
+                )
+            ]
+        )
         assert batch_manager._last_batch_received["step1"] is None
 
     def test_from_dag(

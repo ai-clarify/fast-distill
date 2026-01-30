@@ -5,6 +5,7 @@
 import logging
 import os
 import tempfile
+from collections import deque
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from queue import Queue
@@ -612,10 +613,12 @@ class TestBasePipeline:
 
         pipeline._add_batches_back_to_batch_manager()
 
-        assert pipeline._batch_manager._steps[step_name].built_batches == [
-            step_batch_0,
-            step_batch_1,
-        ]
+        assert pipeline._batch_manager._steps[step_name].built_batches == deque(
+            [
+                step_batch_0,
+                step_batch_1,
+            ]
+        )
 
     def test_consume_output_queue(self) -> None:
         with DummyPipeline(name="unit-test-pipeline") as pipeline:
