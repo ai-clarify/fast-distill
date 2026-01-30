@@ -373,7 +373,7 @@ class _BatchManagerStep(_Serializable):
             # using the data from the buffer. We will remove the consumed batches (no data
             # left) and update the batch data with the remaining data.
             step_data = []
-            idx_drop_batches = []
+            consumed_indices: set = set()
             remaining_rows: int = self.input_batch_size  # type: ignore
             next_expected_seq_no = None
             for idx, batch in enumerate(self.data[step_name]):
@@ -398,13 +398,16 @@ class _BatchManagerStep(_Serializable):
                 # If the batch was entirely consumed, then remove it from the buffer
                 if len(batch.data[0]) == 0:
                     next_expected_seq_no += 1
-                    idx_drop_batches.append(idx)
+                    consumed_indices.add(idx)
                     continue
 
             # Remove the batches that were entirely consumed
-            idx_drop_batches.reverse()
-            for idx in idx_drop_batches:
-                self.data[step_name].pop(idx)
+            if consumed_indices:
+                self.data[step_name] = [
+                    b
+                    for i, b in enumerate(self.data[step_name])
+                    if i not in consumed_indices
+                ]
 
             # Update the `next_expected_seq_no` from `step_name`. It can happen that:
             # 1. This step didn't receive one batch because it was routed to other batches
