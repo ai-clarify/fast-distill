@@ -67,6 +67,9 @@ class _WriteBuffer:
         )
         self._buffer_last_schema = {}
         self._buffers_last_file: Dict[str, int] = dict.fromkeys(leaf_steps, 1)
+        self._files_needing_schema_rewrite: Dict[str, Set[Path]] = {
+            step: set() for step in leaf_steps
+        }
         self._steps_cached = steps_cached or {}
         self._logger = logging.getLogger("fastdistill.write_buffer")
 
@@ -143,6 +146,12 @@ class _WriteBuffer:
                     new_schema = pa.unify_schemas([last_schema, table.schema])
                     self._buffer_last_schema[step_name] = new_schema
                     table = table.cast(new_schema)
+                    # All previously written files need schema rewrite
+                    step_parquet_dir = Path(self._path, step_name)
+                    if step_parquet_dir.exists():
+                        self._files_needing_schema_rewrite[step_name] = set(
+                            list_files_in_dir(step_parquet_dir)
+                        )
 
         next_file_number = self._buffers_last_file[step_name]
         self._buffers_last_file[step_name] = next_file_number + 1
@@ -178,12 +187,11 @@ class _WriteBuffer:
             if self._buffers[step_name]:
                 self._write(step_name)
 
-            # We need to read the parquet files and write them again to ensure the schema
-            # is correct. Otherwise, the first parquets won't have the last schema and
-            # then we will have issues when reading them.
-            for file in list_files_in_dir(self._path / step_name):
-                if step_name in self._buffer_last_schema:
-                    table = pq.read_table(
-                        file, schema=self._buffer_last_schema[step_name]
-                    )
-                    pq.write_table(table, file)
+            # Only rewrite files that were written with an older schema
+            files_to_rewrite = self._files_needing_schema_rewrite.get(step_name, set())
+            if files_to_rewrite and step_name in self._buffer_last_schema:
+                final_schema = self._buffer_last_schema[step_name]
+                for file in files_to_rewrite:
+                    if file.exists():
+                        table = pq.read_table(file, schema=final_schema)
+                        pq.write_table(table, file)
