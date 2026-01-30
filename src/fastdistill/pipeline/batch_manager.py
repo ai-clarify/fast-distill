@@ -103,6 +103,10 @@ class _BatchManagerStep(_Serializable):
         # Ensure built_batches is a deque (handles deserialization from list)
         if not isinstance(self.built_batches, deque):
             self.built_batches = deque(self.built_batches)
+        # Cache for _group_batches_by_created_from (convergence steps only)
+        self._grouped_batches_cache: Union[
+            List[Tuple[int, List[Tuple["_Batch", int]]]], None
+        ] = None
 
     def add_batch(self, batch: _Batch, prepend: bool = False) -> None:
         """Add a batch of data from `batch.step_name` to the step. It will accumulate the
@@ -121,6 +125,7 @@ class _BatchManagerStep(_Serializable):
             self.built_batches.append(batch)
         else:
             bisect.insort(self.data[from_step], batch)
+            self._grouped_batches_cache = None
 
         if batch.last_batch:
             self.last_batch_received.append(from_step)
@@ -302,6 +307,7 @@ class _BatchManagerStep(_Serializable):
             data.append([row for batch in batches for row in batch.get_data()])
         # Reset the data buffer
         self.data = {step_name: [] for step_name in self.data}  # noqa: C420
+        self._grouped_batches_cache = None
         return data, batches_used
 
     def _get_data_for_convergence_step(
@@ -350,6 +356,7 @@ class _BatchManagerStep(_Serializable):
             # If the batch was entirely consumed, then remove it from the buffer
             if len(batch.data[0]) == 0:
                 self.data[batch.step_name].remove(batch)
+                self._grouped_batches_cache = None
                 continue
 
         # If all the batches grouped by the `seq_no` in `created_from` were consumed, then
@@ -671,17 +678,26 @@ class _BatchManagerStep(_Serializable):
         """Group the batches by the first key of `created_from` field. This method is
         meant to be used only with a `convergence_step`.
 
+        Uses a cache that is invalidated when data changes via `add_batch`.
+
         Returns:
             A list of the batches grouped by the `seq_no` of the first step name in `created_from`.
             The list is sorted by the `seq_no`.
         """
+        if self._grouped_batches_cache is not None:
+            return self._grouped_batches_cache
+
         grouped_batches: Dict[int, List[Tuple["_Batch", int]]] = defaultdict(list)
         for batches in self.data.values():
             for batch in batches:
                 first_key = next(iter(batch.created_from))
                 batch_seq_no, batch_size, _ = batch.created_from[first_key][0]
                 grouped_batches[batch_seq_no].append((batch, batch_size))
-        return sorted((seq_no, batches) for seq_no, batches in grouped_batches.items())
+        result = sorted(
+            (seq_no, batches) for seq_no, batches in grouped_batches.items()
+        )
+        self._grouped_batches_cache = result
+        return result
 
     def _model_dump(self, obj: Any, **kwargs: Any) -> Dict[str, Any]:
         """Dumps the content of the `_BatchManagerStep` to a dictionary.
