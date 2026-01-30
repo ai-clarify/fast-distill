@@ -3,7 +3,6 @@
 # Licensed under the MIT License.
 
 import importlib.util
-import json
 import logging
 import os.path as posixpath
 import re
@@ -14,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Union
 
 import fsspec
+import orjson
 import yaml
 from datasets import Dataset, DatasetDict, load_dataset, load_from_disk
 from datasets.filesystems import is_remote_filesystem
@@ -254,7 +254,7 @@ class Distiset(dict):
             for artifact_dir in iterdir_ignore_hidden(step_artifacts_dir):
                 artifact_name = artifact_dir.stem
                 metadata_path = artifact_dir / "metadata.json"
-                metadata = json.loads(metadata_path.read_text())
+                metadata = orjson.loads(metadata_path.read_bytes())
                 artifacts_metadata[step_name].append(
                     {"name": artifact_name, "metadata": metadata}
                 )
