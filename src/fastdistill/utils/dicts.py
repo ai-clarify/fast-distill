@@ -2,10 +2,11 @@
 #
 # Licensed under the MIT License.
 
-import json
 from collections import defaultdict
 from itertools import chain
 from typing import Any, Dict, List, TypeVar
+
+import orjson
 
 _K = TypeVar("_K")
 
@@ -35,7 +36,9 @@ def group_dicts(*dicts: Dict[_K, Any], flatten: bool = False) -> Dict[_K, List[A
 
 
 def flatten_dict(x: Dict[Any, Any]) -> Dict[Any, Any]:
-    return {k: json.dumps(v) if isinstance(v, dict) else v for k, v in x.items()}
+    return {
+        k: orjson.dumps(v).decode() if isinstance(v, dict) else v for k, v in x.items()
+    }
 
 
 def merge_dicts(*dict_lists: dict) -> list[dict]:
