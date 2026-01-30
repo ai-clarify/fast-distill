@@ -184,7 +184,6 @@ class _Step(
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
         validate_default=True,
-        validate_assignment=True,
         extra="forbid",
     )
 
