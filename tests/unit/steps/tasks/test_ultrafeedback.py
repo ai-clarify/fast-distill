@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import importlib.util
 from typing import Any, Dict, List, Union
 
 import pytest
@@ -11,6 +12,11 @@ from fastdistill.steps.tasks.ultrafeedback import UltraFeedback
 from fastdistill.typing import ChatType, GenerateOutput
 
 pytest.importorskip("instructor")
+
+requires_outlines = pytest.mark.skipif(
+    not importlib.util.find_spec("outlines"),
+    reason="outlines not installed",
+)
 
 
 class UltraFeedbackLLM(LLM):
@@ -101,6 +107,7 @@ class TestUltraFeedback:
             }
         ]
 
+    @requires_outlines
     @pytest.mark.parametrize(
         "output, use_default_structured_output, aspect, expected",
         [

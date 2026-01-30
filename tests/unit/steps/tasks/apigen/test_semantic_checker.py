@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import importlib.util
 from typing import Any, Dict
 
 import pytest
@@ -10,6 +11,11 @@ from fastdistill.steps.tasks.apigen.semantic_checker import APIGenSemanticChecke
 from tests.unit.conftest import DummyLLM
 
 pytest.importorskip("instructor")
+
+requires_outlines = pytest.mark.skipif(
+    not importlib.util.find_spec("outlines"),
+    reason="outlines not installed",
+)
 
 SAMPLE_DATA = [
     # The info can for the function description can be obtained from the tool itself
@@ -35,7 +41,10 @@ SAMPLE_DATA = [
 
 
 class TestAPIGenSemanticChecker:
-    @pytest.mark.parametrize("use_default_structured_output", [True, False])
+    @pytest.mark.parametrize(
+        "use_default_structured_output",
+        [pytest.param(True, marks=requires_outlines), False],
+    )
     def test_format_input(self, use_default_structured_output: bool) -> None:
         task = APIGenSemanticChecker(
             llm=DummyLLM(),

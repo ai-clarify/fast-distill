@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import importlib.util
 import json
 import random
 from typing import TYPE_CHECKING, List, Union
@@ -15,6 +16,11 @@ if TYPE_CHECKING:
     from fastdistill.typing import FormattedInput, GenerateOutput
 
 pytest.importorskip("instructor")
+
+requires_outlines = pytest.mark.skipif(
+    not importlib.util.find_spec("outlines"),
+    reason="outlines not installed",
+)
 
 
 class DummyAPIGenLLM(DummyLLM):
@@ -76,7 +82,10 @@ SAMPLE_DATA = [
 
 class TestApiGenGenerator:
     @pytest.mark.parametrize("number", [1, 2, [3]])
-    @pytest.mark.parametrize("use_default_structured_output", [True, False])
+    @pytest.mark.parametrize(
+        "use_default_structured_output",
+        [pytest.param(True, marks=requires_outlines), False],
+    )
     @pytest.mark.parametrize("use_tools", [True, False])
     def test_format_input(
         self,
@@ -128,7 +137,10 @@ class TestApiGenGenerator:
             assert is_parallel_check not in formatted_prompt
 
     @pytest.mark.parametrize("number", [1, 2])
-    @pytest.mark.parametrize("use_default_structured_output", [True, False])
+    @pytest.mark.parametrize(
+        "use_default_structured_output",
+        [pytest.param(True, marks=requires_outlines), False],
+    )
     @pytest.mark.parametrize("use_tools", [True, False])
     def test_process(
         self,

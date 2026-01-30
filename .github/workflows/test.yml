@@ -22,26 +22,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       - name: Install uv
         uses: astral-sh/setup-uv@v4
-        with:
-          enable-cache: true
-          cache-dependency-glob: pyproject.toml
-
-      - name: Install dependencies
-        run: uv pip install --system -e ".[dev]"
 
       - name: Lint
         run: |
-          ruff check src/fastdistill tests
-          ruff format --check src/fastdistill tests
+          uvx ruff@0.8.1 check src/fastdistill tests
+          uvx ruff@0.8.1 format --check src/fastdistill tests
 
-  unit-tests:
+  tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -63,35 +52,12 @@ jobs:
       # faiss, ray, mlx, text-clustering) are excluded — tests that need them
       # use `pytest.importorskip` and will be skipped gracefully.
       - name: Install dependencies
-        run: >
-          uv pip install --system -e
-          ".[tests,anthropic,argilla,cohere,groq,hf-inference-endpoints,litellm,ollama,openai,mistralai,instructor,minhash,vision]"
+        run: |
+          uv pip install --system -e ".[tests,anthropic,argilla,cohere,groq,hf-inference-endpoints,litellm,ollama,openai,mistralai,instructor,minhash,vision,faiss-cpu]"
+          python -m nltk.downloader punkt_tab
 
       - name: Unit Tests
         run: pytest -n auto tests/unit
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [unit-tests]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          enable-cache: true
-          cache-dependency-glob: pyproject.toml
-
-      - name: Install dependencies
-        run: >
-          uv pip install --system -e
-          ".[tests,anthropic,argilla,cohere,groq,hf-inference-endpoints,litellm,ollama,openai,mistralai,instructor,minhash,vision]"
 
       - name: Integration Tests
         run: pytest tests/integration

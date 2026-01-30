@@ -152,7 +152,7 @@ class MinHashLSH(_MinHashLSH):
             raise ValueError("The number of bands are too small (b < 2)")
 
         self.prepickle = (
-            storage_config["type"] == "redis" if not prepickle else prepickle
+            storage_config["type"] in ("redis", "disk") if not prepickle else prepickle
         )
 
         self.hashfunc = hashfunc
@@ -171,6 +171,9 @@ class MinHashLSH(_MinHashLSH):
         ]
         self.hashranges = [(i * self.r, (i + 1) * self.r) for i in range(self.b)]
         self.keys = ordered_storage(storage_config, name=b"".join([basename, b"_keys"]))
+        self._require_bytes_keys = not (
+            storage_config["type"] == "dict" or self.prepickle
+        )
 
     def close(self):
         """Closes the internal connections."""

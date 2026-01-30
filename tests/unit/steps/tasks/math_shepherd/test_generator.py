@@ -2,6 +2,7 @@
 #
 # Licensed under the MIT License.
 
+import importlib.util
 import json
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
@@ -19,6 +20,11 @@ if TYPE_CHECKING:
     from fastdistill.typing import GenerateOutput
 
 pytest.importorskip("instructor")
+
+requires_outlines = pytest.mark.skipif(
+    not importlib.util.find_spec("outlines"),
+    reason="outlines not installed",
+)
 
 
 class MathShepherdGeneratorLLM(DummyLLM):
@@ -158,6 +164,7 @@ class TestMathShepherdGenerator:
         else:
             assert len(result) == 5
 
+    @requires_outlines
     @pytest.mark.parametrize(
         "M, output_name",
         [
@@ -183,6 +190,7 @@ class TestMathShepherdGenerator:
         else:
             assert len(result) == 5
 
+    @requires_outlines
     @pytest.mark.parametrize(
         "M, output_name, expected",
         [
